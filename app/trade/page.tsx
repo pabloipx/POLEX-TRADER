@@ -1107,7 +1107,7 @@ export default function TradePage() {
         className="trade-desktop-controls hidden lg:flex flex-col border-l border-[#1a1a1e] min-h-0"
         style={{ backgroundColor: "#111111" }}
       >
-        <div className="p-4 xl:p-5 space-y-4 shrink-0">
+        <div className="trade-desktop-form p-4 xl:p-5 space-y-4 shrink-0">
           {/* Expiry Time */}
           <div>
             <label className="text-white/50 text-[11px] mb-2 block font-medium uppercase tracking-wider">Horario</label>

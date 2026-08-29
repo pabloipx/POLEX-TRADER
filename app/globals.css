@@ -469,7 +469,7 @@ body {
 @media screen and (orientation: landscape) and (max-height: 600px) and (max-width: 1023px) {
   .trade-shell {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) 230px !important;
   }
 
   .trade-mobile-asset-selector,
@@ -480,6 +480,47 @@ body {
   .trade-desktop-tabs,
   .trade-desktop-controls {
     display: flex !important;
+  }
+
+  .trade-desktop-form {
+    padding: 6px;
+  }
+
+  .trade-desktop-form > :not(:first-child) {
+    margin-top: 5px;
+  }
+
+  .trade-desktop-form label {
+    margin-bottom: 2px;
+    font-size: 9px;
+  }
+
+  .trade-desktop-form > div:nth-child(1) > div,
+  .trade-desktop-form > div:nth-child(3) {
+    padding: 3px;
+  }
+
+  .trade-desktop-form > div:nth-child(1) button {
+    width: 24px;
+    height: 24px;
+  }
+
+  .trade-desktop-form > div:nth-child(2) button,
+  .trade-desktop-form > div:nth-child(2) input {
+    height: 28px;
+  }
+
+  .trade-desktop-form > div:nth-child(2) button {
+    width: 28px;
+  }
+
+  .trade-desktop-form > div:nth-child(4) > :not(:first-child) {
+    margin-top: 5px;
+  }
+
+  .trade-desktop-form > div:nth-child(4) button {
+    padding-top: 7px;
+    padding-bottom: 7px;
   }
 }
 
