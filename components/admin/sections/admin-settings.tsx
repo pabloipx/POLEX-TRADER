@@ -43,7 +43,7 @@ export function AdminSettings({ section }: AdminSettingsProps) {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Nome da Plataforma</label>
-                  <Input defaultValue="POLEX BROKER" className="bg-[#1E2430] border-[#2A3142] text-white" />
+                  <Input defaultValue="Fidelity Broker" className="bg-[#1E2430] border-[#2A3142] text-white" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Email de Suporte</label>

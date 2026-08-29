@@ -16,15 +16,11 @@ export function TradingHeader({ balance, isDemo, payout, onToggleDemo }: Trading
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link href="/trade" className="flex items-center gap-2">
-          <div className="flex items-end gap-0.5">
-            <div className="w-1 h-3 bg-[#4ade80] rounded-sm" />
-            <div className="w-1 h-5 bg-[#22c55e] rounded-sm" />
-            <div className="w-1 h-4 bg-[#4ade80] rounded-sm" />
-            <div className="w-1 h-6 bg-[#22c55e] rounded-sm" />
-          </div>
-          <span className="text-white font-bold text-lg">
-            POLEX<span className="text-[#4ade80]"> BROKER</span>
-          </span>
+          <img
+            src="/images/fidelity-logo.png"
+            alt="Fidelity Broker"
+            className="h-9 w-auto object-contain"
+          />
         </Link>
 
         {/* Account Selector */}

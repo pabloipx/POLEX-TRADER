@@ -91,8 +91,8 @@ export function SidebarMenu({
         <div className="p-5 pb-0 flex-shrink-0">
           <div className="flex items-center justify-between mb-5">
             <img
-              src="/images/polex-broker-logo.png"
-              alt="POLEX BROKER"
+              src="/images/fidelity-logo.png"
+              alt="Fidelity Broker"
               className="h-8 w-auto"
             />
             <button

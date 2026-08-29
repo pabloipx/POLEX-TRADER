@@ -65,8 +65,8 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Image
-            src="/images/polex-broker-logo.png"
-            alt="POLEX BROKER"
+            src="/images/fidelity-logo.png"
+            alt="Fidelity Broker"
             width={240}
             height={64}
             priority

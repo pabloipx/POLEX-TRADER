@@ -469,7 +469,7 @@ export default function SettingsPage() {
 
         {/* App Info */}
         <div className="pt-6 text-center">
-          <p className="text-sm text-[#6B7280]">POLEX BROKER v1.0.0</p>
+          <p className="text-sm text-[#6B7280]">Fidelity Broker v1.0.0</p>
           <p className="text-xs text-[#4B5563] mt-1">© 2026 Todos os direitos reservados</p>
         </div>
       </div>
