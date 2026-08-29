@@ -713,6 +713,16 @@ body {
   mask-image: linear-gradient(to bottom, black, transparent 88%);
 }
 
+.landing-hero-noise {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgb(242 247 245 / 2.5%) 4px
+  );
+  mix-blend-mode: soft-light;
+}
+
 .landing-security-grid {
   background-image:
     linear-gradient(var(--landing-line) 1px, transparent 1px),
