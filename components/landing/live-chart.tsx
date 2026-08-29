@@ -29,15 +29,15 @@ function makeCandle(prevClose: number): Candle {
 export function LiveChart() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const candlesRef = useRef<Candle[]>([])
-  const [price, setPrice] = useState(1.0842)
+  const [price, setPrice] = useState(64973.78)
   const [changePct, setChangePct] = useState(0)
-  const priceRef = useRef(1.0842)
-  const firstPriceRef = useRef(1.0842)
+  const priceRef = useRef(64973.78)
+  const firstPriceRef = useRef(64973.78)
 
   // Inicializa candles
   useEffect(() => {
     const seed: Candle[] = []
-    let last = 1.0842
+    let last = 64973.78
     for (let i = 0; i < 60; i++) {
       const c = makeCandle(last)
       seed.push(c)
@@ -125,7 +125,7 @@ export function LiveChart() {
         ctx.lineTo(padding.left + chartW, y)
         ctx.stroke()
         const val = max - (span / 4) * i
-        ctx.fillText(val.toFixed(4), padding.left + chartW + 8, y + 3)
+        ctx.fillText(val.toFixed(0), padding.left + chartW + 8, y + 3)
       }
 
       const n = candles.length
@@ -171,7 +171,7 @@ export function LiveChart() {
       ctx.fillRect(padding.left + chartW, yPrice - 9, padding.right - 4, 18)
       ctx.fillStyle = "#fff"
       ctx.font = "bold 10px ui-sans-serif, system-ui"
-      ctx.fillText(lastClose.toFixed(4), padding.left + chartW + 6, yPrice + 3)
+      ctx.fillText(lastClose.toFixed(0), padding.left + chartW + 6, yPrice + 3)
 
       raf = requestAnimationFrame(render)
     }
@@ -182,20 +182,19 @@ export function LiveChart() {
   const up = changePct >= 0
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0b0e14]/80 p-4 shadow-[0_20px_60px_-15px_rgba(34, 197, 94,0.35)] backdrop-blur-sm">
-      {/* Cabeçalho do gráfico */}
-      <div className="mb-3 flex items-center justify-between">
+    <div className="relative overflow-hidden border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-4 shadow-[0_30px_80px_-35px_rgba(0,229,153,0.35)]">
+      <div className="mb-3 flex items-center justify-between border-b border-[var(--landing-line)] pb-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#22c55e]/20 text-xs font-bold text-[#86efac]">
-            EUR
+          <span className="flex size-8 items-center justify-center rounded-full bg-[var(--landing-primary)] text-xs font-black text-[var(--landing-primary-foreground)]">
+            ₿
           </span>
           <div className="text-left">
-            <p className="text-sm font-semibold text-white">EUR/USD OTC</p>
-            <p className="text-[11px] text-white/40">Tempo real</p>
+            <p className="font-mono text-xs font-bold text-[var(--landing-text)]">BTC / USDT</p>
+            <p className="font-mono text-[9px] tracking-wider text-[var(--landing-muted)]">SPOT · TEMPO REAL</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="font-mono text-sm font-bold text-white">{price.toFixed(4)}</p>
+          <p className="font-mono text-sm font-bold text-[var(--landing-text)]">${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           <p
             className={`flex items-center justify-end gap-1 text-[11px] font-semibold ${
               up ? "text-[#86efac]" : "text-red-400"
@@ -212,7 +211,7 @@ export function LiveChart() {
       <canvas ref={canvasRef} className="h-[260px] w-full sm:h-[300px]" />
 
       {/* Faixa de status "ao vivo" */}
-      <div className="mt-2 flex items-center gap-2 text-[11px] text-white/40">
+      <div className="mt-2 flex items-center gap-2 font-mono text-[9px] tracking-wider text-[var(--landing-muted)]">
         <span className="flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#86efac] opacity-75" />

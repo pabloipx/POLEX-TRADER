@@ -1,363 +1,145 @@
+import Image from "next/image"
 import Link from "next/link"
-import { Globe, ChevronDown, ShieldCheck, Zap, GraduationCap, Wallet, LineChart, Clock } from "lucide-react"
-import { CryptoTicker } from "@/components/landing/crypto-ticker"
-import { LiveChart } from "@/components/landing/live-chart"
-import { HeroBackground } from "@/components/landing/hero-background"
+import { BarChart3, Check, Clock3, Globe2, Headphones, ShieldCheck, Smartphone, WalletCards, Zap } from "lucide-react"
 
 export const metadata = {
-  title: "Fidelity Option - Trade inteligente e seguro, do seu jeito",
-  description:
-    "Mais que uma corretora, um ecossistema completo para você evoluir. Aprenda, teste e negocie com liberdade, transparência e proteção.",
+  title: "FIDELITY Broker — Negocie nos mercados globais",
+  description: "Acesse mais de 200 ativos em uma plataforma de negociação simples, rápida e segura.",
 }
 
-const features = [
-  {
-    icon: Zap,
-    title: "Execução instantânea",
-    desc: "Ordens processadas em tempo real, sem travamentos nos momentos decisivos.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Segurança de ponta",
-    desc: "Verificação em duas etapas e gestão de dispositivos para proteger sua conta.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Conta demo grátis",
-    desc: "Treine com R$10.000 virtuais e evolua antes de operar com dinheiro real.",
-  },
-  {
-    icon: Wallet,
-    title: "Depósito e saque ágil",
-    desc: "Movimente sua banca com praticidade e total transparência.",
-  },
+const assets = [
+  { name: "EUR/USD", symbol: "EURUSD", price: "1,08342", change: "+0,62%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/wise/default.svg", bars: [28, 38, 34, 49, 44, 58, 52, 69, 63, 78, 72, 88] },
+  { name: "Bitcoin", symbol: "BTC", price: "$64.973", change: "+1,47%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/bitcoin/default.svg", bars: [32, 47, 39, 56, 49, 68, 61, 76, 70, 90, 82, 96] },
+  { name: "Ethereum", symbol: "ETH", price: "$3.481", change: "+2,96%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/ethereum/default.svg", bars: [24, 41, 35, 53, 46, 63, 57, 74, 66, 85, 76, 94] },
+  { name: "Tesla", symbol: "TSLA", price: "$248,42", change: "+0,84%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/tesla/default.svg", bars: [26, 36, 31, 45, 41, 55, 49, 67, 59, 73, 68, 84] },
 ]
 
-const stats = [
-  { value: "+85%", label: "Payout por operação" },
-  { value: "24/7", label: "Mercados OTC" },
-  { value: "<1s", label: "Execução de ordens" },
-  { value: "60+", label: "Ativos disponíveis" },
+const benefits = [
+  [BarChart3, "Gráficos em tempo real", "Indicadores e ferramentas para uma leitura clara do mercado."],
+  [Zap, "Execução simples", "Abra suas operações em poucos passos, sem telas desnecessárias."],
+  [Smartphone, "Negocie onde estiver", "Uma experiência responsiva no computador, tablet e celular."],
+  [Headphones, "Suporte quando precisar", "Atendimento para acompanhar você em cada etapa."],
+  [ShieldCheck, "Ambiente protegido", "Tecnologia e processos dedicados à proteção da sua conta."],
+  [WalletCards, "Controle do seu saldo", "Depósitos, retiradas e histórico reunidos em um só lugar."],
+]
+
+const specials = [
+  ["Depósito mínimo", "R$ 60", "Comece com um valor acessível"],
+  ["Retirada mínima", "R$ 2,00", "Mais flexibilidade para sua banca"],
+  ["Conta demo", "R$ 10.000", "Pratique antes de operar com saldo real"],
+  ["Mercados", "200+ ativos", "Forex, cripto, ações e commodities"],
+  ["Retorno potencial", "Até 90%", "Conforme o ativo e as condições de mercado"],
+  ["Disponibilidade", "24 horas", "Mercados abertos todos os dias"],
 ]
 
 export default function HomePage() {
   return (
-    <main id="top" className="relative flex min-h-screen flex-col bg-[#07090d]">
-      {/* Cabeçalho com navegação em pílula */}
-      <header className="fixed inset-x-0 top-0 z-50 px-4 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07090d]/70 px-4 py-2.5 backdrop-blur-xl">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="Fidelity Option — início">
-            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-9 w-auto object-contain" />
-          </Link>
+    <main className="bullex-page min-h-screen overflow-x-clip bg-[var(--landing-bg)] text-[var(--landing-text)]">
+      <div className="bg-[var(--landing-primary)] px-4 py-2 text-center text-[11px] font-semibold text-[var(--landing-primary-foreground)]">
+        Negociar envolve riscos. Opere com responsabilidade e utilize apenas valores que pode administrar.
+      </div>
 
-          {/* Navegação central (desktop) */}
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">
-            <Link
-              href="#top"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Início
-            </Link>
-            <Link
-              href="#grafico"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Plataforma
-            </Link>
-            <Link
-              href="#recursos"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Recursos
-            </Link>
-            <Link
-              href="#cotacoes"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Cotações
-            </Link>
-          </nav>
+      <header className="sticky top-0 z-40 mx-auto flex max-w-7xl items-center justify-between bg-[var(--landing-bg)]/88 px-5 py-5 backdrop-blur-xl lg:px-8">
+        <Link href="#inicio" aria-label="Fidelity Option — início" className="shrink-0">
+          <Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} className="h-auto w-24 object-contain sm:w-44 lg:w-56" priority />
+        </Link>
 
-          {/* Ações */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden items-center gap-1.5 text-sm font-medium text-white/60 sm:flex">
-              <Globe className="h-4 w-4" />
-              PT
-            </span>
-            <Link
-              href="/auth/login"
-              className="rounded-full border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              Login
-            </Link>
-            <Link
-              href="/auth/sign-up"
-              className="rounded-full bg-[#22c55e] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_30px_-8px_rgba(34, 197, 94,0.8)] transition-colors hover:bg-[#4ade80]"
-            >
-              Criar conta
-            </Link>
-          </div>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Link href="/auth/login" className="rounded-lg border border-[var(--landing-line-strong)] bg-[var(--landing-panel-raised)] px-2 py-2 text-[9px] font-semibold uppercase sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Entrar</span><span className="hidden sm:inline">Entre agora</span></Link>
+          <Link href="/auth/sign-up" className="rounded-lg bg-[var(--landing-primary)] px-2 py-2 text-[9px] font-bold uppercase text-[var(--landing-primary-foreground)] sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Criar conta</span><span className="hidden sm:inline">Criar uma conta</span></Link>
         </div>
       </header>
 
-      {/* HERO — tela cheia */}
-      <section className="relative flex min-h-screen flex-col overflow-hidden">
-        {/* Fundo: brilhos e efeitos animados reativos a rolagem */}
-        <HeroBackground />
-
-        {/* Conteúdo do hero */}
-        <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-6 py-28 text-center">
-          <div className="animate-fade-up mx-auto max-w-4xl">
-            <h1 className="text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-              Trade inteligente e seguro, do seu jeito.
-            </h1>
-
-            <p className="mt-5 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
-              Bem-vindo à{" "}
-              <span className="bg-gradient-to-r from-[#4ade80] via-[#86efac] to-[#22c55e] bg-clip-text text-transparent">
-                Fidelity Option
-              </span>
-            </p>
-
-            <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-white/70 md:text-lg">
-              Mais que uma corretora, somos um ecossistema completo — feito para você evoluir.
-              <br className="hidden sm:block" />{" "}
-              Aqui, você aprende, testa e negocia com liberdade, transparência e proteção.
-            </p>
-
-            {/* CTAs */}
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/auth/sign-up"
-                className="w-full rounded-xl bg-[#22c55e] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80] sm:w-auto"
-              >
-                Criar conta
-              </Link>
-              <Link
-                href="/auth/login"
-                className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-10 py-4 text-base font-bold text-white transition-colors hover:bg-white/10 sm:w-auto"
-              >
-                Login
-              </Link>
-            </div>
+      <section id="inicio" className="fidelity-hero relative min-h-[760px] overflow-hidden border-t border-[var(--landing-line)] px-5 py-16 lg:min-h-[860px] lg:px-8">
+        <div className="bullex-hero-glow absolute inset-0" />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <div className="fidelity-phone-stage relative min-h-[410px] lg:min-h-[520px]">
+            <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
+            <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidelity Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} className="fidelity-phone relative mx-auto max-h-[570px] w-auto object-contain drop-shadow-2xl" priority />
           </div>
-        </div>
-
-        {/* Faixa de cotações + indicador de rolagem */}
-        <div id="cotacoes" className="relative z-20">
-          <CryptoTicker />
-          <div className="flex justify-center pb-5 pt-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md">
-              <ChevronDown className="h-5 w-5 animate-bounce text-white/60" />
-            </div>
+          <div className="fidelity-reveal">
+            <h1 className="text-balance text-5xl font-normal leading-[1.18] tracking-[-0.045em] sm:text-6xl lg:text-7xl">Negocie no mercado financeiro a qualquer momento!</h1>
+            <p className="mt-8 max-w-xl text-xl leading-relaxed text-[var(--landing-text)]">Acesse oportunidades onde quer que você esteja. Negociar nunca foi tão simples.</p>
+            <p className="mt-5 text-lg text-[var(--landing-primary)]">Compatível com computador, tablet e celular.</p>
           </div>
         </div>
       </section>
 
-      {/* SEÇÃO — Gráfico ao vivo */}
-      <section id="grafico" className="relative scroll-mt-24 px-6 py-20 sm:py-28">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-              <LineChart className="h-3.5 w-3.5" />
-              Gráfico em tempo real
-            </span>
-            <h2 className="mt-5 text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-              Acompanhe o mercado se mexendo a cada segundo
-            </h2>
-            <p className="mt-5 max-w-lg text-pretty text-base leading-relaxed text-white/60 md:text-lg">
-              Velas atualizadas em tempo real, leitura clara de tendência e execução rápida.
-              Veja abaixo uma prévia do gráfico que você usa na plataforma Fidelity Option.
-            </p>
-
-            <ul className="mt-8 space-y-4">
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
-                  <Zap className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm text-white/70">
-                  <span className="font-semibold text-white">Candles ao vivo</span> — o gráfico se
-                  atualiza continuamente, como na conta real.
-                </p>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
-                  <Clock className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm text-white/70">
-                  <span className="font-semibold text-white">Múltiplos tempos</span> — opere em
-                  timeframes de segundos a minutos.
-                </p>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm text-white/70">
-                  <span className="font-semibold text-white">Dados confiáveis</span> — preços de
-                  mercado aberto vindos de fontes reais.
-                </p>
-              </li>
-            </ul>
-
-            <Link
-              href="/auth/sign-up"
-              className="mt-8 inline-flex rounded-xl bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80]"
-            >
-              Começar a operar
-            </Link>
-          </div>
-
-          <LiveChart />
-        </div>
-      </section>
-
-      {/* SEÇÃO — Showcase (imagem) */}
-      <section className="relative overflow-hidden px-6 py-20 sm:py-28">
-        <div className="absolute left-1/2 top-1/2 h-96 w-[60rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22c55e]/10 blur-[140px]" />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-            A plataforma
-          </span>
-          <h2 className="mx-auto mt-5 max-w-3xl text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-            Uma plataforma feita para decolar seus resultados
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-white/60 md:text-lg">
-            Interface intuitiva, gráficos poderosos e todas as ferramentas que você precisa em um
-            só lugar.
-          </p>
-
-          <div className="group relative mx-auto mt-12 max-w-4xl">
-            {/* Glow pulsante atrás da moldura */}
-            <div className="animate-tech-pulse absolute -inset-6 rounded-[2rem] bg-[#22c55e]/25 blur-3xl" />
-
-            {/* Pontos orbitando o quadro */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block">
-              <span className="animate-tech-orbit absolute h-2.5 w-2.5 rounded-full bg-[#86efac] shadow-[0_0_12px_4px_rgba(74,222,128,0.8)]" />
-              <span
-                className="animate-tech-orbit absolute h-1.5 w-1.5 rounded-full bg-[#22c55e] shadow-[0_0_10px_3px_rgba(34,197,94,0.7)]"
-                style={{ animationDelay: "-4.5s", animationDuration: "12s" }}
-              />
-            </div>
-
-            {/* Moldura tecnológica */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#22c55e]/30 bg-[#0b0f14] shadow-[0_30px_90px_-20px_rgba(34,197,94,0.55)]">
-              {/* Grade tecnológica animada */}
-              <div className="tech-grid pointer-events-none absolute inset-0 z-10 opacity-40" />
-
-              {/* Vinheta para dar profundidade */}
-              <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(11,15,20,0.75)_100%)]" />
-
-              {/* Linha de varredura (scanline) */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-[#86efac]/40 via-[#22c55e]/15 to-transparent blur-[2px] animate-tech-scan" />
-
-              {/* Cantos estilo HUD */}
-              <span className="pointer-events-none absolute left-3 top-3 z-30 h-6 w-6 rounded-tl-md border-l-2 border-t-2 border-[#22c55e]" />
-              <span className="pointer-events-none absolute right-3 top-3 z-30 h-6 w-6 rounded-tr-md border-r-2 border-t-2 border-[#22c55e]" />
-              <span className="pointer-events-none absolute bottom-3 left-3 z-30 h-6 w-6 rounded-bl-md border-b-2 border-l-2 border-[#22c55e]" />
-              <span className="pointer-events-none absolute bottom-3 right-3 z-30 h-6 w-6 rounded-br-md border-b-2 border-r-2 border-[#22c55e]" />
-
-              {/* Badge "ao vivo" */}
-              <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-[#22c55e]/40 bg-[#0b0f14]/80 px-3 py-1.5 backdrop-blur-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ade80] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]" />
-                </span>
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86efac]">
-                  Sistema ativo
-                </span>
+      <section id="ativos" className="fidelity-market overflow-hidden border-y border-[var(--landing-line)] py-10">
+        <div className="fidelity-market-marquee flex w-max gap-4 px-4">
+          {[...assets, ...assets].map((asset, cardIndex) => (
+            <article key={`${asset.symbol}-${cardIndex}`} className="fidelity-market-card group relative w-[280px] shrink-0 overflow-hidden rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-5 sm:w-[320px]">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--landing-primary)] to-transparent opacity-70" />
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-11 items-center justify-center rounded-xl border border-[var(--landing-line-strong)] bg-[var(--landing-bg)]">
+                    <img src={asset.icon} alt={`Logo ${asset.name}`} width="26" height="26" className="size-7 object-contain" />
+                  </span>
+                  <span><b className="block text-base">{asset.name}</b><small className="font-mono text-[11px] tracking-wider text-[var(--landing-muted)]">{asset.symbol}</small></span>
+                </div>
+                <span className="rounded-full bg-[var(--landing-primary)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--landing-primary)]">{asset.change}</span>
               </div>
-
-              <img
-                src="/images/polex-showcase.png"
-                alt="Plataforma de trading da Fidelity Option com gráfico de candles e painel de operações"
-                className="relative z-0 w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SEÇÃO — Recursos */}
-      <section id="recursos" className="relative scroll-mt-24 px-6 py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-              Por que a Fidelity Option
-            </span>
-            <h2 className="mt-5 text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-              Tudo que você precisa para operar com confiança
-            </h2>
-          </div>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#22c55e]/40 hover:bg-[#22c55e]/[0.06]"
-              >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#22c55e]/15 text-[#86efac] transition-colors group-hover:bg-[#22c55e]/25">
-                  <f.icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-5 text-lg font-bold text-white">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/60">{f.desc}</p>
+              <div className="mt-6 flex items-end justify-between gap-5">
+                <p className="font-mono text-3xl font-bold tracking-tight">{asset.price}</p>
+                <div className="flex h-12 w-28 items-end gap-1" aria-hidden="true">{asset.bars.map((height, index)=><span key={index} className="fidelity-market-bar flex-1 rounded-t-sm bg-[var(--landing-primary)]" style={{height:`${height}%`, animationDelay:`${index * 70}ms`}} />)}</div>
               </div>
-            ))}
-          </div>
-
-          {/* Estatísticas */}
-          <div className="mt-16 grid grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-8 sm:grid-cols-4 sm:gap-8">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <p className="bg-gradient-to-r from-[#4ade80] to-[#86efac] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
-                  {s.value}
-                </p>
-                <p className="mt-1 text-xs text-white/50 sm:text-sm">{s.label}</p>
-              </div>
-            ))}
-          </div>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* SEÇÃO — CTA final */}
-      <section className="relative overflow-hidden px-6 py-24">
-        <div className="absolute left-1/2 top-1/2 h-72 w-[50rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22c55e]/15 blur-[130px]" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <h2 className="text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-            Pronto para começar sua jornada?
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-white/60 md:text-lg">
-            Crie sua conta gratuita, treine na conta demo e negocie quando estiver pronto.
-          </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/auth/sign-up"
-              className="w-full rounded-xl bg-[#22c55e] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80] sm:w-auto"
-            >
-              Criar conta grátis
-            </Link>
-            <Link
-              href="/auth/login"
-              className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-10 py-4 text-base font-bold text-white transition-colors hover:bg-white/10 sm:w-auto"
-            >
-              Já tenho conta
-            </Link>
-          </div>
+      <section className="fidelity-scroll-section mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <div className="fidelity-scroll-copy max-w-2xl">
+          <span className="rounded-full border border-[var(--landing-primary)]/30 px-3 py-1 text-xs text-[var(--landing-primary)]">MAIS POSSIBILIDADES</span>
+          <h2 className="mt-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl">Mais de 200 ativos em uma plataforma descomplicada</h2>
+          <p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Escolha o mercado que combina com sua estratégia e acompanhe tudo em uma única interface.</p>
+        </div>
+        <div className="fidelity-asset-track mt-12 flex gap-3">
+          {assets.map((asset) => <div key={asset.name} className="w-[78vw] max-w-sm shrink-0 rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-lg bg-[var(--landing-bg)]"><img src={asset.icon} alt="" width="24" height="24" className="size-6 object-contain" /></span><b>{asset.name}</b></div><span className="text-[var(--landing-primary)]">{asset.change}</span></div><p className="mt-8 font-mono text-2xl">{asset.price}</p></div>)}
         </div>
       </section>
 
-      {/* Rodapé */}
-      <footer className="relative border-t border-white/10 px-6 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <Link href="#top" className="flex items-center gap-2" aria-label="Voltar ao início">
-            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-8 w-auto object-contain" />
-          </Link>
-          <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} Fidelity Option. Todos os direitos reservados.
-          </p>
+      <section className="fidelity-view-reveal mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div><p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p><h2 className="mt-3 text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2><p className="mt-5 max-w-2xl text-[var(--landing-muted)]">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p><Link href="/auth/sign-up" className="mt-7 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Começar agora</Link></div>
+        <Image src="/images/fidelity-profit.png" alt="Notificação de lucro realizado na Fidelity Option" width={2086} height={724} className="fidelity-profit-banner h-auto w-full object-contain" />
+      </section>
+
+      <section id="vantagens" className="fidelity-view-reveal mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <h2 className="max-w-2xl text-balance text-4xl font-bold tracking-tight sm:text-5xl">Por que a FIDELITY é uma plataforma para grandes decisões?</h2>
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {benefits.map(([Icon,title,desc]) => { const FeatureIcon=Icon as typeof Zap; return <article key={title as string} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-6"><FeatureIcon className="size-6 text-[var(--landing-primary)]"/><h3 className="mt-8 text-lg font-bold">{title as string}</h3><p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></article> })}
         </div>
-      </footer>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <h2 className="text-center text-3xl font-bold sm:text-5xl">Condições FIDELITY</h2>
+        <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {specials.map(([label,value,desc]) => <article key={label} className="bullex-special rounded-xl border border-[var(--landing-line)] p-7"><p className="text-xs text-[var(--landing-primary)]">{label}</p><h3 className="mt-4 text-3xl font-bold">{value}</h3><p className="mt-2 text-sm text-[var(--landing-muted)]">{desc}</p></article>)}
+        </div>
+        <div className="mt-10 text-center"><Link href="/auth/sign-up" className="inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Abrir minha conta</Link></div>
+      </section>
+
+      <section id="plataforma" className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
+        <Image src="/images/fidelity-platform.png" alt="Plataforma Fidelity Option no notebook e celular" width={1668} height={928} className="fidelity-platform-device h-auto w-full object-contain drop-shadow-2xl" />
+        <div><span className="text-xs font-semibold text-[var(--landing-primary)]">MERCADO NA SUA TELA</span><h2 className="mt-5 text-balance text-4xl font-bold sm:text-5xl">Negocie no mercado financeiro em tempo real</h2><p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Acesse cotações, gráficos e suas operações sem complicação. A plataforma se adapta ao seu dispositivo para você acompanhar o mercado onde estiver.</p><div className="mt-8 flex flex-col gap-4">{["Conta demo para praticar", "Gráficos e indicadores integrados", "Histórico completo de operações"].map(item=><div key={item} className="flex items-center gap-3"><Check className="size-5 text-[var(--landing-primary)]"/><span>{item}</span></div>)}</div></div>
+      </section>
+
+      <section className="overflow-hidden py-24">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8"><span className="text-xs font-semibold text-[var(--landing-primary)]">FLEXIBILIDADE</span><h2 className="mt-5 max-w-2xl text-balance text-4xl font-normal sm:text-6xl">Negocie diretamente do seu celular.</h2><p className="mt-6 text-xl">Experiência perfeita em todas as telas.</p></div>
+        <div className="fidelity-testimonials mt-16 flex w-max gap-4 px-4">
+          {[...Array(2)].flatMap((_, copy) => [["Estou encantado com as ferramentas de análise da plataforma. Os indicadores me ajudam a identificar tendências e tomar decisões mais informadas.","J. G. Marins"],["Minha rotina sempre dificultou encontrar tempo para investir. A FIDELITY transformou essa experiência com uma plataforma intuitiva e acessível pelo celular.","David Gama"],["Eu estava perdido no mercado até conhecer esta plataforma. Os gráficos são claros e a equipe de suporte sempre me ajuda quando preciso.","Maria Elisa Cara"]].map(([quote,name],i)=><article key={`${copy}-${i}`} className="w-[86vw] max-w-xl shrink-0 rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-8 sm:p-12"><p className="text-lg leading-relaxed sm:text-xl">{quote}</p><p className="mt-10 text-lg font-semibold text-[var(--landing-primary)]">{name}</p></article>))}
+        </div>
+        <div className="mt-8 flex justify-center gap-3" aria-hidden="true"><span className="size-2 rounded-full bg-[var(--landing-text)]"/><span className="size-2 rounded-full bg-[var(--landing-primary)]"/><span className="size-2 rounded-full bg-[var(--landing-text)]"/></div>
+      </section>
+
+      <section id="duvidas" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div><span className="inline-flex rounded-full border border-[var(--landing-primary)] px-6 py-3 text-sm font-medium">PERGUNTAS FREQUENTES</span><h2 className="mt-5 text-5xl font-normal sm:text-6xl">Sobre a FIDELITY</h2></div>
+        <div className="flex flex-col">{[["O que é a conta demo?","É um ambiente de prática com saldo virtual para conhecer a plataforma sem usar dinheiro real."],["Quais mercados estão disponíveis?","Você encontra moedas, criptomoedas, ações e outros ativos disponíveis na plataforma."],["Posso acessar pelo celular?","Sim. A interface é responsiva e funciona nos principais navegadores móveis."],["Como começo?","Crie sua conta, conheça a conta demo e avance no seu ritmo."]].map(([q,a],i)=><details key={q} className="group border-b border-[var(--landing-line-strong)] py-7"><summary className="cursor-pointer list-none text-lg font-medium marker:hidden">{String(i + 1).padStart(2,"0")}. {q}<span className="float-right text-2xl text-[var(--landing-primary)] transition-transform group-open:rotate-45">+</span></summary><p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--landing-muted)]">{a}</p></details>)}</div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8"><div className="bullex-cta overflow-hidden rounded-2xl border border-[var(--landing-primary)]/20 px-6 py-12 text-center"><Image src="/images/fidelity-withdrawal.png" alt="Saque Fidelity Option em até 24 horas" width={2086} height={750} className="fidelity-withdrawal mx-auto h-auto w-full max-w-5xl object-contain"/><h2 className="mx-auto mt-6 max-w-2xl text-balance text-3xl font-bold sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Criar conta gratuita</Link></div></section>
+
+      <footer className="border-t border-[var(--landing-line)] px-5 py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row"><Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} className="h-auto w-40 object-contain" /><div className="flex items-center gap-5 text-xs text-[var(--landing-muted)]"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
     </main>
   )
 }

@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Shield,
   Wallet,
+  Bot,
 } from "lucide-react"
 
 interface SidebarMenuProps {
@@ -54,6 +55,7 @@ export function SidebarMenu({
   const mainMenuItems = [
     { icon: History, label: "Historico", href: "/transactions" },
     { icon: User, label: "Perfil", href: "/profile" },
+    { icon: Bot, label: "IAs conectadas", href: "/connections" },
   ]
 
   const financeMenuItems = [
