@@ -6,13 +6,10 @@ import { accrueTradeRevshare } from "@/lib/affiliate-revshare"
 // GET - Obter dados do afiliado
 export async function GET() {
   try {
-    console.log("[v0] Affiliate GET - Starting")
     const supabase = await createClient()
     const {
       data: { user },
     } = await supabase.auth.getUser()
-
-    console.log("[v0] Affiliate GET - User:", user?.id)
 
     if (!user) {
       return NextResponse.json({ error: "Nao autorizado" }, { status: 401 })
@@ -28,12 +25,10 @@ export async function GET() {
       .maybeSingle()
 
     if (profileError) {
-      console.log("[v0] Affiliate GET - Profile error:", profileError)
+      console.error("Affiliate GET - Profile error:", profileError)
       return NextResponse.json({ error: "Erro ao buscar perfil" }, { status: 500 })
     }
     
-    console.log("[v0] Affiliate GET - Profile:", profile)
-
     // If profile doesn't exist yet, create it
     if (!profile) {
       const { error: insertError } = await admin
@@ -175,7 +170,7 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.log("[v0] Affiliate GET - Error:", error)
+    console.error("Affiliate GET - Error:", error)
     return NextResponse.json({ error: "Erro interno" }, { status: 500 })
   }
 }
@@ -184,13 +179,10 @@ export async function GET() {
 // POST - Tornar-se afiliado
 export async function POST() {
   try {
-    console.log("[v0] Affiliate POST - Starting")
     const supabase = await createClient()
     const {
       data: { user },
     } = await supabase.auth.getUser()
-
-    console.log("[v0] Affiliate POST - User:", user?.id)
 
     if (!user) {
       return NextResponse.json({ error: "Nao autorizado" }, { status: 401 })
@@ -285,11 +277,9 @@ export async function POST() {
       .single()
 
     if (error) {
-      console.log("[v0] Affiliate POST - Update error:", error)
+      console.error("Affiliate POST - Update error:", error)
       return NextResponse.json({ error: "Erro ao ativar afiliado" }, { status: 500 })
     }
-
-    console.log("[v0] Affiliate POST - Success:", updatedProfile)
 
     return NextResponse.json({
       affiliate: {
@@ -305,7 +295,7 @@ export async function POST() {
       },
     })
   } catch (error) {
-    console.log("[v0] Affiliate POST - Error:", error)
+    console.error("Affiliate POST - Error:", error)
     return NextResponse.json({ error: "Erro interno" }, { status: 500 })
   }
 }

@@ -177,7 +177,9 @@ export default function TradePage() {
   // Direcao apenas pre-visualizada: setada no hover de Comprar/Vender para tingir o grafico.
   const [hoverDirection, setHoverDirection] = useState<"call" | "put" | null>(null)
   const [historyRefresh, setHistoryRefresh] = useState(0)
-  const [accountType, setAccountType] = useState<"demo" | "real">("real")
+  // A conta demo é a experiência segura padrão. Contas sem saldo real não devem abrir a tela
+  // com os controles aparentemente quebrados quando há saldo de treinamento disponível.
+  const [accountType, setAccountType] = useState<"demo" | "real">("demo")
   const [showAccountDropdown, setShowAccountDropdown] = useState(false)
   const [amount, setAmount] = useState(10)
   // Modal centralizado: usado somente no mobile.
@@ -1194,9 +1196,10 @@ export default function TradePage() {
           <div className="space-y-3">
             <button
               onClick={() => executeTrade("CALL")}
-              disabled={amount > currentBalance || entryBlocked}
+              disabled={isTrading || currentBalance <= 0 || amount > currentBalance || entryBlocked}
+              aria-busy={isTrading}
               onMouseEnter={() => {
-                if (!(amount > currentBalance || entryBlocked)) setHoverDirection("call")
+                if (!(isTrading || currentBalance <= 0 || amount > currentBalance || entryBlocked)) setHoverDirection("call")
               }}
               onMouseLeave={() => setHoverDirection(null)}
               className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1210,9 +1213,10 @@ export default function TradePage() {
 
             <button
               onClick={() => executeTrade("PUT")}
-              disabled={amount > currentBalance || entryBlocked}
+              disabled={isTrading || currentBalance <= 0 || amount > currentBalance || entryBlocked}
+              aria-busy={isTrading}
               onMouseEnter={() => {
-                if (!(amount > currentBalance || entryBlocked)) setHoverDirection("put")
+                if (!(isTrading || currentBalance <= 0 || amount > currentBalance || entryBlocked)) setHoverDirection("put")
               }}
               onMouseLeave={() => setHoverDirection(null)}
               className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1327,7 +1331,8 @@ export default function TradePage() {
             <div className="flex-1 grid grid-cols-2 gap-2">
               <button
                 onClick={() => executeTrade("PUT")}
-                disabled={amount > currentBalance || entryBlocked}
+                disabled={isTrading || currentBalance <= 0 || amount > currentBalance || entryBlocked}
+                aria-busy={isTrading}
                 className="py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   background: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
@@ -1338,7 +1343,8 @@ export default function TradePage() {
               </button>
               <button
                 onClick={() => executeTrade("CALL")}
-                disabled={amount > currentBalance || entryBlocked}
+                disabled={isTrading || currentBalance <= 0 || amount > currentBalance || entryBlocked}
+                aria-busy={isTrading}
                 className="py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   background: "linear-gradient(135deg, #00B35A 0%, #00E676 100%)",
