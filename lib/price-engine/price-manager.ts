@@ -30,7 +30,7 @@ export class PriceManager {
   private symbols: Map<string, SymbolConfig> = new Map()
   private maxCandles = 200
 
-  initialize(otcSymbols: OTCSymbol[]) {
+  initialize(otcSymbols: Pick<OTCSymbol, "symbol" | "is_active" | "base_price" | "volatility">[]) {
     for (const symbol of otcSymbols) {
       if (!symbol.is_active) continue
       this.symbols.set(symbol.symbol, {
