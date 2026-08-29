@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8">
           <Image
             src="/images/fidelity-logo.png"
-            alt="Fidelity Broker"
+            alt="Fidelity Option"
             width={240}
             height={64}
             priority

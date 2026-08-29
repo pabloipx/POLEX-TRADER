@@ -92,7 +92,7 @@ export function SidebarMenu({
           <div className="flex items-center justify-between mb-5">
             <img
               src="/images/fidelity-logo.png"
-              alt="Fidelity Broker"
+              alt="Fidelity Option"
               className="h-8 w-auto"
             />
             <button

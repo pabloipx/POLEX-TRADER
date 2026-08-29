@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
         <Link href="/" className="flex items-center">
           <Image
             src="/images/fidelity-logo.png"
-            alt="Fidelity Broker"
+            alt="Fidelity Option"
             width={180}
             height={44}
             className="h-8 w-auto sm:h-9"

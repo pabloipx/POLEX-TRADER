@@ -69,7 +69,7 @@ export function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarPro
       <div className="p-4 border-b border-[#1E2430]">
         <Image
           src="/images/fidelity-logo.png"
-          alt="Fidelity Broker"
+          alt="Fidelity Option"
           width={150}
           height={40}
           priority

@@ -28,9 +28,9 @@ const RULE_SECTIONS = [
     id: "gerais",
     title: "Restrições gerais",
     body: [
-      "• Não se apresente como um funcionário/representante da Fidelity Broker ou as suas fontes de tráfego como perfis oficiais da Fidelity Broker em redes sociais ou websites. Suas fontes de tráfego não devem induzir ao erro, fazendo crer que são oficiais, e não devem ser semelhantes aos websites e/ou perfis de redes sociais oficiais da Fidelity Broker. Se você utilizar um website para a promoção da Fidelity Broker, ele não deve conter a marca Fidelity Broker em seu nome e deve ser claramente identificado como não oficial na primeira tela.",
-      "• Não faça login na conta da Fidelity Broker do seu cliente e não realize operações em nome deles. Não é permitido operar em nome de outra pessoa para promover a corretora e criar conteúdo para fins de marketing. Você só pode operar estritamente na sua própria conta.",
-      "• Não compre publicidade usando o link de afiliado e não dê lances para consultas de marca da Fidelity Broker. Publicidade contextual de pesquisa e display só pode ser usada ao promover seus próprios websites.",
+      "• Não se apresente como um funcionário/representante da Fidelity Option ou as suas fontes de tráfego como perfis oficiais da Fidelity Option em redes sociais ou websites. Suas fontes de tráfego não devem induzir ao erro, fazendo crer que são oficiais, e não devem ser semelhantes aos websites e/ou perfis de redes sociais oficiais da Fidelity Option. Se você utilizar um website para a promoção da Fidelity Option, ele não deve conter a marca Fidelity Option em seu nome e deve ser claramente identificado como não oficial na primeira tela.",
+      "• Não faça login na conta da Fidelity Option do seu cliente e não realize operações em nome deles. Não é permitido operar em nome de outra pessoa para promover a corretora e criar conteúdo para fins de marketing. Você só pode operar estritamente na sua própria conta.",
+      "• Não compre publicidade usando o link de afiliado e não dê lances para consultas de marca da Fidelity Option. Publicidade contextual de pesquisa e display só pode ser usada ao promover seus próprios websites.",
     ],
   },
   {
@@ -54,14 +54,14 @@ const RULE_SECTIONS = [
     id: "negativas",
     title: "Palavras negativas",
     body: [
-      "Ao rodar campanhas pagas, adicione como palavras negativas os termos de marca: Fidelity Broker, Fidelity Broker Broker, Fidelity Broker login, Fidelity Broker entrar, Fidelity Broker oficial, Fidelity Broker app e variações com erros de digitação.",
+      "Ao rodar campanhas pagas, adicione como palavras negativas os termos de marca: Fidelity Option, Fidelity Option Broker, Fidelity Option login, Fidelity Option entrar, Fidelity Option oficial, Fidelity Option app e variações com erros de digitação.",
     ],
   },
   {
     id: "apps",
     title: "Diretrizes de aplicativos",
     body: [
-      "Aplicativos próprios não podem usar o nome nem o logotipo da Fidelity Broker como identidade principal, devem informar de forma visível que não são oficiais e precisam de aprovação prévia do gerente antes da publicação nas lojas.",
+      "Aplicativos próprios não podem usar o nome nem o logotipo da Fidelity Option como identidade principal, devem informar de forma visível que não são oficiais e precisam de aprovação prévia do gerente antes da publicação nas lojas.",
     ],
   },
   {
@@ -251,7 +251,7 @@ export function OfferDetail({ offer, affiliate, onBack }: OfferDetailProps) {
       {tab === "Anunciante" && (
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <article className="flex flex-col gap-5 rounded-xl border border-gray-200 p-6 text-[15px] leading-relaxed text-gray-700">
-            <p>Fidelity Broker — A mais simples, completa e lucrativa plataforma de trading.</p>
+            <p>Fidelity Option — A mais simples, completa e lucrativa plataforma de trading.</p>
             <p>
               Promova: cursos, salas de sinais, robôs de trading, canais de operação ao vivo, entre outros produtos e
               ganhe comissões ao cadastrar novos traders.
@@ -275,7 +275,7 @@ export function OfferDetail({ offer, affiliate, onBack }: OfferDetailProps) {
             <div className="flex items-center justify-center rounded-xl border border-gray-200 p-8">
               <Image
                 src="/images/fidelity-logo.png"
-                alt="Fidelity Broker"
+                alt="Fidelity Option"
                 width={1500}
                 height={400}
                 className="h-10 w-auto"
@@ -286,7 +286,7 @@ export function OfferDetail({ offer, affiliate, onBack }: OfferDetailProps) {
               <div>
                 <p className="text-[15px] text-gray-500">Site</p>
                 <a href="/" className="text-[15px] text-emerald-700 hover:underline">
-                  https://urynbroker.com
+                  https://fidelityoption.com
                 </a>
               </div>
               <div>

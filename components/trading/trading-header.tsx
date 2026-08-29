@@ -18,7 +18,7 @@ export function TradingHeader({ balance, isDemo, payout, onToggleDemo }: Trading
         <Link href="/trade" className="flex items-center gap-2">
           <img
             src="/images/fidelity-logo.png"
-            alt="Fidelity Broker"
+            alt="Fidelity Option"
             className="h-9 w-auto object-contain"
           />
         </Link>

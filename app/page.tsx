@@ -5,7 +5,7 @@ import { LiveChart } from "@/components/landing/live-chart"
 import { HeroBackground } from "@/components/landing/hero-background"
 
 export const metadata = {
-  title: "Fidelity Broker - Trade inteligente e seguro, do seu jeito",
+  title: "Fidelity Option - Trade inteligente e seguro, do seu jeito",
   description:
     "Mais que uma corretora, um ecossistema completo para você evoluir. Aprenda, teste e negocie com liberdade, transparência e proteção.",
 }
@@ -47,8 +47,8 @@ export default function HomePage() {
       <header className="fixed inset-x-0 top-0 z-50 px-4 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07090d]/70 px-4 py-2.5 backdrop-blur-xl">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="Fidelity Broker — início">
-            <img src="/images/fidelity-logo.png" alt="Fidelity Broker" className="h-9 w-auto object-contain" />
+          <Link href="/" className="flex items-center gap-2" aria-label="Fidelity Option — início">
+            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-9 w-auto object-contain" />
           </Link>
 
           {/* Navegação central (desktop) */}
@@ -116,7 +116,7 @@ export default function HomePage() {
             <p className="mt-5 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               Bem-vindo à{" "}
               <span className="bg-gradient-to-r from-[#4ade80] via-[#86efac] to-[#22c55e] bg-clip-text text-transparent">
-                Fidelity Broker
+                Fidelity Option
               </span>
             </p>
 
@@ -168,7 +168,7 @@ export default function HomePage() {
             </h2>
             <p className="mt-5 max-w-lg text-pretty text-base leading-relaxed text-white/60 md:text-lg">
               Velas atualizadas em tempo real, leitura clara de tendência e execução rápida.
-              Veja abaixo uma prévia do gráfico que você usa na plataforma Fidelity Broker.
+              Veja abaixo uma prévia do gráfico que você usa na plataforma Fidelity Option.
             </p>
 
             <ul className="mt-8 space-y-4">
@@ -271,7 +271,7 @@ export default function HomePage() {
 
               <img
                 src="/images/polex-showcase.png"
-                alt="Plataforma de trading da Fidelity Broker com gráfico de candles e painel de operações"
+                alt="Plataforma de trading da Fidelity Option com gráfico de candles e painel de operações"
                 className="relative z-0 w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
             </div>
@@ -284,7 +284,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-2xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-              Por que a Fidelity Broker
+              Por que a Fidelity Option
             </span>
             <h2 className="mt-5 text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
               Tudo que você precisa para operar com confiança
@@ -351,10 +351,10 @@ export default function HomePage() {
       <footer className="relative border-t border-white/10 px-6 py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
           <Link href="#top" className="flex items-center gap-2" aria-label="Voltar ao início">
-            <img src="/images/fidelity-logo.png" alt="Fidelity Broker" className="h-8 w-auto object-contain" />
+            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-8 w-auto object-contain" />
           </Link>
           <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} Fidelity Broker. Todos os direitos reservados.
+            © {new Date().getFullYear()} Fidelity Option. Todos os direitos reservados.
           </p>
         </div>
       </footer>

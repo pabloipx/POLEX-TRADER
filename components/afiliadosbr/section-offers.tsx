@@ -23,7 +23,7 @@ export function SectionOffers({ affiliate }: SectionOffersProps) {
     offers.push({
       id: "revenue",
       model: "revenue",
-      title: `URYN · ${affiliate.commission_rate}% · Revenue`,
+      title: `Fidelity Option · ${affiliate.commission_rate}% · Revenue`,
       rate: `${affiliate.commission_rate}%`,
       payout: `${affiliate.commission_rate}%`,
     })
@@ -33,7 +33,7 @@ export function SectionOffers({ affiliate }: SectionOffersProps) {
     offers.push({
       id: "cpa",
       model: "cpa",
-      title: `URYN · ${brl(cpaAmount)} · CPA`,
+      title: `Fidelity Option · ${brl(cpaAmount)} · CPA`,
       rate: brl(cpaAmount),
       payout: brl(cpaAmount),
     })

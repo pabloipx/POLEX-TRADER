@@ -106,7 +106,7 @@ export default function LoginPage() {
       {/* Header */}
       <header className="flex items-center justify-between border-b border-white/10 bg-[#0b0f14]/90 px-6 py-3 backdrop-blur-xl">
         <Link href="/" className="flex items-center">
-          <Image src="/images/fidelity-logo.png" alt="Fidelity Broker" width={150} height={38} className="h-9 w-auto" unoptimized />
+          <Image src="/images/fidelity-logo.png" alt="Fidelity Option" width={150} height={38} className="h-9 w-auto" unoptimized />
         </Link>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm font-medium text-white/60">
@@ -125,7 +125,7 @@ export default function LoginPage() {
       {/* Form */}
       <main className="flex-1 flex flex-col items-center px-5 py-10">
         <h1 className="mb-2 text-center text-3xl font-bold text-white">Acesse sua conta</h1>
-        <p className="mb-8 text-center text-sm text-white/50">Entre para operar na Fidelity Broker</p>
+        <p className="mb-8 text-center text-sm text-white/50">Entre para operar na Fidelity Option</p>
 
         <form onSubmit={handleLogin} className="flex w-full max-w-[420px] flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-6 shadow-2xl">
           <input
