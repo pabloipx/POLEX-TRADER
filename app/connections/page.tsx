@@ -4,6 +4,7 @@ import useSWR from "swr"
 import { useState } from "react"
 import { ArrowLeft, Bot, BookOpen, ShieldCheck, Unplug } from "lucide-react"
 import { ApiDocumentation } from "@/components/connections/api-documentation"
+import { QuickConnect } from "@/components/connections/quick-connect"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -61,7 +62,9 @@ export default function ConnectionsPage() {
           </TabsList>
 
           <TabsContent value="connections" className="flex flex-col gap-6">
-            <Alert><ShieldCheck /><AlertDescription>Nunca informe sua senha à IA. Autorize somente por OAuth, defina limites conservadores e revogue o acesso ao primeiro comportamento inesperado.</AlertDescription></Alert>
+            <Alert><ShieldCheck /><AlertDescription>Nunca informe sua senha à IA. Use apenas a chave temporária abaixo, defina limites conservadores e revogue o acesso ao primeiro comportamento inesperado.</AlertDescription></Alert>
+
+            <QuickConnect />
 
             {isLoading && <Card><CardContent className="p-6 text-muted-foreground">Carregando conexões...</CardContent></Card>}
             {error && <Card><CardContent className="p-6 text-destructive">Não foi possível carregar suas conexões.</CardContent></Card>}

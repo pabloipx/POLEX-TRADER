@@ -14,6 +14,10 @@ const permissions = [
   { scope: "trade:read", title: "Ver histórico", description: "Permite consultar apenas as operações criadas por esta mesma IA." },
 ]
 
+const quickConnectExample = `curl -X POST https://SUA_CORRETORA/api/oauth/connect \\
+  -H "Content-Type: application/json" \\
+  -d '{ "code": "COLE_A_CHAVE_PLX_CONNECT_AQUI" }'`
+
 const authorizationExample = `GET /oauth/authorize?
   response_type=code&
   client_id=SEU_CLIENT_ID&
@@ -82,7 +86,19 @@ export function ApiDocumentation() {
 
       <Card>
         <CardHeader>
-          <CardTitle>1. Cadastre seu aplicativo</CardTitle>
+          <Badge variant="secondary" className="w-fit">Recomendado para IAs</Badge>
+          <CardTitle>Conexão rápida com uma chave</CardTitle>
+          <CardDescription>O usuário gera a chave na aba IAs conectadas e cola na IA. Troque-a uma única vez no endpoint abaixo; a resposta contém access_token, client_id e api_base_url.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <CodeBlock code={quickConnectExample} />
+          <p className="text-sm leading-relaxed text-muted-foreground">A chave expira em 10 minutos e não pode ser reutilizada. O access token emitido dura 30 dias, fica sujeito aos limites definidos e pode ser revogado pelo usuário a qualquer momento.</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Fluxo avançado: cadastre seu aplicativo</CardTitle>
           <CardDescription>Solicite ao administrador da corretora um Client ID e cadastre uma URL HTTPS exata para o retorno OAuth.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
