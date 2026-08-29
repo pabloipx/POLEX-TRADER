@@ -56,9 +56,7 @@ export default function HomePage() {
         <div className="relative z-10 mx-auto mt-24 grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="fidelity-phone-stage relative min-h-[410px] lg:min-h-[520px]">
             <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
-            <Image src="/images/hero-trading.png" alt="Aplicativo FIDELITY BROKER em dispositivos móveis" width={1024} height={1024} className="fidelity-phone relative mx-auto w-full max-w-xl object-contain drop-shadow-2xl" priority />
-            <div className="fidelity-profit absolute left-0 top-1/3 rounded-lg border border-[var(--landing-line)] bg-[var(--landing-bg)]/85 px-4 py-3 text-xs shadow-2xl backdrop-blur-md"><b>Lucro realizado!</b><br/><span className="text-[var(--landing-muted)]">Valor: R$ 3.532,20</span></div>
-            <div className="fidelity-profit fidelity-profit-delay absolute bottom-12 right-0 rounded-lg border border-[var(--landing-line)] bg-[var(--landing-bg)]/85 px-4 py-3 text-xs shadow-2xl backdrop-blur-md"><b>Lucro realizado!</b><br/><span className="text-[var(--landing-muted)]">Valor: R$ 10.200,24</span></div>
+            <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidelity Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} className="fidelity-phone relative mx-auto max-h-[570px] w-auto object-contain drop-shadow-2xl" priority />
           </div>
           <div className="fidelity-reveal">
             <h1 className="text-balance text-5xl font-normal leading-[1.18] tracking-[-0.045em] sm:text-6xl lg:text-7xl">Negocie no mercado financeiro a qualquer momento!</h1>
@@ -91,11 +89,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="fidelity-view-reveal px-5 py-20 text-center lg:px-8">
-        <p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p>
-        <h2 className="mx-auto mt-3 max-w-xl text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2>
-        <p className="mx-auto mt-5 max-w-2xl text-[var(--landing-muted)]">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p>
-        <Link href="/auth/sign-up" className="mt-7 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Começar agora</Link>
+      <section className="fidelity-view-reveal mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div><p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p><h2 className="mt-3 text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2><p className="mt-5 max-w-2xl text-[var(--landing-muted)]">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p><Link href="/auth/sign-up" className="mt-7 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Começar agora</Link></div>
+        <Image src="/images/fidelity-profit.png" alt="Notificação de lucro realizado na Fidelity Option" width={2086} height={724} className="fidelity-profit-banner h-auto w-full object-contain" />
       </section>
 
       <section id="vantagens" className="fidelity-view-reveal mx-auto max-w-7xl px-5 py-24 lg:px-8">
@@ -114,7 +110,7 @@ export default function HomePage() {
       </section>
 
       <section id="plataforma" className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
-        <Image src="/images/hero-trading.png" alt="Terminal de negociação FIDELITY" width={1024} height={1024} className="w-full rounded-2xl border border-[var(--landing-line)]" />
+        <Image src="/images/fidelity-platform.png" alt="Plataforma Fidelity Option no notebook e celular" width={1668} height={928} className="fidelity-platform-device h-auto w-full object-contain drop-shadow-2xl" />
         <div><span className="text-xs font-semibold text-[var(--landing-primary)]">MERCADO NA SUA TELA</span><h2 className="mt-5 text-balance text-4xl font-bold sm:text-5xl">Negocie no mercado financeiro em tempo real</h2><p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Acesse cotações, gráficos e suas operações sem complicação. A plataforma se adapta ao seu dispositivo para você acompanhar o mercado onde estiver.</p><div className="mt-8 flex flex-col gap-4">{["Conta demo para praticar", "Gráficos e indicadores integrados", "Histórico completo de operações"].map(item=><div key={item} className="flex items-center gap-3"><Check className="size-5 text-[var(--landing-primary)]"/><span>{item}</span></div>)}</div></div>
       </section>
 
@@ -131,7 +127,7 @@ export default function HomePage() {
         <div className="flex flex-col">{[["O que é a conta demo?","É um ambiente de prática com saldo virtual para conhecer a plataforma sem usar dinheiro real."],["Quais mercados estão disponíveis?","Você encontra moedas, criptomoedas, ações e outros ativos disponíveis na plataforma."],["Posso acessar pelo celular?","Sim. A interface é responsiva e funciona nos principais navegadores móveis."],["Como começo?","Crie sua conta, conheça a conta demo e avance no seu ritmo."]].map(([q,a],i)=><details key={q} className="group border-b border-[var(--landing-line-strong)] py-7"><summary className="cursor-pointer list-none text-lg font-medium marker:hidden">{String(i + 1).padStart(2,"0")}. {q}<span className="float-right text-2xl text-[var(--landing-primary)] transition-transform group-open:rotate-45">+</span></summary><p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--landing-muted)]">{a}</p></details>)}</div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8"><div className="bullex-cta rounded-2xl border border-[var(--landing-primary)]/20 px-6 py-16 text-center"><Clock3 className="mx-auto size-7 text-[var(--landing-primary)]"/><h2 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Criar conta gratuita</Link></div></section>
+      <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8"><div className="bullex-cta overflow-hidden rounded-2xl border border-[var(--landing-primary)]/20 px-6 py-12 text-center"><Image src="/images/fidelity-withdrawal.png" alt="Saque Fidelity Option em até 24 horas" width={2086} height={750} className="fidelity-withdrawal mx-auto h-auto w-full max-w-5xl object-contain"/><h2 className="mx-auto mt-6 max-w-2xl text-balance text-3xl font-bold sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Criar conta gratuita</Link></div></section>
 
       <footer className="border-t border-[var(--landing-line)] px-5 py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row"><Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} className="h-auto w-40 object-contain" /><div className="flex items-center gap-5 text-xs text-[var(--landing-muted)]"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
     </main>
