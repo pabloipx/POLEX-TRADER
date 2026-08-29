@@ -895,7 +895,7 @@ export default function TradePage() {
   }
 
   return (
-    <div className="h-[100dvh] flex flex-col lg:grid lg:grid-cols-[1fr_340px] overflow-hidden" style={{ backgroundColor: "#0e0e0e" }}>
+    <div className="trade-shell h-[100dvh] flex flex-col lg:grid lg:grid-cols-[1fr_340px] overflow-hidden" style={{ backgroundColor: "#0e0e0e" }}>
       {/* LEFT COLUMN: Header + Chart */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Header */}
@@ -911,7 +911,7 @@ export default function TradePage() {
           {/* Center (MOBILE) - Seletor simples de ativo, abre o modal */}
           <button
             onClick={() => setShowAssetModal(true)}
-            className="flex lg:hidden items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] transition-all duration-200 border border-white/[0.06] min-w-0 flex-1"
+            className="trade-mobile-asset-selector flex lg:hidden items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] transition-all duration-200 border border-white/[0.06] min-w-0 flex-1"
           >
             <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-700 shrink-0 ring-2 ring-white/10">
               <Image
@@ -939,7 +939,7 @@ export default function TradePage() {
           </button>
 
           {/* Center (DESKTOP) - Barra de abas de ativos (estilo IQ Option) */}
-          <div className="hidden lg:flex items-center gap-1.5 min-w-0 flex-1 overflow-x-auto scrollbar-hide">
+          <div className="trade-desktop-tabs hidden lg:flex items-center gap-1.5 min-w-0 flex-1 overflow-x-auto scrollbar-hide">
             {/* Botao de grade - abre a lista de todos os ativos */}
             <button
               onClick={() => setShowAssetPanel(true)}
@@ -1104,7 +1104,7 @@ export default function TradePage() {
 
       {/* RIGHT COLUMN: Trading Controls (Desktop only) */}
       <div
-        className="hidden lg:flex flex-col border-l border-[#1a1a1e] min-h-0"
+        className="trade-desktop-controls hidden lg:flex flex-col border-l border-[#1a1a1e] min-h-0"
         style={{ backgroundColor: "#111111" }}
       >
         <div className="p-4 xl:p-5 space-y-4 shrink-0">
@@ -1248,7 +1248,7 @@ export default function TradePage() {
 
       {/* Mobile Bottom Controls (visible only on mobile) */}
       <div
-        className="lg:hidden w-full border-t border-[#1a1a1e] shrink-0"
+        className="trade-mobile-controls lg:hidden w-full border-t border-[#1a1a1e] shrink-0"
         style={{ backgroundColor: "#111111" }}
       >
         <div className="p-3 space-y-3">

@@ -464,6 +464,25 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Em celulares deitados, a plataforma de trading assume a estrutura de desktop.
+   O limite de altura evita alterar tablets e notebooks com viewport estreita. */
+@media screen and (orientation: landscape) and (max-height: 600px) and (max-width: 1023px) {
+  .trade-shell {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  .trade-mobile-asset-selector,
+  .trade-mobile-controls {
+    display: none !important;
+  }
+
+  .trade-desktop-tabs,
+  .trade-desktop-controls {
+    display: flex !important;
+  }
+}
+
 /* Fix for iOS input zoom */
 @media screen and (max-width: 768px) {
   input,
