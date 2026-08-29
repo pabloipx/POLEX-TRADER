@@ -29,6 +29,13 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import Image from "next/image"
 import { TradeEditor } from "@/components/admin/trade-editor"
 import { AdminAffiliates } from "@/components/admin/sections/admin-affiliates"
@@ -57,14 +64,20 @@ interface Stats {
 
 interface User {
   id: string
+  public_id: number
   email: string
   full_name: string
   phone: string
   is_blocked: boolean
   is_verified: boolean
+  is_admin: boolean
+  is_affiliate: boolean
   created_at: string
   balance_real: number
   balance_demo: number
+  deposit_count: number
+  deposit_total: number
+  last_deposit_at: string | null
 }
 
 interface Deposit {
@@ -123,10 +136,11 @@ export default function AdminDashboardClient() {
   const [statsRefreshKey, setStatsRefreshKey] = useState(0)
 
   // Users
-  const [users, setUsers] = useState<any[]>([])
+  const [users, setUsers] = useState<User[]>([])
   const [usersLoading, setUsersLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [userDaysFilter, setUserDaysFilter] = useState<number | "all">("all")
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
   // Deposits
   const [deposits, setDeposits] = useState<any[]>([])
@@ -542,8 +556,9 @@ export default function AdminDashboardClient() {
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone?.includes(searchTerm)
+  user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  user.phone?.includes(searchTerm) ||
+  String(user.public_id).includes(searchTerm)
     if (!matchesSearch) return false
     if (userDaysFilter === "all") return true
     const cutoff = Date.now() - userDaysFilter * 24 * 60 * 60 * 1000
@@ -943,7 +958,20 @@ export default function AdminDashboardClient() {
               ) : (
                 <div className="space-y-3">
                   {filteredUsers.map((user) => (
-                    <div key={user.id} className="bg-[#1A1F2E] rounded-xl p-4 border border-[#2A3142]">
+                    <div
+                      key={user.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedUser(user)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault()
+                          setSelectedUser(user)
+                        }
+                      }}
+                      className="cursor-pointer rounded-xl border border-[#2A3142] bg-[#1A1F2E] p-4 transition-colors hover:border-orange-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+                      aria-label={`Ver detalhes de ${user.full_name || user.email}`}
+                    >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
@@ -963,6 +991,7 @@ export default function AdminDashboardClient() {
   )}
   </div>
                           <p className="text-gray-400 text-sm">{user.full_name || "Sem nome"}</p>
+                          <p className="font-mono text-xs text-orange-400">ID {user.public_id}</p>
                           <p className="text-gray-500 text-xs">{formatDate(user.created_at)}</p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -971,7 +1000,10 @@ export default function AdminDashboardClient() {
                             <p className="text-gray-500 text-xs">Demo: {formatCurrency(user.balance_demo)}</p>
                           </div>
                           <Button
-                            onClick={() => openEditModal(user)}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              openEditModal(user)
+                            }}
                             size="sm"
                             variant="outline"
                             className="border-[#2A3142]"
@@ -1590,6 +1622,71 @@ export default function AdminDashboardClient() {
         </div>
       </div>
 
+      <Dialog open={Boolean(selectedUser)} onOpenChange={(open) => !open && setSelectedUser(null)}>
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto border-[#2A3142] bg-[#111722] text-white">
+          {selectedUser && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl">Detalhes do usuário</DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  Informações cadastrais e financeiras da conta selecionada.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="flex flex-col gap-5">
+                <div className="rounded-xl border border-orange-500/20 bg-orange-500/10 p-4">
+                  <p className="text-xs uppercase tracking-wider text-orange-300">ID público</p>
+                  <p className="font-mono text-2xl font-bold text-orange-400">{selectedUser.public_id}</p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <UserDetail label="Nome" value={selectedUser.full_name || "Não informado"} />
+                  <UserDetail label="E-mail" value={selectedUser.email} />
+                  <UserDetail label="Telefone" value={selectedUser.phone || "Não informado"} />
+                  <UserDetail label="Cadastro" value={formatDate(selectedUser.created_at)} />
+                  <UserDetail label="UUID interno" value={selectedUser.id} mono />
+                  <UserDetail
+                    label="Situação"
+                    value={selectedUser.is_blocked ? "Bloqueado" : selectedUser.is_verified ? "Verificado" : "Pendente"}
+                  />
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <UserDetail label="Saldo real" value={formatCurrency(selectedUser.balance_real)} highlight />
+                  <UserDetail label="Saldo demo" value={formatCurrency(selectedUser.balance_demo)} />
+                  <UserDetail label="Depósitos aprovados" value={String(selectedUser.deposit_count)} />
+                  <UserDetail label="Total depositado" value={formatCurrency(selectedUser.deposit_total)} highlight />
+                </div>
+
+                <UserDetail
+                  label="Último depósito aprovado"
+                  value={selectedUser.last_deposit_at ? formatDate(selectedUser.last_deposit_at) : "Nenhum depósito aprovado"}
+                />
+
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {selectedUser.is_admin && <span className="rounded bg-orange-500/20 px-2 py-1 text-orange-400">Administrador</span>}
+                  {selectedUser.is_affiliate && <span className="rounded bg-green-500/20 px-2 py-1 text-green-400">Afiliado</span>}
+                  {selectedUser.is_verified && <span className="rounded bg-blue-500/20 px-2 py-1 text-blue-400">KYC verificado</span>}
+                </div>
+
+                <Button
+                  onClick={() => {
+                    const user = selectedUser
+                    setSelectedUser(null)
+                    openEditModal(user)
+                  }}
+                  variant="outline"
+                  className="border-[#2A3142]"
+                >
+                  <Edit data-icon="inline-start" />
+                  Editar usuário
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Edit User Modal */}
       {editingUser && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
@@ -1684,6 +1781,27 @@ export default function AdminDashboardClient() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function UserDetail({
+  label,
+  value,
+  mono = false,
+  highlight = false,
+}: {
+  label: string
+  value: string
+  mono?: boolean
+  highlight?: boolean
+}) {
+  return (
+    <div className="min-w-0 rounded-lg border border-[#2A3142] bg-[#0B0F14] p-3">
+      <p className="text-xs text-gray-500">{label}</p>
+      <p className={`${mono ? "break-all font-mono text-xs" : "text-sm"} ${highlight ? "font-semibold text-green-400" : "text-gray-200"}`}>
+        {value}
+      </p>
     </div>
   )
 }

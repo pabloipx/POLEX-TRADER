@@ -32,8 +32,30 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Failed to fetch users", details: usersError.message }, { status: 500 })
     }
 
-    const mappedUsers = (users || []).map((u: any) => ({
+    const { data: approvedDeposits, error: depositsError } = await adminClient
+      .from("deposits")
+      .select("user_id, amount, created_at")
+      .in("status", ["approved", "completed"])
+      .order("created_at", { ascending: false })
+
+    if (depositsError) {
+      return NextResponse.json({ error: "Failed to fetch deposits", details: depositsError.message }, { status: 500 })
+    }
+
+    const depositsByUser = new Map<string, { count: number; total: number; lastAt: string | null }>()
+    for (const deposit of approvedDeposits || []) {
+      const current = depositsByUser.get(deposit.user_id) || { count: 0, total: 0, lastAt: null }
+      current.count += 1
+      current.total += Number(deposit.amount || 0)
+      current.lastAt ||= deposit.created_at
+      depositsByUser.set(deposit.user_id, current)
+    }
+
+    const mappedUsers = (users || []).map((u: any) => {
+      const depositStats = depositsByUser.get(u.id) || { count: 0, total: 0, lastAt: null }
+      return {
       id: u.id,
+      public_id: u.public_id,
       email: u.email || "",
       full_name: u.full_name || "",
       phone: u.phone || "",
@@ -43,7 +65,12 @@ export async function GET(request: Request) {
       created_at: u.created_at,
       balance_real: u.user_balances?.[0]?.balance_real || 0,
       balance_demo: u.user_balances?.[0]?.balance_demo || 0,
-    }))
+      deposit_count: depositStats.count,
+      deposit_total: depositStats.total,
+      last_deposit_at: depositStats.lastAt,
+      is_affiliate: u.is_affiliate || false,
+    }
+    })
 
     return NextResponse.json(mappedUsers)
   } catch (error) {

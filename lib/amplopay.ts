@@ -20,7 +20,7 @@ const BASE_URL = process.env.AMPLOPAY_BASE_URL || "https://app.amplopay.com/api/
 // Sem a variavel, agora falha de forma clara em vez de tentar uma conta errada em silencio.
 const PUBLIC_KEY = process.env.AMPLOPAY_PUBLIC_KEY || ""
 // Chave Privada (Client Secret).
-const SECRET_KEY = process.env.AMPLOPAY_SECRET_KEY_V2 || ""
+const SECRET_KEY = process.env.AMPLOPAY_SECRET_KEY || ""
 
 // URL do webhook que a AmploPay chama quando o pagamento e confirmado.
 //
@@ -48,11 +48,6 @@ function resolveAppUrl(): string {
 
 const APP_URL = resolveAppUrl()
 const CALLBACK_URL = APP_URL + "/api/webhook/amplopay"
-
-// Split automático: uma porcentagem de todos os depósitos é repassada para outra conta AmploPay.
-// producerId = ID da conta que recebe o split (copiado da página da AmploPay).
-const SPLIT_PRODUCER_ID = "cmp2sclex01vu1rnnqp0i9e3d"
-const SPLIT_PERCENT = 25 // % de cada depósito destinado ao split
 
 export interface AmploPayPixResponse {
   transactionId: string
@@ -133,12 +128,9 @@ class AmploPayClient {
     metadata?: Record<string, any>
   }): Promise<AmploPayPixResponse> {
     if (!PUBLIC_KEY || !SECRET_KEY) {
-      // Diz exatamente QUAL variavel falta. A mensagem antiga citava "AMPLOPAY_SECRET_KEY", nome
-      // que nao existe mais no codigo (o correto e AMPLOPAY_SECRET_KEY_V2), o que mandava quem
-      // fosse diagnosticar procurar a variavel errada.
       const faltando = [
         !PUBLIC_KEY && "AMPLOPAY_PUBLIC_KEY (Chave Pública / Client ID)",
-        !SECRET_KEY && "AMPLOPAY_SECRET_KEY_V2 (Chave Privada)",
+        !SECRET_KEY && "AMPLOPAY_SECRET_KEY (Chave Privada)",
       ]
         .filter(Boolean)
         .join(" e ")
@@ -155,19 +147,6 @@ class AmploPayClient {
         phone: params.client.phone.replace(/\D/g, "") || "00000000000",
         document: params.client.document.replace(/\D/g, ""),
       },
-    }
-
-    // Split automático: repassa SPLIT_PERCENT% do valor para a conta configurada.
-    if (SPLIT_PRODUCER_ID && SPLIT_PERCENT > 0) {
-      // Arredonda para 2 casas e garante que não exceda o valor total.
-      const splitAmount = Math.min(
-        Math.round(params.amount * (SPLIT_PERCENT / 100) * 100) / 100,
-        params.amount,
-      )
-      if (splitAmount > 0) {
-        payload.splits = [{ producerId: SPLIT_PRODUCER_ID, amount: splitAmount }]
-        console.log(`[v0] AmploPay split: R$${splitAmount} (${SPLIT_PERCENT}%) -> ${SPLIT_PRODUCER_ID}`)
-      }
     }
 
     // Registra para qual URL a confirmacao de pagamento foi pedida. Se um deposito pago nao

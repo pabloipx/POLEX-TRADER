@@ -45,6 +45,7 @@ export default function DepositPage() {
 
   // PIX state
   const [pixData, setPixData] = useState<PixPaymentData | null>(null)
+  const [pixCpf, setPixCpf] = useState("")
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [checkingStatus, setCheckingStatus] = useState(false)
@@ -240,7 +241,12 @@ export default function DepositPage() {
   }
 
   const handlePixDeposit = async () => {
-    if (!acceptTerms) {
+  const cleanCpf = pixCpf.replace(/\D/g, "")
+  if (cleanCpf.length !== 11) {
+  setError("Informe o CPF válido do titular")
+  return
+  }
+  if (!acceptTerms) {
       setError("Voce precisa aceitar os termos e condicoes")
       return
     }
@@ -262,8 +268,10 @@ export default function DepositPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: depositAmount,
-          promoCode: appliedPromoCode,
+  amount: depositAmount,
+  document: cleanCpf,
+  promoCode: appliedPromoCode,
+
         }),
       })
       const data = await response.json()
@@ -784,6 +792,27 @@ export default function DepositPage() {
           </div>
         )}
 
+        {method === "pix" && (
+          <div>
+            <label htmlFor="pix-cpf" className="block text-sm text-[#9CA3AF] mb-2">CPF do titular</label>
+            <input
+              id="pix-cpf"
+              type="text"
+              value={pixCpf}
+              onChange={(event) => {
+                setPixCpf(formatCpf(event.target.value))
+                setError(null)
+              }}
+              placeholder="000.000.000-00"
+              maxLength={14}
+              inputMode="numeric"
+              autoComplete="off"
+              className="w-full py-3 text-white bg-transparent border-0 border-b border-[#2a2a2e] focus:border-[#22c55e] outline-none font-mono"
+            />
+            <p className="mt-2 text-xs text-[#6B7280]">O CPF deve pertencer ao titular da conta que fará o pagamento.</p>
+          </div>
+        )}
+
         {/* PROMOÇÃO */}
         {method !== "crypto" && (
           <div>
@@ -1199,7 +1228,7 @@ export default function DepositPage() {
         {method !== "crypto" && (
           <button
             onClick={method === "pix" ? handlePixDeposit : handleCardDeposit}
-            disabled={!acceptTerms || parseAmount() < 50 || isLoading}
+            disabled={!acceptTerms || parseAmount() < 50 || isLoading || (method === "pix" && pixCpf.replace(/\D/g, "").length !== 11)}
             className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {isLoading ? (

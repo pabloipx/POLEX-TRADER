@@ -20,6 +20,11 @@ export default async function OAuthAuthorizePage({ searchParams }: { searchParam
   }
 
   const scopes = parseScopes(scope)
+  const scopeDescriptions: Record<string, string> = {
+    "trade:write": "Operar compra e venda",
+    "balance:read": "Consultar saldo real",
+    "trade:read": "Ver operações criadas por esta IA",
+  }
   const admin = createAdminClient()
   const { data: client } = await admin.from("oauth_clients").select("name,redirect_uris,active").eq("client_id", clientId).maybeSingle()
   const valid = Boolean(client?.active && client.redirect_uris.includes(redirectUri) && state.length >= 8 && challenge.length >= 43 && method === "S256" && scopes)
@@ -33,8 +38,8 @@ export default async function OAuthAuthorizePage({ searchParams }: { searchParam
         <form action="/api/oauth/authorize" method="post" className="flex flex-col gap-6 p-7">
           {Object.entries({ client_id: clientId, redirect_uri: redirectUri, state, scope, code_challenge: challenge, code_challenge_method: "S256" }).map(([name,value]) => <input key={name} type="hidden" name={name} value={value}/>) }
           <div className="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-4"><p className="flex items-center gap-2 font-semibold text-amber-200"><TriangleAlert className="size-5"/>Operações com saldo real</p><p className="mt-2 text-sm leading-6 text-white/65">Este aplicativo poderá abrir operações automaticamente. Lucros não são garantidos e você pode perder o valor investido.</p></div>
-          <div><label htmlFor="max_trade_amount" className="text-sm font-medium">Limite por operação (R$)</label><input id="max_trade_amount" name="max_trade_amount" type="number" min="1" max="100000" step="0.01" required defaultValue="50" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none focus:border-emerald-400"/></div>
-          <div><label htmlFor="daily_loss_limit" className="text-sm font-medium">Limite de perda diária (R$)</label><input id="daily_loss_limit" name="daily_loss_limit" type="number" min="1" max="1000000" step="0.01" required defaultValue="200" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none focus:border-emerald-400"/></div>
+          <div className="flex flex-col gap-3"><p className="text-sm font-semibold">Permissões solicitadas</p>{scopes!.map((requestedScope) => <div key={requestedScope} className="flex items-start gap-3 rounded-xl border border-white/10 p-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-400"/><div><p className="text-sm font-medium">{scopeDescriptions[requestedScope]}</p><p className="mt-0.5 font-mono text-xs text-white/45">{requestedScope}</p></div></div>)}</div>
+          <div><label htmlFor="max_trade_amount" className="text-sm font-medium">Limite por operação (R$)</label><input id="max_trade_amount" name="max_trade_amount" type="number" min="1" max="1000" step="0.01" required defaultValue="50" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none focus:border-emerald-400"/><p className="mt-2 text-xs text-white/45">Máximo de R$ 1.000 por operação. Não há limite de perda diária.</p></div>
           <div><label htmlFor="allowed_symbols" className="text-sm font-medium">Ativos permitidos</label><input id="allowed_symbols" name="allowed_symbols" placeholder="EURUSD, BTCUSD" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none focus:border-emerald-400"/><p className="mt-2 text-xs text-white/45">Separe por vírgulas. Em branco permite todos os ativos habilitados.</p></div>
           <div className="flex items-start gap-3 text-sm text-white/65"><ShieldCheck className="mt-0.5 size-5 shrink-0 text-emerald-400"/><p>Você poderá revogar o acesso. A IA nunca recebe sua senha da corretora.</p></div>
           <div className="grid grid-cols-2 gap-3"><button name="decision" value="deny" className="rounded-xl border border-white/15 px-4 py-3 font-semibold">Cancelar</button><button name="decision" value="allow" className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-[#07110c]">Autorizar IA</button></div>

@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/server"
 
 export const ACCESS_TOKEN_TTL_SECONDS = 900
 export const AUTH_CODE_TTL_SECONDS = 300
-export const ALLOWED_SCOPES = new Set(["trade:write"])
+export const ALLOWED_SCOPES = new Set(["trade:write", "balance:read", "trade:read"])
 
 export function randomToken(bytes = 32) {
   return randomBytes(bytes).toString("base64url")

@@ -4,6 +4,17 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { approveDeposit, isPaidStatus } from "@/lib/deposits"
 import { validatePromoCode } from "@/lib/promo-codes"
 
+function isValidCpf(value: string) {
+  if (!/^\d{11}$/.test(value) || /^(\d)\1{10}$/.test(value)) return false
+  const calculateDigit = (length: number) => {
+    let sum = 0
+    for (let index = 0; index < length; index++) sum += Number(value[index]) * (length + 1 - index)
+    const remainder = (sum * 10) % 11
+    return remainder === 10 ? 0 : remainder
+  }
+  return calculateDigit(9) === Number(value[9]) && calculateDigit(10) === Number(value[10])
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { createClient } = await import("@/lib/supabase/server")
@@ -17,7 +28,12 @@ export async function POST(request: NextRequest) {
     const supabaseAdmin = createAdminClient()
 
     const body = await request.json()
-    const { amount, promoCode } = body
+    const { amount, promoCode, document } = body
+
+    const cpf = typeof document === "string" ? document.replace(/\D/g, "") : ""
+    if (!isValidCpf(cpf)) {
+      return NextResponse.json({ error: "Informe um CPF válido do titular da conta." }, { status: 400 })
+    }
 
     const numericAmount =
       typeof amount === "string" ? Number.parseFloat(amount.replace(/[^\d.,]/g, "").replace(",", ".")) : Number(amount)
@@ -26,20 +42,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Valor minimo: R$ 50,00" }, { status: 400 })
     }
 
-    // Dados fixos para todas as transacoes PIX
-    const FIXED_CLIENT = {
-      name: "Anthony Pedro Henrique Nicolas Barbosa",
-      email: "anthony.pedro.barbosa@bb.com.br",
-      phone: "91984355084",
-      document: "84054702040",
-    }
-
     // Fetch user profile
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("full_name, email, phone")
       .eq("id", user.id)
       .maybeSingle()
+
+    const clientName = profile?.full_name?.trim()
+    const clientEmail = profile?.email?.trim() || user.email?.trim()
+    if (!clientName || !clientEmail) {
+      return NextResponse.json({ error: "Complete seu nome e e-mail no perfil antes de gerar o PIX." }, { status: 400 })
+    }
 
     const identifier = `DEP-${user.id.slice(0, 8)}-${Date.now()}`
 
@@ -79,7 +93,12 @@ export async function POST(request: NextRequest) {
       const pixResponse = await amplopay.createPixPayment({
         amount: numericAmount,
         identifier: identifier,
-        client: FIXED_CLIENT,
+        client: {
+          name: clientName,
+          email: clientEmail,
+          phone: profile?.phone || "",
+          document: cpf,
+        },
         metadata: { userId: user.id, depositId: deposit.id },
       })
 
