@@ -14,7 +14,6 @@ interface GeneratedCode { code: string; expiresAt: string }
 export function QuickConnect() {
   const [clientName, setClientName] = useState("")
   const [maxTradeAmount, setMaxTradeAmount] = useState("50")
-  const [dailyLossLimit, setDailyLossLimit] = useState("200")
   const [symbols, setSymbols] = useState("")
   const [generated, setGenerated] = useState<GeneratedCode | null>(null)
   const [loading, setLoading] = useState(false)
@@ -31,7 +30,6 @@ export function QuickConnect() {
       body: JSON.stringify({
         clientName,
         maxTradeAmount,
-        dailyLossLimit,
         allowedSymbols: symbols.split(",").map((value) => value.trim()).filter(Boolean),
       }),
     })
@@ -53,7 +51,7 @@ export function QuickConnect() {
       <CardHeader>
         <div className="flex items-center justify-between gap-4">
           <Badge variant="secondary"><KeyRound /> Conexão rápida</Badge>
-          <Badge variant="outline">Uso único · 10 min</Badge>
+          <Badge variant="outline">Uso único · 24 horas</Badge>
         </div>
         <CardTitle className="text-balance text-xl">Gere uma chave para conectar sua IA</CardTitle>
         <CardDescription>Defina os limites, copie a chave e cole na IA. Ela poderá trocar a chave uma única vez por um acesso revogável.</CardDescription>
@@ -61,8 +59,7 @@ export function QuickConnect() {
       <CardContent className="flex flex-col gap-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="ai-name">Nome da IA</Label><Input id="ai-name" value={clientName} onChange={(event) => setClientName(event.target.value)} placeholder="Ex.: Assistente de Trading" maxLength={80} /></div>
-          <div className="flex flex-col gap-2"><Label htmlFor="max-trade">Máximo por operação (R$)</Label><Input id="max-trade" type="number" min="1" step="0.01" value={maxTradeAmount} onChange={(event) => setMaxTradeAmount(event.target.value)} /></div>
-          <div className="flex flex-col gap-2"><Label htmlFor="daily-loss">Limite de perda diária (R$)</Label><Input id="daily-loss" type="number" min="1" step="0.01" value={dailyLossLimit} onChange={(event) => setDailyLossLimit(event.target.value)} /></div>
+          <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="max-trade">Máximo por operação (R$)</Label><Input id="max-trade" type="number" min="1" max="1000" step="0.01" value={maxTradeAmount} onChange={(event) => setMaxTradeAmount(event.target.value)} /><p className="text-xs leading-relaxed text-muted-foreground">Escolha um valor entre R$ 1 e R$ 1.000. Não há limite de perda diária.</p></div>
           <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="symbols">Ativos permitidos</Label><Input id="symbols" value={symbols} onChange={(event) => setSymbols(event.target.value)} placeholder="EURUSD_OTC, BTCUSD (vazio permite todos)" /><p className="text-xs leading-relaxed text-muted-foreground">Separe os ativos por vírgula. Deixe vazio somente se quiser permitir todos os ativos habilitados.</p></div>
         </div>
 
@@ -80,7 +77,7 @@ export function QuickConnect() {
             <AlertDescription className="flex flex-col gap-3">
               <code className="break-all rounded-md bg-muted p-3 font-mono text-xs text-foreground">{generated.code}</code>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <span>Expira às {new Date(generated.expiresAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })} e desaparece após o primeiro uso.</span>
+                <span>Expira em {new Date(generated.expiresAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })} e desaparece após o primeiro uso.</span>
                 <Button type="button" size="sm" variant="outline" onClick={copyCode}>{copied ? <Check data-icon="inline-start" /> : <Copy data-icon="inline-start" />}{copied ? "Copiada" : "Copiar chave"}</Button>
               </div>
             </AlertDescription>

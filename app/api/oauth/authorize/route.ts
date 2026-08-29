@@ -7,8 +7,7 @@ const consentSchema = z.object({
   client_id: z.string().min(8).max(128), redirect_uri: z.string().url().max(2048),
   state: z.string().min(8).max(512), scope: z.string().min(1).max(200),
   code_challenge: z.string().min(43).max(128), code_challenge_method: z.literal("S256"),
-  decision: z.enum(["allow", "deny"]), max_trade_amount: z.coerce.number().positive().max(100000),
-  daily_loss_limit: z.coerce.number().positive().max(1000000),
+  decision: z.enum(["allow", "deny"]), max_trade_amount: z.coerce.number().positive().max(1000),
   allowed_symbols: z.string().max(1000).default(""),
 })
 
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
   const symbols = [...new Set(input.allowed_symbols.split(",").map((value) => value.trim().toUpperCase()).filter(Boolean))]
   const { error: consentError } = await admin.from("oauth_consents").upsert({
     user_id: user.id, client_id: input.client_id, scopes, max_trade_amount: input.max_trade_amount,
-    daily_loss_limit: input.daily_loss_limit, allowed_symbols: symbols, active: true, revoked_at: null,
+    daily_loss_limit: null, allowed_symbols: symbols, active: true, revoked_at: null,
   }, { onConflict: "user_id,client_id" })
   if (consentError) return NextResponse.json({ error: "Não foi possível registrar o consentimento." }, { status: 500 })
 

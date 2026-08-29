@@ -92,7 +92,7 @@ export function ApiDocumentation() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <CodeBlock code={quickConnectExample} />
-          <p className="text-sm leading-relaxed text-muted-foreground">A chave expira em 10 minutos e não pode ser reutilizada. O access token emitido dura 30 dias, fica sujeito aos limites definidos e pode ser revogado pelo usuário a qualquer momento.</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">A chave expira em 24 horas e não pode ser reutilizada. O access token emitido dura 30 dias, respeita o máximo definido de até R$ 1.000 por operação e pode ser revogado pelo usuário a qualquer momento.</p>
         </CardContent>
       </Card>
 

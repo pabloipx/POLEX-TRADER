@@ -5,8 +5,7 @@ import { createAdminClient, createClient } from "@/lib/supabase/server"
 
 const inputSchema = z.object({
   clientName: z.string().trim().min(2).max(80),
-  maxTradeAmount: z.coerce.number().positive().max(1_000_000),
-  dailyLossLimit: z.coerce.number().positive().max(10_000_000),
+  maxTradeAmount: z.coerce.number().positive().max(1_000),
   allowedSymbols: z.array(z.string().trim().min(1).max(32)).max(50),
 })
 
@@ -16,10 +15,10 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "Não autenticado" }, { status: 401 })
 
   const parsed = inputSchema.safeParse(await request.json().catch(() => null))
-  if (!parsed.success) return NextResponse.json({ error: "Revise o nome e os limites informados." }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ error: "Revise o nome e informe um máximo de até R$ 1.000 por operação." }, { status: 400 })
 
   const rawCode = `plx_connect_${randomToken(32)}`
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
   const admin = createAdminClient()
   const { error } = await admin.from("oauth_connection_codes").insert({
     user_id: user.id,
@@ -27,7 +26,7 @@ export async function POST(request: Request) {
     client_name: parsed.data.clientName,
     scopes: ["trade:write", "balance:read", "trade:read"],
     max_trade_amount: parsed.data.maxTradeAmount,
-    daily_loss_limit: parsed.data.dailyLossLimit,
+    daily_loss_limit: null,
     allowed_symbols: [...new Set(parsed.data.allowedSymbols.map((symbol) => symbol.toUpperCase()))],
     expires_at: expiresAt,
   })
