@@ -7,9 +7,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "POLEX Broker — Plataforma de negociação",
+  title: "FIDELITY BROKER — Plataforma de negociação",
   description: "Acesse os mercados globais em uma plataforma simples, rápida e segura.",
-  generator: "POLEX Broker",
+  generator: "FIDELITY BROKER",
 }
 
 export const viewport: Viewport = {
