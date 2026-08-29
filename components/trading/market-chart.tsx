@@ -1720,7 +1720,7 @@ function ChartCore({
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: "url(/images/urynbroker-watermark.png)",
+          backgroundImage: "url(/images/polex-watermark.png)",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center 45%",
           backgroundSize: "55% auto",

@@ -23,7 +23,7 @@ export function TradingHeader({ balance, isDemo, payout, onToggleDemo }: Trading
             <div className="w-1 h-6 bg-[#22c55e] rounded-sm" />
           </div>
           <span className="text-white font-bold text-lg">
-            URYN<span className="text-[#4ade80]"> BROKER</span>
+            POLEX<span className="text-[#4ade80]"> BROKER</span>
           </span>
         </Link>
 
