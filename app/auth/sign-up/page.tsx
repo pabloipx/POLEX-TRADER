@@ -175,7 +175,7 @@ function SignUpForm() {
 
       <header className="flex h-20 items-center justify-between border-b border-[#eeeeee] bg-[#fbfafb] px-5 md:h-24 md:px-8">
         <Link href="/" className="flex items-center" aria-label="Fidelity Option — início">
-          <Image src="/images/fidelity-logo.png" alt="Fidelity Option" width={210} height={54} className="h-14 w-auto object-contain md:h-16" unoptimized />
+          <Image src="/images/fidelity-auth-logo.png" alt="Fidelity Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
         </Link>
         <div className="flex items-center gap-4 md:gap-8">
           <div className="flex items-center gap-2 text-base font-medium text-[#343434]">
