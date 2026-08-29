@@ -76,10 +76,14 @@ export class PriceManager {
     }
   }
 
-  getCurrentPrice(symbol: string): number | null {
+  getPriceAt(symbol: string, timestampMs: number): number | null {
     const config = this.symbols.get(symbol)
-    if (!config) return null
-    return this.generatePriceAtTime(config, Math.floor(Date.now() / 1000))
+    if (!config || !Number.isFinite(timestampMs)) return null
+    return this.generatePriceAtTime(config, Math.floor(timestampMs / 1000))
+  }
+
+  getCurrentPrice(symbol: string): number | null {
+    return this.getPriceAt(symbol, Date.now())
   }
 
   getHistoricalCandles(symbol: string, timeframe: 60 | 300 | 600 | 900): Candle[] {

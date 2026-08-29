@@ -1,76 +1,83 @@
 import { NextResponse } from "next/server"
-import { getTradeManager } from "@/lib/trade-engine/trade-manager"
+import { getPriceManager } from "@/lib/price-engine/price-manager"
+import { getRealPriceAt } from "@/lib/price-engine/real-quote"
+import { isRealSymbol } from "@/lib/price-engine/real-price-store"
+import { createClient } from "@/lib/supabase/server"
 import { isTimeframeAllowed, timeframesFor, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
+
+const errorMessages: Record<string, string> = {
+  ASSET_DISABLED: "Ativo indisponível para negociação.",
+  AMOUNT_OUT_OF_RANGE: "Valor fora dos limites permitidos para este ativo.",
+  BALANCE_NOT_FOUND: "Saldo não encontrado.",
+  INSUFFICIENT_BALANCE: "Saldo insuficiente.",
+  INVALID_AMOUNT: "Valor inválido.",
+  INVALID_DIRECTION: "Direção inválida.",
+  INVALID_PRICE: "Cotação indisponível.",
+  INVALID_TIMEFRAME: "Tempo de expiração inválido.",
+}
 
 export async function POST(request: Request) {
   try {
-    // Verifica se Supabase está configurado
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: "Database not configured" }, { status: 503 })
-    }
-
-    const { createClient } = await import("@/lib/supabase/server")
     const supabase = await createClient()
-
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    if (!user) return NextResponse.json({ error: "Não autorizado." }, { status: 401 })
 
     const body = await request.json()
-    const { symbol, direction, amount, timeframe } = body
+    const symbol = typeof body.symbol === "string" ? body.symbol.trim() : ""
+    const direction = body.direction
+    const amount = Number(body.amount)
+    const timeframe = Number(body.timeframe)
+    const isDemo = body.isDemo === true
+    const idempotencyKey = typeof body.idempotencyKey === "string" ? body.idempotencyKey : ""
 
-    if (!symbol || !direction || !amount || !timeframe) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    if (!symbol || !["CALL", "PUT"].includes(direction) || !Number.isFinite(amount) || !Number.isInteger(timeframe) || !idempotencyKey) {
+      return NextResponse.json({ error: "Dados da operação inválidos." }, { status: 400 })
     }
 
-    if (!["CALL", "PUT"].includes(direction)) {
-      return NextResponse.json({ error: "Invalid direction" }, { status: 400 })
-    }
-
-    // A duracao valida depende do ativo: mercado aberto opera em 5m/10m/15m, OTC em 1m/5m/10m.
-    // A checagem tem de ficar aqui, e nao so na interface: uma chamada direta a esta rota
-    // poderia abrir uma operacao de 30s num par real, cuja fonte de preco nao tem resolucao
-    // para liquidar de forma justa.
     if (!isTimeframeAllowed(symbol, timeframe)) {
-      const permitidos = timeframesFor(symbol)
-        .map(tf => TIMEFRAME_LABELS[tf])
-        .join(", ")
-      return NextResponse.json(
-        { error: `Tempo indisponivel para ${symbol}. Use: ${permitidos}.` },
-        { status: 400 },
-      )
+      const allowed = timeframesFor(symbol).map((value) => TIMEFRAME_LABELS[value]).join(", ")
+      return NextResponse.json({ error: `Tempo indisponível para ${symbol}. Use: ${allowed}.` }, { status: 400 })
     }
 
-    if (amount <= 0) {
-      return NextResponse.json({ error: "Invalid amount" }, { status: 400 })
+    const now = Date.now()
+    let entryPrice: number | null
+    if (isRealSymbol(symbol)) {
+      entryPrice = await getRealPriceAt(symbol, now)
+    } else {
+      const { data: otcSymbols, error: otcError } = await supabase
+        .from("otc_symbols")
+        .select("symbol,is_active,base_price,volatility")
+        .eq("is_active", true)
+      if (otcError || !otcSymbols?.length) {
+        return NextResponse.json({ error: "Configuração OTC indisponível." }, { status: 503 })
+      }
+      const manager = getPriceManager()
+      manager.initialize(otcSymbols)
+      entryPrice = manager.getPriceAt(symbol, now)
     }
 
-    const { data: existingTrade } = await supabase
-      .from("trades")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("result", "PENDING")
-      .single()
-
-    if (existingTrade) {
-      return NextResponse.json({ error: "You already have an active trade" }, { status: 400 })
+    if (!entryPrice || entryPrice <= 0) {
+      return NextResponse.json({ error: "Cotação confiável indisponível. Tente novamente." }, { status: 503 })
     }
 
-    const tradeManager = getTradeManager()
-    const result = await tradeManager.openTrade(user.id, symbol, direction, amount, timeframe)
-
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 })
-    }
-
-    return NextResponse.json({
-      success: true,
-      trade: result.trade,
-      newBalance: result.newBalance,
+    const { data, error } = await supabase.rpc("open_trade_atomic", {
+      p_symbol: symbol,
+      p_direction: direction,
+      p_amount: amount,
+      p_timeframe: timeframe,
+      p_entry_price: entryPrice,
+      p_is_demo: isDemo,
+      p_idempotency_key: idempotencyKey,
     })
+
+    if (error) {
+      const code = Object.keys(errorMessages).find((key) => error.message.includes(key))
+      return NextResponse.json({ error: code ? errorMessages[code] : "Não foi possível abrir a operação." }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true, ...data })
   } catch (error) {
-    console.error("Error opening trade:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("[trade/open] Falha ao abrir operação:", error)
+    return NextResponse.json({ error: "Erro interno ao abrir a operação." }, { status: 500 })
   }
 }

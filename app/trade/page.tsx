@@ -387,19 +387,12 @@ export default function TradePage() {
 
         if (!mountedRef.current) return
 
-        if (balanceData) {
-          setBalanceReal(balanceData.balance_real || 0)
-          setBalanceDemo(balanceData.balance_demo || 10000)
-        } else {
-          // Create default balance
-          await supabase.from("user_balances").insert({
-            user_id: currentUser.id,
-            balance_real: 0,
-            balance_demo: 10000,
-            currency: "BRL",
-          })
-          setBalanceDemo(10000)
+        if (!balanceData) {
+          throw new Error("Saldo do usuário não foi provisionado")
         }
+
+        setBalanceReal(Number(balanceData.balance_real || 0))
+        setBalanceDemo(Number(balanceData.balance_demo || 0))
 
         await finalizeExpiredTrades(currentUser.id)
 
@@ -436,107 +429,49 @@ export default function TradePage() {
   // frequencia, e era por isso que a animacao "quase sempre" nao aparecia.
   const trackedDbIdsRef = useRef<Set<string>>(new Set())
 
-  const finalizeExpiredTrades = useCallback(async (userId: string) => {
-    try {
-      const supabase = supabaseRef.current
+  const finalizeExpiredTrades = useCallback(async (_userId: string) => {
+    const expired = activeTrades.filter(
+      (trade) => trade.dbId && Date.now() >= trade.timestamp + trade.expiryTime * 1000,
+    )
 
-      // Buscar trades pendentes que já expiraram
-      const { data: pendingTrades, error } = await supabase
-        .from("trades")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("result", "pending")
-        .not("entry_time", "is", null)
+    for (const trade of expired) {
+      if (!trade.dbId || processedTradesRef.current.has(trade.id)) continue
+      processedTradesRef.current.add(trade.id)
 
-      if (error || !pendingTrades || pendingTrades.length === 0) return
+      try {
+        const response = await fetch("/api/trade/settle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tradeId: trade.dbId }),
+        })
+        const data = await response.json()
 
-      // Filter only truly expired trades
-      const now = Date.now()
-      const expiredTrades = pendingTrades.filter((t: any) => {
-        // Operacao acompanhada na tela: deixa para o caminho que mostra a animacao.
-        if (trackedDbIdsRef.current.has(t.id)) return false
-        const entryMs = new Date(t.entry_time).getTime()
-        const expiryMs = (t.timeframe || 60) * 1000
-        return now >= entryMs + expiryMs
-      })
-
-      if (expiredTrades.length === 0) return
-
-      for (const trade of expiredTrades) {
-        // Preco de saida: o preco ATUAL do motor para o ativo — o mesmo que alimenta o grafico,
-        // garantindo que o resultado seja consistente com o que o usuario viu.
-        //
-        // NAO existe mais fallback aleatorio aqui. Antes, quando o motor nao tinha preco, a
-        // operacao era liquidada em `entry_price * (1 + (Math.random() - 0.5) * 0.01)`: ganho ou
-        // perda decidido por sorteio, com desvio de ate 0,5% sobre a entrada. Agora, sem preco a
-        // operacao permanece pendente e e liquidada no proximo ciclo (roda a cada 3s), quando
-        // houver cotacao real.
-        const enginePrice = multiAssetEngine.getCurrentPrice(trade.symbol)
-        if (!enginePrice || enginePrice <= 0) continue
-        const exitPrice = enginePrice
-        const isWin =
-          trade.direction === "CALL" ? exitPrice > trade.entry_price : exitPrice < trade.entry_price
-        const result = isWin ? "win" : "loss"
-        const profitAmount = isWin ? trade.amount * (trade.payout_percentage || 0.96) : -trade.amount
-
-        // A operacao SO e marcada como encerrada aqui. Duas correcoes importantes neste update:
-        //
-        // 1. Antes gravava `exit_time`, coluna que NAO existe em `trades` (o nome correto e
-        //    `closed_at`). O Postgres recusava o update inteiro com erro PGRST204, entao a operacao
-        //    ficava eternamente com result='pending' — era isso que travava o cronometro em "0s".
-        // 2. O erro nao era verificado. Como o registro continuava 'pending', a consulta acima
-        //    pegava a MESMA operacao no ciclo seguinte (a cada 3s) e creditava o ganho de novo, sem
-        //    limite. Agora, se o update falhar, abortamos antes de creditar qualquer coisa.
-        const { data: closedRows, error: closeError } = await supabase
-          .from("trades")
-          .update({
-            result,
-            profit: profitAmount,
-            exit_price: exitPrice,
-            closed_at: new Date().toISOString(),
-            status: "closed",
-          })
-          .eq("id", trade.id)
-          .eq("result", "pending") // so encerra se ainda estiver pendente
-          .select("id")
-
-        // O credito depende de ESTE update ter encerrado a operacao de fato. Se deu erro, ou se
-        // nenhuma linha foi afetada (outro caminho de liquidacao fechou primeiro), nao creditamos:
-        // e o que impede o mesmo ganho de ser pago duas vezes.
-        if (closeError || !closedRows || closedRows.length === 0) {
-          if (closeError) {
-            console.error("[v0] Falha ao encerrar operacao, credito abortado:", closeError.message)
-          }
+        if (!response.ok) {
+          processedTradesRef.current.delete(trade.id)
           continue
         }
 
-        // Se ganhou, creditar o saldo
-        if (isWin) {
-          const balanceField = trade.is_demo ? "balance_demo" : "balance_real"
-          const returnAmount = trade.amount + trade.amount * (trade.payout_percentage || 0.96)
+        const settled = data.trade
+        const result = String(settled?.result || "loss").toLowerCase()
+        const profit = Number(settled?.profit || 0)
+        const newBalance = Number(data.newBalance)
 
-          const { data: balanceData } = await supabase
-            .from("user_balances")
-            .select(balanceField)
-            .eq("user_id", userId)
-            .single()
+        if (trade.isDemo) setBalanceDemo(newBalance)
+        else setBalanceReal(newBalance)
 
-          if (balanceData) {
-            const currentBal = balanceData[balanceField] || 0
-            await supabase
-              .from("user_balances")
-              .update({ [balanceField]: currentBal + returnAmount })
-              .eq("user_id", userId)
-          }
-        }
+        setResultQueue((prev) => [
+          ...prev,
+          { key: trade.id, type: result === "win" ? "win" : "loss", amount: Math.abs(profit || trade.amount) },
+        ])
+        setActiveTrades((prev) => prev.filter((item) => item.id !== trade.id))
+        setHistoryRefresh((prev) => prev + 1)
+        if (result === "win") playWinSound()
+        else playLossSound()
+      } catch {
+        processedTradesRef.current.delete(trade.id)
       }
-
-      // Atualizar histórico
-      setHistoryRefresh((prev) => prev + 1)
-    } catch (err) {
-      console.error("[v0] Erro ao finalizar trades expirados:", err)
     }
-  }, [])
+  }, [activeTrades])
 
   // Rede de seguranca: finaliza no banco qualquer operacao expirada, mesmo que o
   // preco ao vivo esteja 0 ou a operacao nao esteja mais na lista em memoria.
@@ -657,7 +592,9 @@ export default function TradePage() {
 
   // Check active trades results - ROBUST
   useEffect(() => {
-    if (activeTrades.length === 0 || !user || !mountedRef.current) return
+    // A liquidação financeira é executada exclusivamente pela API transacional acima.
+    // Mantemos este bloco temporariamente sem execução até remover o legado por completo.
+    return
 
     const checkTradeResults = async () => {
       if (!mountedRef.current) return
@@ -858,11 +795,7 @@ export default function TradePage() {
         return
       }
 
-      const entryPrice = price > 0 ? price : 1.085 // fallback price
-
-      // Toca o som AQUI (sincrono, ainda dentro do gesto de clique do usuario).
-      // Se tocado apos os awaits abaixo, o navegador ja perdeu o contexto do gesto e
-      // o AudioContext fica suspenso (sem som), principalmente no mobile.
+      // O preço de entrada é sempre obtido e gravado pelo servidor; nunca usamos fallback local.
       if (direction === "CALL") playCallSound()
       else playPutSound()
 
@@ -870,82 +803,44 @@ export default function TradePage() {
       setTradeError(null)
 
       try {
-        const tradeId = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-        const entryTime = new Date()
-        const expiryTimeDate = new Date(Date.now() + expiryTime * 1000)
+        const idempotencyKey = crypto.randomUUID()
         const isDemo = accountType === "demo"
+        const response = await fetch("/api/trade/open", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            symbol: selectedSymbol,
+            direction,
+            amount: Math.round(amount * 100) / 100,
+            timeframe: expiryTime,
+            isDemo,
+            idempotencyKey,
+          }),
+        })
+        const data = await response.json()
 
-        // Deduct balance first
-        const newBalance = Math.round((currentBalance - amount) * 100) / 100
-        const balanceField = isDemo ? "balance_demo" : "balance_real"
-
-        const { error: balanceError } = await supabaseRef.current
-          .from("user_balances")
-          .update({ [balanceField]: newBalance })
-          .eq("user_id", user.id)
-
-        if (balanceError) {
-          throw new Error("Erro ao atualizar saldo")
+        if (!response.ok || !data.trade) {
+          throw new Error(data.error || "Erro ao criar operação")
         }
 
-        if (isDemo) {
-          setBalanceDemo(newBalance)
-        } else {
-          setBalanceReal(newBalance)
-        }
+        const insertedTrade = data.trade
+        const newBalance = Number(data.newBalance)
+        if (isDemo) setBalanceDemo(newBalance)
+        else setBalanceReal(newBalance)
 
-        const tradeData = {
-          user_id: user.id,
-          symbol: selectedSymbol,
-          direction: direction,
-          amount: Math.round(amount * 100) / 100,
-          entry_price: entryPrice,
-          entry_time: entryTime.toISOString(),
-          timeframe: expiryTime,
-          expiry_time: expiryTimeDate.toISOString(),
-          payout_percentage: payout / 100,
-          is_demo: isDemo,
-          result: "pending",
-        }
-
-        // `.select()` devolve a linha criada. Precisamos do id dela para encerrar exatamente
-        // esta operacao depois, em vez de procurar "a pendente mais recente" do ativo.
-        const { data: insertedTrade, error: insertError } = await supabaseRef.current
-          .from("trades")
-          .insert(tradeData)
-          .select("id")
-          .single()
-
-        if (insertError) {
-          // Rollback balance
-          await supabaseRef.current
-            .from("user_balances")
-            .update({ [balanceField]: currentBalance })
-            .eq("user_id", user.id)
-
-          if (isDemo) {
-            setBalanceDemo(currentBalance)
-          } else {
-            setBalanceReal(currentBalance)
-          }
-
-          throw new Error(insertError.message || "Erro ao criar operação")
-        }
-
-        // Add to active trades for chart display
         const activeTrade: ActiveTrade = {
-          id: tradeId,
-          dbId: insertedTrade?.id,
-          symbol: selectedSymbol,
-          direction: direction, // UPPERCASE
-          amount,
-          entryPrice: entryPrice,
-          expiryTime: expiryTime,
-          timestamp: Date.now(),
-          isDemo,
+          id: insertedTrade.id,
+          dbId: insertedTrade.id,
+          symbol: insertedTrade.symbol,
+          direction: insertedTrade.direction,
+          amount: Number(insertedTrade.amount),
+          entryPrice: Number(insertedTrade.entry_price),
+          expiryTime: Number(insertedTrade.timeframe),
+          timestamp: new Date(insertedTrade.entry_time).getTime(),
+          isDemo: insertedTrade.is_demo,
         }
 
-        setActiveTrades((prev) => [...prev, activeTrade])
+        setActiveTrades((prev) => prev.some((trade) => trade.dbId === activeTrade.dbId) ? prev : [...prev, activeTrade])
         setHistoryRefresh((prev) => prev + 1)
       } catch (err: any) {
         setTradeError(err?.message || "Erro ao executar operação")

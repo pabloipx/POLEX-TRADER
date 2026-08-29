@@ -18,16 +18,14 @@ export async function GET() {
       .from("trades")
       .select("*")
       .eq("user_id", user.id)
-      .eq("result", "PENDING")
-      .order("entry_time", { ascending: false })
-      .limit(1)
-      .single()
+      .ilike("result", "pending")
+      .order("entry_time", { ascending: true })
 
     if (error || !trade) {
-      return NextResponse.json({ activeTrade: null })
+      return NextResponse.json({ activeTrades: [] })
     }
 
-    return NextResponse.json({ activeTrade: trade })
+    return NextResponse.json({ activeTrades: trade, activeTrade: trade[0] ?? null })
   } catch {
     return NextResponse.json({ activeTrade: null })
   }
