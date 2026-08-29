@@ -1,361 +1,222 @@
 import Link from "next/link"
-import { Globe, ChevronDown, ShieldCheck, Zap, GraduationCap, Wallet, LineChart, Clock } from "lucide-react"
+import {
+  ArrowRight,
+  BarChart3,
+  Bitcoin,
+  Blocks,
+  Check,
+  ChevronRight,
+  CircleDollarSign,
+  Globe2,
+  LockKeyhole,
+  Radio,
+  ShieldCheck,
+  Sparkles,
+  WalletCards,
+  Zap,
+} from "lucide-react"
 import { CryptoTicker } from "@/components/landing/crypto-ticker"
 import { LiveChart } from "@/components/landing/live-chart"
 import { HeroBackground } from "@/components/landing/hero-background"
 
 export const metadata = {
-  title: "Fidelity Option - Trade inteligente e seguro, do seu jeito",
+  title: "POLEX — Trading de cripto em tempo real",
   description:
-    "Mais que uma corretora, um ecossistema completo para você evoluir. Aprenda, teste e negocie com liberdade, transparência e proteção.",
+    "Acompanhe o mercado cripto, teste estratégias na conta demo e opere em uma plataforma rápida, simples e segura.",
 }
 
 const features = [
   {
     icon: Zap,
-    title: "Execução instantânea",
-    desc: "Ordens processadas em tempo real, sem travamentos nos momentos decisivos.",
+    eyebrow: "VELOCIDADE",
+    title: "Execução em tempo real",
+    desc: "Uma experiência fluida para acompanhar movimentos do mercado sem perder o ritmo.",
+  },
+  {
+    icon: BarChart3,
+    eyebrow: "MERCADO",
+    title: "Gráficos que fazem sentido",
+    desc: "Leitura direta de candles, tendências e variações em uma interface focada na decisão.",
+  },
+  {
+    icon: WalletCards,
+    eyebrow: "CONTROLE",
+    title: "Sua banca, suas regras",
+    desc: "Visão clara de saldo, histórico e movimentações para operar com mais controle.",
   },
   {
     icon: ShieldCheck,
-    title: "Segurança de ponta",
-    desc: "Verificação em duas etapas e gestão de dispositivos para proteger sua conta.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Conta demo grátis",
-    desc: "Treine com R$10.000 virtuais e evolua antes de operar com dinheiro real.",
-  },
-  {
-    icon: Wallet,
-    title: "Depósito e saque ágil",
-    desc: "Movimente sua banca com praticidade e total transparência.",
+    eyebrow: "PROTEÇÃO",
+    title: "Segurança em cada etapa",
+    desc: "Camadas de proteção para acesso, dados e movimentações dentro da plataforma.",
   },
 ]
 
-const stats = [
-  { value: "+85%", label: "Payout por operação" },
-  { value: "24/7", label: "Mercados OTC" },
-  { value: "<1s", label: "Execução de ordens" },
-  { value: "60+", label: "Ativos disponíveis" },
+const marketRows = [
+  { pair: "BTC / USDT", price: "$64.973,78", change: "+1,47%", volume: "$28,4B" },
+  { pair: "ETH / USDT", price: "$3.481,20", change: "+2,96%", volume: "$14,8B" },
+  { pair: "SOL / USDT", price: "$142,88", change: "+0,84%", volume: "$3,7B" },
 ]
 
 export default function HomePage() {
   return (
-    <main id="top" className="relative flex min-h-screen flex-col bg-[#07090d]">
-      {/* Cabeçalho com navegação em pílula */}
-      <header className="fixed inset-x-0 top-0 z-50 px-4 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07090d]/70 px-4 py-2.5 backdrop-blur-xl">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="Fidelity Option — início">
-            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-9 w-auto object-contain" />
+    <main id="top" className="landing-crypto min-h-screen overflow-hidden bg-[var(--landing-bg)] text-[var(--landing-text)]">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--landing-line)] bg-[color:var(--landing-bg)]/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
+          <Link href="#top" aria-label="POLEX — início" className="flex items-center gap-3">
+            <img src="/images/fidelity-logo.png" alt="POLEX" className="h-8 w-auto object-contain" />
+            <span className="hidden items-center gap-2 border-l border-[var(--landing-line)] pl-3 font-mono text-[10px] tracking-[0.16em] text-[var(--landing-muted)] sm:flex">
+              <span className="size-1.5 rounded-full bg-[var(--landing-primary)] shadow-[0_0_10px_var(--landing-primary)]" />
+              MARKET ONLINE
+            </span>
           </Link>
 
-          {/* Navegação central (desktop) */}
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">
-            <Link
-              href="#top"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Início
-            </Link>
-            <Link
-              href="#grafico"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Plataforma
-            </Link>
-            <Link
-              href="#recursos"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Recursos
-            </Link>
-            <Link
-              href="#cotacoes"
-              className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Cotações
-            </Link>
+          <nav aria-label="Navegação principal" className="hidden items-center gap-7 lg:flex">
+            <Link href="#mercado" className="text-sm text-[var(--landing-muted)] transition-colors hover:text-[var(--landing-text)]">Mercado</Link>
+            <Link href="#plataforma" className="text-sm text-[var(--landing-muted)] transition-colors hover:text-[var(--landing-text)]">Plataforma</Link>
+            <Link href="#recursos" className="text-sm text-[var(--landing-muted)] transition-colors hover:text-[var(--landing-text)]">Recursos</Link>
+            <Link href="#seguranca" className="text-sm text-[var(--landing-muted)] transition-colors hover:text-[var(--landing-text)]">Segurança</Link>
           </nav>
 
-          {/* Ações */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden items-center gap-1.5 text-sm font-medium text-white/60 sm:flex">
-              <Globe className="h-4 w-4" />
-              PT
-            </span>
-            <Link
-              href="/auth/login"
-              className="rounded-full border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              Login
-            </Link>
-            <Link
-              href="/auth/sign-up"
-              className="rounded-full bg-[#22c55e] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_30px_-8px_rgba(34, 197, 94,0.8)] transition-colors hover:bg-[#4ade80]"
-            >
-              Criar conta
+          <div className="flex items-center gap-2">
+            <Link href="/auth/login" className="px-3 py-2 text-sm font-semibold text-[var(--landing-muted)] transition-colors hover:text-[var(--landing-text)]">Entrar</Link>
+            <Link href="/auth/sign-up" className="inline-flex items-center gap-2 rounded-md bg-[var(--landing-primary)] px-4 py-2 text-sm font-bold text-[var(--landing-primary-foreground)] transition-transform hover:-translate-y-0.5">
+              Criar conta <ArrowRight className="size-4" />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* HERO — tela cheia */}
-      <section className="relative flex min-h-screen flex-col overflow-hidden">
-        {/* Fundo: brilhos e efeitos animados reativos a rolagem */}
+      <section className="relative border-b border-[var(--landing-line)] pt-16">
         <HeroBackground />
-
-        {/* Conteúdo do hero */}
-        <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-6 py-28 text-center">
-          <div className="animate-fade-up mx-auto max-w-4xl">
-            <h1 className="text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-              Trade inteligente e seguro, do seu jeito.
+        <div className="relative z-10 mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-24">
+          <div className="max-w-2xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--landing-primary)]/30 bg-[var(--landing-primary)]/10 px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] text-[var(--landing-primary)]">
+              <Radio className="size-3" /> MERCADO CRIPTO 24/7
+            </div>
+            <h1 className="text-balance text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
+              O mercado cripto,
+              <span className="mt-2 block text-[var(--landing-primary)]">na sua frequência.</span>
             </h1>
-
-            <p className="mt-5 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
-              Bem-vindo à{" "}
-              <span className="bg-gradient-to-r from-[#4ade80] via-[#86efac] to-[#22c55e] bg-clip-text text-transparent">
-                Fidelity Option
-              </span>
+            <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-[var(--landing-muted)] sm:text-lg">
+              Acompanhe ativos digitais, teste estratégias com saldo demo e opere em uma plataforma construída para decisões rápidas.
             </p>
-
-            <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-white/70 md:text-lg">
-              Mais que uma corretora, somos um ecossistema completo — feito para você evoluir.
-              <br className="hidden sm:block" />{" "}
-              Aqui, você aprende, testa e negocia com liberdade, transparência e proteção.
-            </p>
-
-            {/* CTAs */}
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/auth/sign-up"
-                className="w-full rounded-xl bg-[#22c55e] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80] sm:w-auto"
-              >
-                Criar conta
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/auth/sign-up" className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--landing-primary)] px-7 py-3.5 font-bold text-[var(--landing-primary-foreground)] transition-transform hover:-translate-y-0.5">
+                Começar agora <ArrowRight className="size-4" />
               </Link>
-              <Link
-                href="/auth/login"
-                className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-10 py-4 text-base font-bold text-white transition-colors hover:bg-white/10 sm:w-auto"
-              >
-                Login
+              <Link href="#plataforma" className="inline-flex items-center justify-center gap-2 rounded-md border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] px-7 py-3.5 font-semibold transition-colors hover:border-[var(--landing-primary)]/50">
+                Explorar plataforma <ChevronRight className="size-4" />
               </Link>
+            </div>
+            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 font-mono text-[11px] text-[var(--landing-muted)]">
+              {['Conta demo gratuita', 'Acesso 24/7', 'Ambiente protegido'].map((item) => (
+                <span key={item} className="flex items-center gap-2"><Check className="size-3 text-[var(--landing-primary)]" />{item}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="mb-3 flex items-center justify-between font-mono text-[10px] tracking-wider text-[var(--landing-muted)]">
+              <span>POLEX / LIVE TERMINAL</span>
+              <span className="flex items-center gap-2 text-[var(--landing-primary)]"><span className="size-1.5 rounded-full bg-current" /> CONECTADO</span>
+            </div>
+            <LiveChart />
+            <div className="mt-3 grid grid-cols-3 border border-[var(--landing-line)] bg-[var(--landing-panel)]">
+              {[['VOLUME 24H', '$46,8B'], ['DOMINÂNCIA BTC', '54,2%'], ['ATIVOS ONLINE', '60+']].map(([label, value], index) => (
+                <div key={label} className={`px-3 py-3 ${index ? 'border-l border-[var(--landing-line)]' : ''}`}>
+                  <p className="font-mono text-[9px] text-[var(--landing-muted)]">{label}</p>
+                  <p className="mt-1 font-mono text-sm font-bold">{value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-
-        {/* Faixa de cotações + indicador de rolagem */}
-        <div id="cotacoes" className="relative z-20">
+        <div id="mercado" className="relative z-10 scroll-mt-16 border-t border-[var(--landing-line)] bg-[var(--landing-bg)]/85">
           <CryptoTicker />
-          <div className="flex justify-center pb-5 pt-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md">
-              <ChevronDown className="h-5 w-5 animate-bounce text-white/60" />
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* SEÇÃO — Gráfico ao vivo */}
-      <section id="grafico" className="relative scroll-mt-24 px-6 py-20 sm:py-28">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-              <LineChart className="h-3.5 w-3.5" />
-              Gráfico em tempo real
-            </span>
-            <h2 className="mt-5 text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-              Acompanhe o mercado se mexendo a cada segundo
-            </h2>
-            <p className="mt-5 max-w-lg text-pretty text-base leading-relaxed text-white/60 md:text-lg">
-              Velas atualizadas em tempo real, leitura clara de tendência e execução rápida.
-              Veja abaixo uma prévia do gráfico que você usa na plataforma Fidelity Option.
-            </p>
-
-            <ul className="mt-8 space-y-4">
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
-                  <Zap className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm text-white/70">
-                  <span className="font-semibold text-white">Candles ao vivo</span> — o gráfico se
-                  atualiza continuamente, como na conta real.
-                </p>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
-                  <Clock className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm text-white/70">
-                  <span className="font-semibold text-white">Múltiplos tempos</span> — opere em
-                  timeframes de segundos a minutos.
-                </p>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm text-white/70">
-                  <span className="font-semibold text-white">Dados confiáveis</span> — preços de
-                  mercado aberto vindos de fontes reais.
-                </p>
-              </li>
-            </ul>
-
-            <Link
-              href="/auth/sign-up"
-              className="mt-8 inline-flex rounded-xl bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80]"
-            >
-              Começar a operar
-            </Link>
-          </div>
-
-          <LiveChart />
-        </div>
-      </section>
-
-      {/* SEÇÃO — Showcase (imagem) */}
-      <section className="relative overflow-hidden px-6 py-20 sm:py-28">
-        <div className="absolute left-1/2 top-1/2 h-96 w-[60rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22c55e]/10 blur-[140px]" />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-            A plataforma
-          </span>
-          <h2 className="mx-auto mt-5 max-w-3xl text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-            Uma plataforma feita para decolar seus resultados
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-white/60 md:text-lg">
-            Interface intuitiva, gráficos poderosos e todas as ferramentas que você precisa em um
-            só lugar.
-          </p>
-
-          <div className="group relative mx-auto mt-12 max-w-4xl">
-            {/* Glow pulsante atrás da moldura */}
-            <div className="animate-tech-pulse absolute -inset-6 rounded-[2rem] bg-[#22c55e]/25 blur-3xl" />
-
-            {/* Pontos orbitando o quadro */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block">
-              <span className="animate-tech-orbit absolute h-2.5 w-2.5 rounded-full bg-[#86efac] shadow-[0_0_12px_4px_rgba(74,222,128,0.8)]" />
-              <span
-                className="animate-tech-orbit absolute h-1.5 w-1.5 rounded-full bg-[#22c55e] shadow-[0_0_10px_3px_rgba(34,197,94,0.7)]"
-                style={{ animationDelay: "-4.5s", animationDuration: "12s" }}
-              />
-            </div>
-
-            {/* Moldura tecnológica */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#22c55e]/30 bg-[#0b0f14] shadow-[0_30px_90px_-20px_rgba(34,197,94,0.55)]">
-              {/* Grade tecnológica animada */}
-              <div className="tech-grid pointer-events-none absolute inset-0 z-10 opacity-40" />
-
-              {/* Vinheta para dar profundidade */}
-              <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(11,15,20,0.75)_100%)]" />
-
-              {/* Linha de varredura (scanline) */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-[#86efac]/40 via-[#22c55e]/15 to-transparent blur-[2px] animate-tech-scan" />
-
-              {/* Cantos estilo HUD */}
-              <span className="pointer-events-none absolute left-3 top-3 z-30 h-6 w-6 rounded-tl-md border-l-2 border-t-2 border-[#22c55e]" />
-              <span className="pointer-events-none absolute right-3 top-3 z-30 h-6 w-6 rounded-tr-md border-r-2 border-t-2 border-[#22c55e]" />
-              <span className="pointer-events-none absolute bottom-3 left-3 z-30 h-6 w-6 rounded-bl-md border-b-2 border-l-2 border-[#22c55e]" />
-              <span className="pointer-events-none absolute bottom-3 right-3 z-30 h-6 w-6 rounded-br-md border-b-2 border-r-2 border-[#22c55e]" />
-
-              {/* Badge "ao vivo" */}
-              <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-[#22c55e]/40 bg-[#0b0f14]/80 px-3 py-1.5 backdrop-blur-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ade80] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]" />
-                </span>
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86efac]">
-                  Sistema ativo
-                </span>
-              </div>
-
-              <img
-                src="/images/polex-showcase.png"
-                alt="Plataforma de trading da Fidelity Option com gráfico de candles e painel de operações"
-                className="relative z-0 w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SEÇÃO — Recursos */}
-      <section id="recursos" className="relative scroll-mt-24 px-6 py-20 sm:py-28">
+      <section id="plataforma" className="scroll-mt-16 border-b border-[var(--landing-line)] px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
-              Por que a Fidelity Option
-            </span>
-            <h2 className="mt-5 text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-              Tudo que você precisa para operar com confiança
-            </h2>
-          </div>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#22c55e]/40 hover:bg-[#22c55e]/[0.06]"
-              >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#22c55e]/15 text-[#86efac] transition-colors group-hover:bg-[#22c55e]/25">
-                  <f.icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-5 text-lg font-bold text-white">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/60">{f.desc}</p>
+          <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
+            <div>
+              <p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">02 / MERCADO AO VIVO</p>
+              <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-5xl">Dados claros. Decisões sem ruído.</h2>
+              <p className="mt-5 text-pretty leading-relaxed text-[var(--landing-muted)]">Uma visão direta dos principais pares, com preço, variação e volume organizados como em uma exchange profissional.</p>
+            </div>
+            <div className="overflow-hidden border border-[var(--landing-line)] bg-[var(--landing-panel)]">
+              <div className="grid grid-cols-[1fr_1fr_0.8fr_0.8fr] border-b border-[var(--landing-line)] px-4 py-3 font-mono text-[9px] tracking-wider text-[var(--landing-muted)]">
+                <span>PAR</span><span>PREÇO</span><span>24H</span><span className="text-right">VOLUME</span>
               </div>
-            ))}
+              {marketRows.map((row) => (
+                <div key={row.pair} className="grid grid-cols-[1fr_1fr_0.8fr_0.8fr] items-center border-b border-[var(--landing-line)] px-4 py-4 font-mono text-xs last:border-0 sm:text-sm">
+                  <span className="flex items-center gap-2 font-bold"><Bitcoin className="size-4 text-[var(--landing-primary)]" />{row.pair}</span>
+                  <span>{row.price}</span><span className="text-[var(--landing-primary)]">{row.change}</span><span className="text-right text-[var(--landing-muted)]">{row.volume}</span>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+      </section>
 
-          {/* Estatísticas */}
-          <div className="mt-16 grid grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-8 sm:grid-cols-4 sm:gap-8">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <p className="bg-gradient-to-r from-[#4ade80] to-[#86efac] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
-                  {s.value}
-                </p>
-                <p className="mt-1 text-xs text-white/50 sm:text-sm">{s.label}</p>
-              </div>
+      <section id="recursos" className="scroll-mt-16 px-5 py-20 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-3xl">
+            <p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">03 / INFRAESTRUTURA</p>
+            <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-5xl">Feita para quem leva o mercado a sério.</h2>
+          </div>
+          <div className="mt-12 grid border-l border-t border-[var(--landing-line)] sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature) => (
+              <article key={feature.title} className="group border-b border-r border-[var(--landing-line)] bg-[var(--landing-panel)] p-6 transition-colors hover:bg-[var(--landing-panel-raised)]">
+                <div className="flex items-center justify-between">
+                  <feature.icon className="size-6 text-[var(--landing-primary)]" />
+                  <span className="font-mono text-[9px] tracking-widest text-[var(--landing-muted)]">{feature.eyebrow}</span>
+                </div>
+                <h3 className="mt-16 text-xl font-bold">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{feature.desc}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SEÇÃO — CTA final */}
-      <section className="relative overflow-hidden px-6 py-24">
-        <div className="absolute left-1/2 top-1/2 h-72 w-[50rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22c55e]/15 blur-[130px]" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <h2 className="text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-            Pronto para começar sua jornada?
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-white/60 md:text-lg">
-            Crie sua conta gratuita, treine na conta demo e negocie quando estiver pronto.
-          </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/auth/sign-up"
-              className="w-full rounded-xl bg-[#22c55e] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80] sm:w-auto"
-            >
-              Criar conta grátis
-            </Link>
-            <Link
-              href="/auth/login"
-              className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-10 py-4 text-base font-bold text-white transition-colors hover:bg-white/10 sm:w-auto"
-            >
-              Já tenho conta
-            </Link>
+      <section id="seguranca" className="scroll-mt-16 border-y border-[var(--landing-line)] bg-[var(--landing-panel)] px-5 py-20 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="relative overflow-hidden border border-[var(--landing-line-strong)] bg-[var(--landing-bg)] p-8">
+            <div className="landing-security-grid absolute inset-0 opacity-40" />
+            <LockKeyhole className="relative size-10 text-[var(--landing-primary)]" />
+            <p className="relative mt-24 font-mono text-[10px] tracking-[0.16em] text-[var(--landing-primary)]">SECURITY LAYER / ACTIVE</p>
+            <p className="relative mt-3 max-w-md text-2xl font-black">Proteção não é detalhe. É infraestrutura.</p>
+          </div>
+          <div>
+            <p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">04 / SEGURANÇA</p>
+            <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-5xl">Sua experiência protegida, ponta a ponta.</h2>
+            <div className="mt-8 flex flex-col gap-5">
+              {[
+                [Blocks, 'Arquitetura monitorada', 'Processos estruturados para manter a plataforma estável e disponível.'],
+                [CircleDollarSign, 'Movimentações transparentes', 'Histórico e saldos apresentados com clareza em cada etapa.'],
+                [Globe2, 'Acesso em qualquer dispositivo', 'Uma experiência consistente no desktop, tablet ou celular.'],
+              ].map(([Icon, title, desc]) => {
+                const ItemIcon = Icon as typeof Blocks
+                return <div key={title as string} className="flex gap-4"><ItemIcon className="mt-1 size-5 shrink-0 text-[var(--landing-primary)]" /><div><h3 className="font-bold">{title as string}</h3><p className="mt-1 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></div></div>
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Rodapé */}
-      <footer className="relative border-t border-white/10 px-6 py-8">
+      <section className="px-5 py-24 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 border border-[var(--landing-primary)]/30 bg-[var(--landing-primary)]/[0.06] p-8 sm:p-12 lg:flex-row lg:items-center">
+          <div><p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">READY TO TRADE?</p><h2 className="mt-3 text-balance text-3xl font-black sm:text-5xl">Entre no ritmo do mercado.</h2><p className="mt-4 text-[var(--landing-muted)]">Comece pela conta demo. Evolua no seu tempo.</p></div>
+          <Link href="/auth/sign-up" className="inline-flex shrink-0 items-center gap-2 rounded-md bg-[var(--landing-primary)] px-7 py-4 font-bold text-[var(--landing-primary-foreground)] transition-transform hover:-translate-y-0.5">Criar conta grátis <Sparkles className="size-4" /></Link>
+        </div>
+      </section>
+
+      <footer className="border-t border-[var(--landing-line)] px-5 py-8 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <Link href="#top" className="flex items-center gap-2" aria-label="Voltar ao início">
-            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-8 w-auto object-contain" />
-          </Link>
-          <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} Fidelity Option. Todos os direitos reservados.
-          </p>
+          <img src="/images/fidelity-logo.png" alt="POLEX" className="h-7 w-auto object-contain" />
+          <p className="font-mono text-[10px] text-[var(--landing-muted)]">© {new Date().getFullYear()} POLEX. TODOS OS DIREITOS RESERVADOS.</p>
         </div>
       </footer>
     </main>

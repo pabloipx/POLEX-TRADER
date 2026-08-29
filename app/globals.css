@@ -691,7 +691,54 @@ body {
   animation: result-coin 1.5s ease-out infinite;
 }
 
+/* Landing cripto: tokens isolados para não alterar a plataforma autenticada. */
+.landing-crypto {
+  --landing-bg: #060a0c;
+  --landing-panel: #0b1114;
+  --landing-panel-raised: #10191c;
+  --landing-text: #f2f7f5;
+  --landing-muted: #84928d;
+  --landing-line: rgb(151 178 168 / 14%);
+  --landing-line-strong: rgb(151 178 168 / 28%);
+  --landing-primary: #00e599;
+  --landing-primary-foreground: #03110c;
+  --landing-danger: #ff5c6c;
+}
+
+.landing-chain-grid {
+  background-image:
+    linear-gradient(var(--landing-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--landing-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.landing-security-grid {
+  background-image:
+    linear-gradient(var(--landing-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--landing-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(135deg, black, transparent 75%);
+}
+
+@keyframes chain-node-pulse {
+  0%, 100% { opacity: 0.25; box-shadow: 0 0 0 0 rgb(0 229 153 / 0%); }
+  50% { opacity: 1; box-shadow: 0 0 16px 2px rgb(0 229 153 / 45%); }
+}
+
+.landing-chain-node {
+  animation: chain-node-pulse 4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .landing-chain-node {
+    animation: none;
+  }
+
+  .animate-marquee {
+    animation-play-state: paused;
+  }
+
   .animate-result-pop-in,
   .animate-result-out,
   .animate-result-shake,

@@ -72,33 +72,30 @@ export function CryptoTicker() {
   const loop = [...coins, ...coins]
 
   return (
-    <div className="relative w-full overflow-hidden py-4">
-      {/* fades laterais */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-[#07090d] to-transparent" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-[#07090d] to-transparent" />
+    <div className="relative w-full overflow-hidden py-2">
+      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-[var(--landing-bg)] to-transparent" />
+      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-[var(--landing-bg)] to-transparent" />
 
-      <div className="flex w-max animate-marquee gap-3">
+      <div className="flex w-max animate-marquee">
         {loop.map((coin, index) => {
           const up = coin.change >= 0
           return (
             <div
               key={`${coin.symbol}-${index}`}
-              className="flex min-w-[240px] items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 backdrop-blur-sm"
+              className="flex min-w-[230px] items-center gap-3 border-r border-[var(--landing-line)] px-4 py-2"
             >
-              <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+              <span
+                className="size-2 shrink-0 rounded-full"
                 style={{ backgroundColor: coin.color }}
                 aria-hidden="true"
-              >
-                {coin.symbol.slice(0, 3)}
-              </div>
+              />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">{coin.symbol}</p>
-                <p className="truncate text-xs text-white/50">${formatPrice(coin.price)}</p>
+                <p className="font-mono text-[10px] font-bold text-[var(--landing-text)]">{coin.symbol} / USD</p>
+                <p className="truncate font-mono text-xs text-[var(--landing-muted)]">${formatPrice(coin.price)}</p>
               </div>
               <span
-                className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold ${
-                  up ? "bg-[#22c55e]/15 text-[#22c55e]" : "bg-[#ef4444]/15 text-[#ef4444]"
+                className={`shrink-0 font-mono text-[10px] font-bold ${
+                  up ? "text-[var(--landing-primary)]" : "text-[var(--landing-danger)]"
                 }`}
               >
                 {up ? "+" : ""}
