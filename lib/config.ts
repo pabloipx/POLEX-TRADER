@@ -18,7 +18,7 @@ export const config = {
   // AmploPay
   // As DUAS credenciais vem do ambiente e devem ser do MESMO par/conta:
   //   AMPLOPAY_PUBLIC_KEY     -> Chave Pública (Client ID)
-  //   AMPLOPAY_SECRET_KEY_V2  -> Chave Privada (Client Secret)
+  //   AMPLOPAY_SECRET_KEY     -> Chave Privada (Client Secret)
   //
   // A chave publica fixa que existia aqui foi removida. Alem de ser credencial no fonte, ela
   // quebrava o isConfigured abaixo: como publicKey nunca ficava vazia, a checagem passava mesmo
@@ -26,7 +26,7 @@ export const config = {
   amplopay: {
     baseUrl: process.env.AMPLOPAY_BASE_URL || "https://app.amplopay.com/api/v1",
     publicKey: process.env.AMPLOPAY_PUBLIC_KEY || "",
-    secretKey: process.env.AMPLOPAY_SECRET_KEY_V2 || "",
+    secretKey: process.env.AMPLOPAY_SECRET_KEY || "",
     get isConfigured() {
       return !!(this.publicKey && this.secretKey)
     },
