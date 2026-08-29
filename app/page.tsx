@@ -5,7 +5,7 @@ import { LiveChart } from "@/components/landing/live-chart"
 import { HeroBackground } from "@/components/landing/hero-background"
 
 export const metadata = {
-  title: "URYN BROKER - Trade inteligente e seguro, do seu jeito",
+  title: "Fidelity Option - Trade inteligente e seguro, do seu jeito",
   description:
     "Mais que uma corretora, um ecossistema completo para você evoluir. Aprenda, teste e negocie com liberdade, transparência e proteção.",
 }
@@ -47,12 +47,8 @@ export default function HomePage() {
       <header className="fixed inset-x-0 top-0 z-50 px-4 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07090d]/70 px-4 py-2.5 backdrop-blur-xl">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <img
-              src="/images/uryn-fox-logo.png"
-              alt="URYNBROKER"
-              className="h-8 w-auto object-contain sm:h-9"
-            />
+          <Link href="/" className="flex items-center gap-2" aria-label="Fidelity Option — início">
+            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-9 w-auto object-contain" />
           </Link>
 
           {/* Navegação central (desktop) */}
@@ -97,7 +93,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/auth/sign-up"
-              className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_30px_-8px_rgba(249, 115, 22,0.8)] transition-colors hover:bg-[#fb923c]"
+              className="rounded-full bg-[#22c55e] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_30px_-8px_rgba(34, 197, 94,0.8)] transition-colors hover:bg-[#4ade80]"
             >
               Criar conta
             </Link>
@@ -119,8 +115,8 @@ export default function HomePage() {
 
             <p className="mt-5 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               Bem-vindo à{" "}
-              <span className="bg-gradient-to-r from-[#fb923c] via-[#fdba74] to-[#f97316] bg-clip-text text-transparent">
-                URYN BROKER
+              <span className="bg-gradient-to-r from-[#4ade80] via-[#86efac] to-[#22c55e] bg-clip-text text-transparent">
+                Fidelity Option
               </span>
             </p>
 
@@ -134,7 +130,7 @@ export default function HomePage() {
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/auth/sign-up"
-                className="w-full rounded-xl bg-[#f97316] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(249, 115, 22,0.8)] transition-all hover:bg-[#fb923c] sm:w-auto"
+                className="w-full rounded-xl bg-[#22c55e] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80] sm:w-auto"
               >
                 Criar conta
               </Link>
@@ -163,7 +159,7 @@ export default function HomePage() {
       <section id="grafico" className="relative scroll-mt-24 px-6 py-20 sm:py-28">
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#f97316]/30 bg-[#f97316]/10 px-4 py-1.5 text-xs font-semibold text-[#fdba74]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
               <LineChart className="h-3.5 w-3.5" />
               Gráfico em tempo real
             </span>
@@ -172,12 +168,12 @@ export default function HomePage() {
             </h2>
             <p className="mt-5 max-w-lg text-pretty text-base leading-relaxed text-white/60 md:text-lg">
               Velas atualizadas em tempo real, leitura clara de tendência e execução rápida.
-              Veja abaixo uma prévia do gráfico que você usa na plataforma URYN BROKER.
+              Veja abaixo uma prévia do gráfico que você usa na plataforma Fidelity Option.
             </p>
 
             <ul className="mt-8 space-y-4">
               <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#f97316]/20 text-[#fdba74]">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
                   <Zap className="h-3.5 w-3.5" />
                 </span>
                 <p className="text-sm text-white/70">
@@ -186,7 +182,7 @@ export default function HomePage() {
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#f97316]/20 text-[#fdba74]">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
                   <Clock className="h-3.5 w-3.5" />
                 </span>
                 <p className="text-sm text-white/70">
@@ -195,7 +191,7 @@ export default function HomePage() {
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#f97316]/20 text-[#fdba74]">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#22c55e]/20 text-[#86efac]">
                   <ShieldCheck className="h-3.5 w-3.5" />
                 </span>
                 <p className="text-sm text-white/70">
@@ -207,7 +203,7 @@ export default function HomePage() {
 
             <Link
               href="/auth/sign-up"
-              className="mt-8 inline-flex rounded-xl bg-[#f97316] px-8 py-3.5 text-sm font-bold text-white shadow-[0_10px_40px_-8px_rgba(249, 115, 22,0.8)] transition-all hover:bg-[#fb923c]"
+              className="mt-8 inline-flex rounded-xl bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80]"
             >
               Começar a operar
             </Link>
@@ -219,9 +215,9 @@ export default function HomePage() {
 
       {/* SEÇÃO — Showcase (imagem) */}
       <section className="relative overflow-hidden px-6 py-20 sm:py-28">
-        <div className="absolute left-1/2 top-1/2 h-96 w-[60rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f97316]/10 blur-[140px]" />
+        <div className="absolute left-1/2 top-1/2 h-96 w-[60rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22c55e]/10 blur-[140px]" />
         <div className="relative mx-auto max-w-5xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#f97316]/30 bg-[#f97316]/10 px-4 py-1.5 text-xs font-semibold text-[#fdba74]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
             A plataforma
           </span>
           <h2 className="mx-auto mt-5 max-w-3xl text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
@@ -234,19 +230,19 @@ export default function HomePage() {
 
           <div className="group relative mx-auto mt-12 max-w-4xl">
             {/* Glow pulsante atrás da moldura */}
-            <div className="animate-tech-pulse absolute -inset-6 rounded-[2rem] bg-[#f97316]/25 blur-3xl" />
+            <div className="animate-tech-pulse absolute -inset-6 rounded-[2rem] bg-[#22c55e]/25 blur-3xl" />
 
             {/* Pontos orbitando o quadro */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block">
-              <span className="animate-tech-orbit absolute h-2.5 w-2.5 rounded-full bg-[#fdba74] shadow-[0_0_12px_4px_rgba(251,146,60,0.8)]" />
+              <span className="animate-tech-orbit absolute h-2.5 w-2.5 rounded-full bg-[#86efac] shadow-[0_0_12px_4px_rgba(74,222,128,0.8)]" />
               <span
-                className="animate-tech-orbit absolute h-1.5 w-1.5 rounded-full bg-[#f97316] shadow-[0_0_10px_3px_rgba(249,115,22,0.7)]"
+                className="animate-tech-orbit absolute h-1.5 w-1.5 rounded-full bg-[#22c55e] shadow-[0_0_10px_3px_rgba(34,197,94,0.7)]"
                 style={{ animationDelay: "-4.5s", animationDuration: "12s" }}
               />
             </div>
 
             {/* Moldura tecnológica */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#f97316]/30 bg-[#0b0f14] shadow-[0_30px_90px_-20px_rgba(249,115,22,0.55)]">
+            <div className="relative overflow-hidden rounded-2xl border border-[#22c55e]/30 bg-[#0b0f14] shadow-[0_30px_90px_-20px_rgba(34,197,94,0.55)]">
               {/* Grade tecnológica animada */}
               <div className="tech-grid pointer-events-none absolute inset-0 z-10 opacity-40" />
 
@@ -254,28 +250,28 @@ export default function HomePage() {
               <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(11,15,20,0.75)_100%)]" />
 
               {/* Linha de varredura (scanline) */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-[#fdba74]/40 via-[#f97316]/15 to-transparent blur-[2px] animate-tech-scan" />
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-[#86efac]/40 via-[#22c55e]/15 to-transparent blur-[2px] animate-tech-scan" />
 
               {/* Cantos estilo HUD */}
-              <span className="pointer-events-none absolute left-3 top-3 z-30 h-6 w-6 rounded-tl-md border-l-2 border-t-2 border-[#f97316]" />
-              <span className="pointer-events-none absolute right-3 top-3 z-30 h-6 w-6 rounded-tr-md border-r-2 border-t-2 border-[#f97316]" />
-              <span className="pointer-events-none absolute bottom-3 left-3 z-30 h-6 w-6 rounded-bl-md border-b-2 border-l-2 border-[#f97316]" />
-              <span className="pointer-events-none absolute bottom-3 right-3 z-30 h-6 w-6 rounded-br-md border-b-2 border-r-2 border-[#f97316]" />
+              <span className="pointer-events-none absolute left-3 top-3 z-30 h-6 w-6 rounded-tl-md border-l-2 border-t-2 border-[#22c55e]" />
+              <span className="pointer-events-none absolute right-3 top-3 z-30 h-6 w-6 rounded-tr-md border-r-2 border-t-2 border-[#22c55e]" />
+              <span className="pointer-events-none absolute bottom-3 left-3 z-30 h-6 w-6 rounded-bl-md border-b-2 border-l-2 border-[#22c55e]" />
+              <span className="pointer-events-none absolute bottom-3 right-3 z-30 h-6 w-6 rounded-br-md border-b-2 border-r-2 border-[#22c55e]" />
 
               {/* Badge "ao vivo" */}
-              <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-[#f97316]/40 bg-[#0b0f14]/80 px-3 py-1.5 backdrop-blur-sm">
+              <div className="absolute left-4 top-4 z-30 flex items-center gap-2 rounded-full border border-[#22c55e]/40 bg-[#0b0f14]/80 px-3 py-1.5 backdrop-blur-sm">
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#fb923c] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f97316]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ade80] opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]" />
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#fdba74]">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#86efac]">
                   Sistema ativo
                 </span>
               </div>
 
               <img
-                src="/images/uryn-showcase.png"
-                alt="Plataforma de trading da URYN BROKER com gráfico de candles, foguete e painel de operações"
+                src="/images/polex-showcase.png"
+                alt="Plataforma de trading da Fidelity Option com gráfico de candles e painel de operações"
                 className="relative z-0 w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
             </div>
@@ -287,8 +283,8 @@ export default function HomePage() {
       <section id="recursos" className="relative scroll-mt-24 px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#f97316]/30 bg-[#f97316]/10 px-4 py-1.5 text-xs font-semibold text-[#fdba74]">
-              Por que a URYN BROKER
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-4 py-1.5 text-xs font-semibold text-[#86efac]">
+              Por que a Fidelity Option
             </span>
             <h2 className="mt-5 text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
               Tudo que você precisa para operar com confiança
@@ -299,9 +295,9 @@ export default function HomePage() {
             {features.map((f) => (
               <div
                 key={f.title}
-                className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#f97316]/40 hover:bg-[#f97316]/[0.06]"
+                className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#22c55e]/40 hover:bg-[#22c55e]/[0.06]"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#f97316]/15 text-[#fdba74] transition-colors group-hover:bg-[#f97316]/25">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#22c55e]/15 text-[#86efac] transition-colors group-hover:bg-[#22c55e]/25">
                   <f.icon className="h-6 w-6" />
                 </span>
                 <h3 className="mt-5 text-lg font-bold text-white">{f.title}</h3>
@@ -314,7 +310,7 @@ export default function HomePage() {
           <div className="mt-16 grid grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-8 sm:grid-cols-4 sm:gap-8">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
-                <p className="bg-gradient-to-r from-[#fb923c] to-[#fdba74] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
+                <p className="bg-gradient-to-r from-[#4ade80] to-[#86efac] bg-clip-text text-3xl font-extrabold text-transparent sm:text-4xl">
                   {s.value}
                 </p>
                 <p className="mt-1 text-xs text-white/50 sm:text-sm">{s.label}</p>
@@ -326,7 +322,7 @@ export default function HomePage() {
 
       {/* SEÇÃO — CTA final */}
       <section className="relative overflow-hidden px-6 py-24">
-        <div className="absolute left-1/2 top-1/2 h-72 w-[50rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f97316]/15 blur-[130px]" />
+        <div className="absolute left-1/2 top-1/2 h-72 w-[50rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22c55e]/15 blur-[130px]" />
         <div className="relative mx-auto max-w-3xl text-center">
           <h2 className="text-balance text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
             Pronto para começar sua jornada?
@@ -337,7 +333,7 @@ export default function HomePage() {
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/auth/sign-up"
-              className="w-full rounded-xl bg-[#f97316] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(249, 115, 22,0.8)] transition-all hover:bg-[#fb923c] sm:w-auto"
+              className="w-full rounded-xl bg-[#22c55e] px-10 py-4 text-base font-bold text-white shadow-[0_10px_40px_-8px_rgba(34, 197, 94,0.8)] transition-all hover:bg-[#4ade80] sm:w-auto"
             >
               Criar conta grátis
             </Link>
@@ -354,13 +350,11 @@ export default function HomePage() {
       {/* Rodapé */}
       <footer className="relative border-t border-white/10 px-6 py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <img
-            src="/images/uryn-fox-logo.png"
-            alt="URYNBROKER"
-            className="h-7 w-auto object-contain"
-          />
+          <Link href="#top" className="flex items-center gap-2" aria-label="Voltar ao início">
+            <img src="/images/fidelity-logo.png" alt="Fidelity Option" className="h-8 w-auto object-contain" />
+          </Link>
           <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} URYN BROKER. Todos os direitos reservados.
+            © {new Date().getFullYear()} Fidelity Option. Todos os direitos reservados.
           </p>
         </div>
       </footer>

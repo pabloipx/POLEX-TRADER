@@ -134,10 +134,10 @@ function SignUpForm() {
   }
 
   const inputClass =
-    "w-full h-12 px-4 rounded-md bg-white text-gray-800 text-[15px] border border-gray-300 outline-none transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+    "h-[72px] w-full rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#343434] outline-none transition-colors placeholder:text-[#8a8a8a] focus:border-[#0bb39c] focus:ring-1 focus:ring-[#0bb39c]"
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col">
+    <div className="flex min-h-screen w-full flex-col bg-[#ffffff] font-sans text-[#343434]">
       {/* Modal de Termos */}
       {showTerms && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
@@ -151,7 +151,7 @@ function SignUpForm() {
             <div className="flex-1 overflow-y-auto p-4 text-gray-600 text-sm leading-relaxed space-y-3">
               <p className="text-xs text-gray-400">Última atualização: Janeiro de 2026</p>
               <p>
-                Ao acessar, cadastrar-se ou utilizar a plataforma URYN BROKER, o usuário declara que leu, compreendeu e
+                Ao acessar, cadastrar-se ou utilizar a plataforma Fidelity Option, o usuário declara que leu, compreendeu e
                 concorda integralmente com os presentes Termos e Condições.
               </p>
               <h3 className="text-gray-800 font-semibold pt-1">1. Elegibilidade</h3>
@@ -159,7 +159,7 @@ function SignUpForm() {
               <h3 className="text-gray-800 font-semibold pt-1">2. Cadastro</h3>
               <p>O usuário compromete-se a fornecer informações verdadeiras e completas.</p>
               <h3 className="text-gray-800 font-semibold pt-1">3. Riscos</h3>
-              <p>Operações financeiras envolvem riscos e podem resultar em perdas. A URYN BROKER não garante lucros.</p>
+              <p>Operações financeiras envolvem riscos e podem resultar em perdas. A Fidelity Option não garante lucros.</p>
             </div>
             <div className="p-4 border-t border-gray-200">
               <button
@@ -173,30 +173,25 @@ function SignUpForm() {
         </div>
       )}
 
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-gray-50/60">
-        <Link href="/" className="flex items-center">
-          <Image src="/images/uryn-fox-logo.png" alt="URYNBROKER" width={150} height={38} className="h-9 w-auto" unoptimized />
+      <header className="flex h-20 items-center justify-between border-b border-[#eeeeee] bg-[#fbfafb] px-5 md:h-24 md:px-8">
+        <Link href="/" className="flex items-center" aria-label="Fidelity Option — início">
+          <Image src="/images/fidelity-auth-logo.png" alt="Fidelity Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
         </Link>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-600 text-sm font-medium">
-            <Flag code="BR" className="rounded-full w-5 h-5 object-cover" />
-            Pt
+        <div className="flex items-center gap-4 md:gap-8">
+          <div className="flex items-center gap-2 text-base font-medium text-[#343434]">
+            <Flag code="BR" className="h-6 w-6 rounded-full object-cover" />
+            PT
           </div>
-          <Link
-            href="/auth/login"
-            className="rounded-md border border-blue-500 text-blue-600 hover:bg-blue-50 px-6 h-10 flex items-center font-medium text-sm transition-colors"
-          >
+          <Link href="/auth/login" className="flex h-12 items-center rounded-sm border border-[#0bb39c] px-5 text-base font-medium text-[#0bb39c] hover:bg-[#0bb39c]/5 md:h-14 md:px-7">
             Entrar
           </Link>
         </div>
       </header>
 
-      {/* Form */}
-      <main className="flex-1 flex flex-col items-center px-5 py-10">
-        <h1 className="text-3xl font-semibold text-gray-500 mb-8 text-center">Registrar-se</h1>
+      <main className="flex flex-1 flex-col items-center px-5 py-14 md:py-20">
+        <h1 className="mb-10 text-center text-4xl font-semibold tracking-tight text-[#565656] md:text-5xl">Criar conta</h1>
 
-        <form onSubmit={handleSignUp} className="w-full max-w-[420px] flex flex-col gap-4">
+        <form onSubmit={handleSignUp} className="flex w-full max-w-[640px] flex-col gap-6">
           <input
             type="text"
             placeholder="Nome"
@@ -219,7 +214,7 @@ function SignUpForm() {
             <button
               type="button"
               onClick={() => setShowCountries((v) => !v)}
-              className="w-full h-12 px-4 rounded-md bg-white border border-gray-300 flex items-center justify-between text-gray-800 text-[15px] focus:border-blue-500 outline-none"
+              className="flex h-[72px] w-full items-center justify-between rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#4f4f4f] outline-none focus:border-[#0bb39c] focus:ring-1 focus:ring-[#0bb39c]"
             >
               <span className="flex items-center gap-2">
                 <Flag code={country.code} className="rounded-full w-5 h-5 object-cover" />
@@ -245,7 +240,7 @@ function SignUpForm() {
                 ))}
               </div>
             )}
-            <p className="text-gray-500 text-xs mt-2">Certifique-se de que este é seu país de residência permanente</p>
+            <p className="mt-3 text-base text-[#5f5f5f]">Confirme se este é o seu país de residência permanente.</p>
           </div>
 
           <input
@@ -266,32 +261,22 @@ function SignUpForm() {
           />
 
           {/* Telefone */}
-          <div className="flex items-stretch gap-2">
-            <div className="flex items-center gap-2 px-3 rounded-md bg-white border border-gray-300 text-gray-800 text-[15px]">
-              <Flag code={country.code} className="rounded-full w-5 h-5 object-cover" />
+          <div className="flex h-[72px] overflow-hidden rounded-md border border-[#a5a5a5] bg-[#ffffff] focus-within:border-[#0bb39c] focus-within:ring-1 focus-within:ring-[#0bb39c]">
+            <div className="flex min-w-32 items-center gap-3 border-r border-[#a5a5a5] px-5 text-lg text-[#4f4f4f]">
+              <Flag code={country.code} className="h-6 w-6 rounded-full object-cover" />
               {country.dial}
             </div>
-            <input
-              type="tel"
-              placeholder="Número de telefone"
-              value={phone}
-              onChange={handlePhoneChange}
-              className={`${inputClass} flex-1`}
-            />
+            <input type="tel" placeholder="Número de telefone" value={phone} onChange={handlePhoneChange} className="min-w-0 flex-1 bg-transparent px-6 text-lg text-[#343434] outline-none placeholder:text-[#8a8a8a]" />
           </div>
 
-          <p className="text-gray-500 text-sm text-center leading-relaxed">
+          <p className="text-center text-base leading-relaxed text-[#5f5f5f]">
             Ao criar uma conta, você aceita nossos{" "}
-            <button type="button" onClick={() => setShowTerms(true)} className="text-blue-600 hover:underline">
-              Termos e Condições
-            </button>
-            , a <span className="text-blue-600">Política de Privacidade</span> e confirma que você tem 18 anos de idade ou
-            mais.
+            <button type="button" onClick={() => setShowTerms(true)} className="text-[#0bb39c] hover:underline">Termos e Condições</button>, a{" "}
+            <span className="text-[#0bb39c]">Política de Privacidade</span> e confirma que tem 18 anos ou mais.
           </p>
 
           {error && (
-            <div className="text-sm p-3 rounded-md flex items-center gap-2 text-red-600 bg-red-50 border border-red-200">
-              <span>⚠</span>
+            <div role="alert" className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -299,7 +284,7 @@ function SignUpForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-14 rounded-md text-white font-semibold text-base bg-green-600 hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+            className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#0bb39c] text-xl font-medium text-[#ffffff] hover:bg-[#079d89] disabled:opacity-70"
           >
             {isLoading ? (
               <>
@@ -311,14 +296,18 @@ function SignUpForm() {
             )}
           </button>
 
-          <p className="text-center text-gray-500 text-sm pt-2">
+          <p className="text-center text-base text-[#5f5f5f]">
             Já tem uma conta?{" "}
-            <Link href="/auth/login" className="font-semibold text-blue-600 hover:underline">
-              Entrar
-            </Link>
+            <Link href="/auth/login" className="font-medium text-[#0bb39c] hover:text-[#079d89]">Entrar agora</Link>
           </p>
+
+          <fieldset className="mt-6 w-full rounded-md border border-[#b0b0b0] px-6 py-5 text-[#5d5d5d]">
+            <legend className="mx-auto px-4 text-base font-bold uppercase">Aviso de risco</legend>
+            <p className="text-base leading-relaxed">Toda negociação envolve riscos. Opere apenas com capital que você está preparado para perder.</p>
+          </fieldset>
         </form>
       </main>
+      <footer className="border-t border-[#c7c7c7] bg-[#fbfafb] py-8 text-center text-base text-[#5d5d5d]">Fidelity Option</footer>
     </div>
   )
 }

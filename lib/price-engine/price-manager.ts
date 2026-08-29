@@ -30,14 +30,19 @@ export class PriceManager {
   private symbols: Map<string, SymbolConfig> = new Map()
   private maxCandles = 200
 
-  initialize(otcSymbols: OTCSymbol[]) {
+  initialize(otcSymbols: Pick<OTCSymbol, "symbol" | "is_active" | "base_price" | "volatility">[]) {
     for (const symbol of otcSymbols) {
       if (!symbol.is_active) continue
-      this.symbols.set(symbol.symbol, {
+      const config = {
         symbol: symbol.symbol,
-        basePrice: symbol.base_price,
-        volatility: symbol.volatility,
-      })
+        basePrice: Number(symbol.base_price),
+        volatility: Number(symbol.volatility),
+      }
+      // O catálogo da interface usa EURUSD_OTC, enquanto a tabela legada usa
+      // EURUSD-OTC. Ambos identificam o mesmo ativo e precisam gerar a mesma série.
+      this.symbols.set(symbol.symbol, config)
+      this.symbols.set(symbol.symbol.replace("-OTC", "_OTC"), config)
+      this.symbols.set(symbol.symbol.replace("_OTC", "-OTC"), config)
     }
   }
 
@@ -76,10 +81,14 @@ export class PriceManager {
     }
   }
 
-  getCurrentPrice(symbol: string): number | null {
+  getPriceAt(symbol: string, timestampMs: number): number | null {
     const config = this.symbols.get(symbol)
-    if (!config) return null
-    return this.generatePriceAtTime(config, Math.floor(Date.now() / 1000))
+    if (!config || !Number.isFinite(timestampMs)) return null
+    return this.generatePriceAtTime(config, Math.floor(timestampMs / 1000))
+  }
+
+  getCurrentPrice(symbol: string): number | null {
+    return this.getPriceAt(symbol, Date.now())
   }
 
   getHistoricalCandles(symbol: string, timeframe: 60 | 300 | 600 | 900): Candle[] {

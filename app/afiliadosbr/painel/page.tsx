@@ -13,9 +13,7 @@ import { SectionPayments } from "@/components/afiliadosbr/section-payments"
 import {
   SectionAccount,
   SectionCompetition,
-  SectionPostbacks,
   SectionSubAffiliate,
-  SectionTelegramBot,
 } from "@/components/afiliadosbr/section-basic"
 import { SectionSecurity } from "@/components/afiliadosbr/section-security"
 import { SectionProfile } from "@/components/afiliadosbr/section-profile"
@@ -192,10 +190,6 @@ export default function AffiliatePanelPage() {
             )}
             {section === "competition" && <SectionCompetition affiliate={affiliate} />}
             {section === "sub-affiliate" && <SectionSubAffiliate affiliate={affiliate} />}
-            {(section === "postbacks" || section === "postbacks-general") && (
-              <SectionPostbacks affiliate={affiliate} />
-            )}
-            {section === "postbacks-telegram" && <SectionTelegramBot affiliate={affiliate} />}
             {section === "account" && <SectionAccount affiliate={affiliate} email={email} />}
             {section === "account-security" && <SectionSecurity email={email} />}
             {section === "account-profile" && <SectionProfile />}

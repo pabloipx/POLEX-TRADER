@@ -9,7 +9,7 @@ export default function SignUpSuccessPage() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-2xl font-bold text-white">
-              URYN<span className="text-orange-500"> BROKER</span>
+              Fidelity<span className="text-[#22c55e]"> Broker</span>
             </h1>
           </div>
 

@@ -1,6 +1,5 @@
-import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { getAffiliateSettings, round2 } from "@/lib/affiliate-commission"
 
 export async function POST(request: Request) {
   try {
@@ -19,69 +18,45 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Chave PIX e obrigatoria" }, { status: 400 })
     }
 
-    const admin = createAdminClient()
-    const settings = await getAffiliateSettings(admin)
+    const numericAmount = Number(amount)
+    const normalizedPixKey = String(pixKey).trim()
+    const normalizedPixKeyType = String(pixKeyType).trim()
 
-    if (!Number.isFinite(Number(amount)) || Number(amount) < settings.min_withdrawal) {
-      return NextResponse.json(
-        { error: `Valor minimo para saque e R$ ${settings.min_withdrawal.toFixed(2)}` },
-        { status: 400 },
-      )
+    if (
+      !Number.isFinite(numericAmount) ||
+      numericAmount <= 0 ||
+      Math.round(numericAmount * 100) !== numericAmount * 100
+    ) {
+      return NextResponse.json({ error: "Informe um valor de saque válido" }, { status: 400 })
     }
 
-    // Buscar dados do perfil/afiliado via admin
-    const { data: profile, error: profileError } = await admin
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle()
+    const { data, error: withdrawalError } = await supabase.rpc(
+      "request_affiliate_withdrawal_atomic",
+      {
+        p_amount: numericAmount,
+        p_pix_key: normalizedPixKey,
+        p_pix_key_type: normalizedPixKeyType,
+      },
+    )
 
-    if (profileError || !profile) {
-      return NextResponse.json({ error: "Perfil nao encontrado" }, { status: 404 })
+    if (withdrawalError) {
+      const message = withdrawalError.message ?? ""
+      if (message.includes("INVALID_AMOUNT")) {
+        return NextResponse.json({ error: "Valor abaixo do mínimo permitido" }, { status: 400 })
+      }
+      if (message.includes("INVALID_PIX")) {
+        return NextResponse.json({ error: "Chave PIX inválida" }, { status: 400 })
+      }
+      if (message.includes("INSUFFICIENT_BALANCE")) {
+        return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 })
+      }
+      if (message.includes("NOT_AFFILIATE") || message.includes("PROFILE_NOT_FOUND")) {
+        return NextResponse.json({ error: "Perfil de afiliado não encontrado" }, { status: 404 })
+      }
+      throw withdrawalError
     }
 
-    if (!profile.is_affiliate) {
-      return NextResponse.json({ error: "Voce nao e um afiliado" }, { status: 400 })
-    }
-
-    const currentBalance = profile.affiliate_balance || 0
-
-    if (currentBalance < amount) {
-      return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 })
-    }
-
-    // Taxa de saque definida nas configuracoes do programa
-    const fee = round2(amount * (settings.withdrawal_fee_percent / 100))
-    const netAmount = round2(amount - fee)
-
-    // Criar solicitacao de saque via admin
-    const { data: withdrawal, error: withdrawalError } = await admin
-      .from("affiliate_withdrawals")
-      .insert({
-        affiliate_id: user.id,
-        amount,
-        fee,
-        net_amount: netAmount,
-        pix_key: pixKey,
-        pix_key_type: pixKeyType,
-        status: "pending",
-      })
-      .select()
-      .single()
-
-    if (withdrawalError) throw withdrawalError
-
-    // Atualizar saldo do afiliado (reservar o valor)
-    const { error: updateError } = await admin
-      .from("profiles")
-      .update({
-        affiliate_balance: currentBalance - amount,
-      })
-      .eq("id", user.id)
-
-    if (updateError) throw updateError
-
-    return NextResponse.json({ withdrawal })
+    return NextResponse.json(data)
   } catch (error) {
     console.error("Erro ao criar saque:", error)
     return NextResponse.json({ error: "Erro interno" }, { status: 500 })

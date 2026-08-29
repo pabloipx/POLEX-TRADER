@@ -306,14 +306,14 @@ export function TradeHistorySidebar({ userId, refreshTrigger, isDemo }: TradeHis
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1 lg:gap-2">
                     {isCall ? (
-                      <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4 text-[#f97316]" />
+                      <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4 text-[#22c55e]" />
                     ) : (
                       <TrendingDown className="w-3 h-3 lg:w-4 lg:h-4 text-[#EF4444]" />
                     )}
                     <span className="text-white font-medium text-[10px] lg:text-sm truncate">{getAssetName(trade.symbol)}</span>
                     <span
                       className={`text-[8px] lg:text-[10px] font-bold px-1 lg:px-1.5 py-0.5 rounded ${
-                        isCall ? "bg-[#f97316]/20 text-[#f97316]" : "bg-[#EF4444]/20 text-[#EF4444]"
+                        isCall ? "bg-[#22c55e]/20 text-[#22c55e]" : "bg-[#EF4444]/20 text-[#EF4444]"
                       }`}
                     >
                       {isCall ? "C" : "V"}
@@ -347,7 +347,7 @@ export function TradeHistorySidebar({ userId, refreshTrigger, isDemo }: TradeHis
                       </div>
                     </div>
                   ) : (
-                    <div className={`text-[10px] lg:text-sm font-bold ${isWin ? "text-[#f97316]" : "text-[#EF4444]"}`}>
+                    <div className={`text-[10px] lg:text-sm font-bold ${isWin ? "text-[#22c55e]" : "text-[#EF4444]"}`}>
                       {isWin ? "+" : ""}
                       {formatBRL(trade.profit)}
                     </div>

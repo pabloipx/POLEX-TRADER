@@ -7,9 +7,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "URYN BROKER - Plataforma de Trading OTC",
-  description: "Negocie opções binárias OTC com a URYN BROKER",
-  generator: "URYN BROKER",
+  title: "Fidelity Option - Plataforma de Trading OTC",
+  description: "Negocie opções binárias OTC com a Fidelity Option",
+  generator: "Fidelity Option",
 }
 
 export const viewport: Viewport = {

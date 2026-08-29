@@ -5,7 +5,6 @@ import {
   BarChart3,
   ChevronDown,
   ChevronUp,
-  Code2,
   Columns2,
   LogOut,
   Tag,
@@ -23,7 +22,6 @@ interface AffiliateSidebarProps {
 
 export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSidebarProps) {
   const [statsOpen, setStatsOpen] = useState(true)
-  const [postbacksOpen, setPostbacksOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
 
   const itemClass = (isActive: boolean) =>
@@ -87,39 +85,6 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
           Sub-afiliado
         </button>
 
-        <button
-          type="button"
-          onClick={() => setPostbacksOpen((v) => !v)}
-          className={itemClass(active === "postbacks")}
-        >
-          <Code2 className="h-5 w-5 text-gray-500" />
-          <span className="flex-1 text-left">Postbacks</span>
-          {postbacksOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-400" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-gray-400" />
-          )}
-        </button>
-
-        {postbacksOpen && (
-          <div className="flex flex-col gap-1">
-            <button
-              type="button"
-              onClick={() => onChange("postbacks-general")}
-              className={`${itemClass(active === "postbacks-general")} pl-12`}
-            >
-              Geral
-            </button>
-            <button
-              type="button"
-              onClick={() => onChange("postbacks-telegram")}
-              className={`${itemClass(active === "postbacks-telegram")} pl-12`}
-            >
-              Bot do Telegram
-            </button>
-          </div>
-        )}
-
         <button type="button" onClick={() => setAccountOpen((v) => !v)} className={itemClass(active === "account")}>
           <UserCircle className="h-5 w-5 text-gray-500" />
           <span className="flex-1 text-left">Configurações da conta</span>
@@ -166,7 +131,7 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
           </div>
           <div className="text-sm leading-tight text-gray-700">
-            <p className="font-medium text-gray-900">Suporte URYN</p>
+            <p className="font-medium text-gray-900">Suporte Fidelity Option</p>
             <p className="text-gray-500">8:00 - 21:00</p>
             <p className="text-gray-500">Seg – Sex</p>
           </div>

@@ -146,7 +146,7 @@ export function AdminDeposits({ onUpdate }: AdminDepositsProps) {
               size="sm"
               className={
                 filter === f
-                  ? "bg-[#f97316] hover:bg-[#c2410c]"
+                  ? "bg-[#22c55e] hover:bg-[#c2410c]"
                   : "border-[#2A3142] bg-transparent text-gray-300 hover:bg-[#1E2430]"
               }
             >

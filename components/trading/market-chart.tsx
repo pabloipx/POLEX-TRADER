@@ -104,7 +104,7 @@ interface Drawing {
   color: string
 }
 
-const DRAW_COLORS = ["#fb923c", "#00E676", "#FF5252", "#FFC400", "#38bdf8", "#e2e8f0"]
+const DRAW_COLORS = ["#4ade80", "#00E676", "#FF5252", "#FFC400", "#38bdf8", "#e2e8f0"]
 const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1]
 
 // ========== INDICADORES TECNICOS ==========
@@ -1466,7 +1466,7 @@ function ChartCore({
     // --- Bandas de Bollinger (20, 2) ---
     if (ind.boll && !S.bollM) {
       S.bollU = addLine(lineOpts("#787B86", { lineWidth: 1 }))
-      S.bollM = addLine(lineOpts("#fb923c", { lineWidth: 1, lineStyle: lwc.LineStyle?.Dashed ?? 1 }))
+      S.bollM = addLine(lineOpts("#4ade80", { lineWidth: 1, lineStyle: lwc.LineStyle?.Dashed ?? 1 }))
       S.bollL = addLine(lineOpts("#787B86", { lineWidth: 1 }))
     } else if (!ind.boll && S.bollM) {
       remove("bollU")
@@ -1716,11 +1716,11 @@ function ChartCore({
 
   return (
     <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: "#0d0d0f" }}>
-      {/* Marca d'agua URYN BROKER no fundo do grafico */}
+      {/* Marca d'água Fidelity Option no fundo do gráfico */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: "url(/images/urynbroker-watermark.png)",
+          backgroundImage: "url(/images/fidelity-chart-watermark.png)",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center 45%",
           backgroundSize: "55% auto",
@@ -1852,7 +1852,7 @@ function ChartCore({
               onClick={() => setTool(active && dt.id !== "cursor" ? "cursor" : dt.id)}
               className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
               style={{
-                backgroundColor: active ? "#f97316" : "transparent",
+                backgroundColor: active ? "#22c55e" : "transparent",
                 color: active ? "#fff" : "#94A3B8",
               }}
             >
@@ -1922,7 +1922,7 @@ function ChartCore({
             onClick={() => setShowIndicators((s) => !s)}
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
             style={{
-              backgroundColor: indicators.ma || indicators.boll || indicators.fractal || indicators.macd ? "#f97316" : "transparent",
+              backgroundColor: indicators.ma || indicators.boll || indicators.fractal || indicators.macd ? "#22c55e" : "transparent",
               color: indicators.ma || indicators.boll || indicators.fractal || indicators.macd ? "#fff" : "#94A3B8",
             }}
           >
@@ -1936,7 +1936,7 @@ function ChartCore({
               {(
                 [
                   { key: "ma", label: "Médias Móveis", desc: "SMA 9 / 21", color: "#FFC400" },
-                  { key: "boll", label: "Bandas de Bollinger", desc: "20, 2", color: "#fb923c" },
+                  { key: "boll", label: "Bandas de Bollinger", desc: "20, 2", color: "#4ade80" },
                   { key: "fractal", label: "Fractais", desc: "Bill Williams", color: "#38bdf8" },
                   { key: "macd", label: "MACD", desc: "12, 26, 9", color: "#00E676" },
                 ] as const
@@ -1956,7 +1956,7 @@ function ChartCore({
                     </span>
                     <span
                       className="flex h-4 w-7 shrink-0 items-center rounded-full p-0.5 transition-colors"
-                      style={{ backgroundColor: on ? "#f97316" : "#2A2E39" }}
+                      style={{ backgroundColor: on ? "#22c55e" : "#2A2E39" }}
                     >
                       <span
                         className="h-3 w-3 rounded-full bg-white transition-transform"

@@ -92,98 +92,61 @@ export default function LoginPage() {
 
   if (isCheckingSession) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-white">
-        <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex min-h-screen w-full items-center justify-center bg-[#07090d]">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
       </div>
     )
   }
 
   const inputClass =
-    "w-full h-12 px-4 rounded-md bg-white text-gray-800 text-[15px] border border-gray-300 outline-none transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+    "h-[72px] w-full rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#343434] outline-none transition-colors placeholder:text-[#8a8a8a] focus:border-[#0bb39c] focus:ring-1 focus:ring-[#0bb39c] disabled:opacity-50"
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-gray-50/60">
-        <Link href="/" className="flex items-center">
-          <Image src="/images/uryn-fox-logo.png" alt="URYNBROKER" width={150} height={38} className="h-9 w-auto" unoptimized />
+    <div className="flex min-h-screen w-full flex-col bg-[#ffffff] font-sans text-[#343434]">
+      <header className="flex h-20 items-center justify-between border-b border-[#eeeeee] bg-[#fbfafb] px-5 md:h-24 md:px-8">
+        <Link href="/" className="flex items-center" aria-label="Fidelity Option — início">
+          <Image src="/images/fidelity-auth-logo.png" alt="Fidelity Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
         </Link>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-600 text-sm font-medium">
-            <Flag code="BR" className="rounded-full w-5 h-5 object-cover" />
-            Pt
+        <div className="flex items-center gap-4 md:gap-8">
+          <div className="flex items-center gap-2 text-base font-medium text-[#343434]">
+            <Flag code="BR" className="h-6 w-6 rounded-full object-cover" />
+            PT
           </div>
-          <Link
-            href="/auth/sign-up"
-            className="rounded-md border border-blue-500 text-blue-600 hover:bg-blue-50 px-6 h-10 flex items-center font-medium text-sm transition-colors"
-          >
-            Registrar-se
+          <Link href="/auth/sign-up" className="flex h-12 items-center rounded-sm bg-[#0bb39c] px-5 text-base font-medium text-[#ffffff] hover:bg-[#079d89] md:h-14 md:px-7">
+            Criar conta
           </Link>
         </div>
       </header>
 
-      {/* Form */}
-      <main className="flex-1 flex flex-col items-center px-5 py-10">
-        <h1 className="text-3xl font-semibold text-gray-500 mb-8 text-center">Entrar</h1>
+      <main className="flex flex-1 flex-col items-center px-5 py-14 md:py-20">
+        <section className="flex w-full max-w-[640px] flex-col items-center">
+          <h1 className="mb-10 text-center text-4xl font-semibold tracking-tight text-[#565656] md:text-5xl">Entrar</h1>
 
-        <form onSubmit={handleLogin} className="w-full max-w-[420px] flex flex-col gap-4">
-          <input
-            type="email"
-            placeholder="E-mail"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            disabled={isLoading}
-            className={inputClass}
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            disabled={isLoading}
-            className={inputClass}
-          />
+          <form onSubmit={handleLogin} className="flex w-full flex-col gap-6">
+            <input type="email" placeholder="E-mail" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" disabled={isLoading} className={inputClass} />
+            <input type="password" placeholder="Senha" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" disabled={isLoading} className={inputClass} />
 
-          <div className="text-right -mt-1">
-            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
-              Esqueceu sua senha?
-            </Link>
-          </div>
+            {error && <div role="alert" className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
-          {error && (
-            <div className="text-sm p-3 rounded-md flex items-center gap-2 text-red-600 bg-red-50 border border-red-200">
-              <span>⚠</span>
-              {error}
-            </div>
-          )}
+            <button type="submit" disabled={isLoading} className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#0bb39c] text-xl font-medium text-[#ffffff] hover:bg-[#079d89] disabled:opacity-70">
+              {isLoading ? <><Loader2 className="h-5 w-5 animate-spin" /> Entrando...</> : "Entrar"}
+            </button>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full h-14 rounded-md text-white font-semibold text-base bg-green-600 hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Entrando...
-              </>
-            ) : (
-              "Entrar"
-            )}
-          </button>
+            <Link href="/auth/forgot-password" className="mt-4 text-center text-base font-medium text-[#0bb39c] hover:text-[#079d89]">Esqueceu sua senha?</Link>
+            <p className="text-center text-base text-[#5f5f5f]">
+              Ainda não tem uma conta?{" "}
+              <Link href="/auth/sign-up" className="font-medium text-[#0bb39c] hover:text-[#079d89]">Criar conta</Link>
+            </p>
+          </form>
 
-          <p className="text-center text-gray-500 text-sm pt-2">
-            Não tem uma conta?{" "}
-            <Link href="/auth/sign-up" className="font-semibold text-blue-600 hover:underline">
-              Registrar-se
-            </Link>
-          </p>
-        </form>
+          <fieldset className="mt-12 w-full rounded-md border border-[#b0b0b0] px-6 py-5 text-[#5d5d5d]">
+            <legend className="mx-auto px-4 text-base font-bold uppercase">Aviso de risco</legend>
+            <p className="text-base leading-relaxed">Toda negociação envolve riscos. Opere apenas com capital que você está preparado para perder.</p>
+          </fieldset>
+        </section>
       </main>
+
+      <footer className="border-t border-[#c7c7c7] bg-[#fbfafb] py-8 text-center text-base text-[#5d5d5d]">Fidelity Option</footer>
     </div>
   )
 }
