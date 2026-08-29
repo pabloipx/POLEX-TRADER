@@ -1,214 +1,134 @@
+import Image from "next/image"
 import Link from "next/link"
-import {
-  BarChart3,
-  Bitcoin,
-  Blocks,
-  CircleDollarSign,
-  Globe2,
-  LockKeyhole,
-  ShieldCheck,
-  Sparkles,
-  WalletCards,
-  Zap,
-} from "lucide-react"
-import { CryptoTicker } from "@/components/landing/crypto-ticker"
-import { HeroBackground } from "@/components/landing/hero-background"
+import { BarChart3, Check, Clock3, Globe2, Headphones, ShieldCheck, Smartphone, WalletCards, Zap } from "lucide-react"
 
 export const metadata = {
-  title: "POLEX — Trading de cripto em tempo real",
-  description:
-    "Acompanhe o mercado cripto, teste estratégias na conta demo e opere em uma plataforma rápida, simples e segura.",
+  title: "POLEX Broker — Negocie nos mercados globais",
+  description: "Acesse mais de 200 ativos em uma plataforma de negociação simples, rápida e segura.",
 }
 
-const features = [
-  {
-    icon: Zap,
-    eyebrow: "VELOCIDADE",
-    title: "Execução em tempo real",
-    desc: "Uma experiência fluida para acompanhar movimentos do mercado sem perder o ritmo.",
-  },
-  {
-    icon: BarChart3,
-    eyebrow: "MERCADO",
-    title: "Gráficos que fazem sentido",
-    desc: "Leitura direta de candles, tendências e variações em uma interface focada na decisão.",
-  },
-  {
-    icon: WalletCards,
-    eyebrow: "CONTROLE",
-    title: "Sua banca, suas regras",
-    desc: "Visão clara de saldo, histórico e movimentações para operar com mais controle.",
-  },
-  {
-    icon: ShieldCheck,
-    eyebrow: "PROTEÇÃO",
-    title: "Segurança em cada etapa",
-    desc: "Camadas de proteção para acesso, dados e movimentações dentro da plataforma.",
-  },
+const assets = [
+  ["EUR/USD", "1,08342", "+0,62%"], ["Bitcoin", "$64.973", "+1,47%"],
+  ["Ethereum", "$3.481", "+2,96%"], ["Tesla", "$248,42", "+0,84%"],
 ]
 
-const marketRows = [
-  { pair: "BTC / USDT", price: "$64.973,78", change: "+1,47%", volume: "$28,4B" },
-  { pair: "ETH / USDT", price: "$3.481,20", change: "+2,96%", volume: "$14,8B" },
-  { pair: "SOL / USDT", price: "$142,88", change: "+0,84%", volume: "$3,7B" },
+const benefits = [
+  [BarChart3, "Gráficos em tempo real", "Indicadores e ferramentas para uma leitura clara do mercado."],
+  [Zap, "Execução simples", "Abra suas operações em poucos passos, sem telas desnecessárias."],
+  [Smartphone, "Negocie onde estiver", "Uma experiência responsiva no computador, tablet e celular."],
+  [Headphones, "Suporte quando precisar", "Atendimento para acompanhar você em cada etapa."],
+  [ShieldCheck, "Ambiente protegido", "Tecnologia e processos dedicados à proteção da sua conta."],
+  [WalletCards, "Controle do seu saldo", "Depósitos, retiradas e histórico reunidos em um só lugar."],
+]
+
+const specials = [
+  ["Depósito mínimo", "R$ 60", "Comece com um valor acessível"],
+  ["Retirada mínima", "R$ 2,00", "Mais flexibilidade para sua banca"],
+  ["Conta demo", "R$ 10.000", "Pratique antes de operar com saldo real"],
+  ["Mercados", "200+ ativos", "Forex, cripto, ações e commodities"],
+  ["Retorno potencial", "Até 90%", "Conforme o ativo e as condições de mercado"],
+  ["Disponibilidade", "24 horas", "Mercados abertos todos os dias"],
 ]
 
 export default function HomePage() {
   return (
-    <main id="top" className="landing-crypto min-h-screen overflow-hidden bg-[var(--landing-bg)] text-[var(--landing-text)]">
-      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between rounded-full border border-[var(--landing-line-strong)] bg-[color:var(--landing-panel)]/78 px-3 shadow-[0_12px_48px_rgb(0_0_0/0.28)] backdrop-blur-2xl sm:px-5">
-          <Link href="#top" aria-label="Ir para o início" className="flex items-center gap-2.5 rounded-full px-2 py-1.5 font-mono text-[10px] tracking-[0.13em] text-[var(--landing-muted)]">
-            <span className="size-2 rounded-full bg-[var(--landing-primary)] shadow-[0_0_14px_var(--landing-primary)]" />
-            MERCADO ABERTO
-          </Link>
+    <main className="bullex-page min-h-screen overflow-hidden bg-[var(--landing-bg)] text-[var(--landing-text)]">
+      <div className="bg-[var(--landing-primary)] px-4 py-2 text-center text-[11px] font-semibold text-[var(--landing-primary-foreground)]">
+        Negociar envolve riscos. Opere com responsabilidade e utilize apenas valores que pode administrar.
+      </div>
 
-          <nav aria-label="Navegação principal" className="hidden items-center gap-1 rounded-full border border-[var(--landing-line)] bg-[var(--landing-bg)]/55 p-1 lg:flex">
-            {[["Mercado", "#mercado"], ["Plataforma", "#plataforma"], ["Recursos", "#recursos"], ["Segurança", "#seguranca"]].map(([label, href]) => (
-              <Link key={href} href={href} className="rounded-full px-4 py-2 text-xs font-medium text-[var(--landing-muted)] transition-colors hover:bg-[var(--landing-panel-raised)] hover:text-[var(--landing-text)]">{label}</Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-1 sm:gap-2">
-            <Link href="/auth/login" className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--landing-muted)] transition-colors hover:text-[var(--landing-text)]">Entrar</Link>
-            <Link href="/auth/sign-up" className="rounded-full bg-[var(--landing-primary)] px-4 py-2 text-sm font-bold text-[var(--landing-primary-foreground)] transition-colors hover:bg-[var(--landing-text)]">
-              Criar conta
-            </Link>
-          </div>
+      <header className="relative z-40 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 lg:px-8">
+        <Link href="#inicio" aria-label="POLEX Broker — início" className="flex items-center gap-2">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-[var(--landing-primary)] text-[var(--landing-primary-foreground)]"><BarChart3 className="size-5" /></span>
+          <span className="leading-none"><b className="block text-lg tracking-tight">POLEX</b><span className="text-[9px] tracking-[0.2em] text-[var(--landing-muted)]">BROKER</span></span>
+        </Link>
+        <nav aria-label="Navegação principal" className="hidden items-center gap-8 text-sm text-[var(--landing-muted)] lg:flex">
+          <Link href="#ativos" className="hover:text-[var(--landing-text)]">Ativos</Link>
+          <Link href="#vantagens" className="hover:text-[var(--landing-text)]">Por que a POLEX?</Link>
+          <Link href="#plataforma" className="hover:text-[var(--landing-text)]">Plataforma</Link>
+          <Link href="#duvidas" className="hover:text-[var(--landing-text)]">Dúvidas</Link>
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link href="/auth/login" className="rounded-lg px-4 py-2.5 text-sm font-semibold">Entrar</Link>
+          <Link href="/auth/sign-up" className="rounded-lg bg-[var(--landing-primary)] px-5 py-2.5 text-sm font-bold text-[var(--landing-primary-foreground)]">Criar conta</Link>
         </div>
       </header>
 
-      <section className="relative border-b border-[var(--landing-line)] pt-20">
-        <HeroBackground />
-        <div className="relative z-10 mx-auto flex min-h-[760px] max-w-7xl items-center px-5 py-20 lg:px-8 lg:py-24">
-          <div className="max-w-2xl">
-            <div className="mb-7 flex items-center gap-3 font-mono text-[10px] tracking-[0.16em] text-[var(--landing-primary)]">
-              <span className="h-px w-8 bg-current" /> MERCADO CRIPTO 24 HORAS
-            </div>
-            <h1 className="text-balance text-5xl font-black leading-[0.96] tracking-[-0.05em] sm:text-6xl lg:text-7xl xl:text-[5.25rem]">
-              Leia o movimento.
-              <span className="mt-2 block text-[var(--landing-primary)]">Opere o momento.</span>
-            </h1>
-            <p className="mt-7 max-w-xl text-pretty text-base leading-relaxed text-[var(--landing-muted)] sm:text-lg">
-              Gráficos em tempo real, execução direta e uma conta demo para você validar estratégias antes de entrar no mercado. Tudo em uma interface criada para manter o foco no preço.
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/auth/sign-up" className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--landing-primary)] px-8 font-bold text-[var(--landing-primary-foreground)] transition-colors hover:bg-[var(--landing-text)]">
-                Abrir conta gratuita
-              </Link>
-              <Link href="#plataforma" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--landing-line-strong)] bg-[var(--landing-bg)]/55 px-8 font-semibold backdrop-blur-md transition-colors hover:border-[var(--landing-primary)]/60 hover:bg-[var(--landing-panel)]">
-                Conhecer a plataforma
-              </Link>
-            </div>
+      <section id="inicio" className="relative mx-auto max-w-7xl px-5 pb-20 pt-14 text-center lg:px-8 lg:pt-20">
+        <div className="bullex-hero-glow absolute inset-x-0 top-0 -z-10 h-[620px]" />
+        <p className="text-sm font-semibold text-[var(--landing-primary)]">UMA PLATAFORMA. TODOS OS MERCADOS.</p>
+        <h1 className="mx-auto mt-5 max-w-4xl text-balance text-4xl font-bold leading-[1.05] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
+          Negocie ações, criptomoedas e moedas de forma simples
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-[var(--landing-muted)] sm:text-lg">
+          Explore os mercados globais em uma plataforma criada para tornar cada decisão mais clara, rápida e acessível.
+        </p>
+        <Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)] shadow-[0_0_40px_rgb(0_229_153/0.22)]">Abrir conta gratuita</Link>
 
-            <dl className="mt-12 grid max-w-xl grid-cols-3 border-y border-[var(--landing-line-strong)] py-5">
-              {[["24/7", "Mercado ativo"], ["60+", "Ativos digitais"], ["Demo", "Saldo para testar"]].map(([value, label], index) => (
-                <div key={label} className={index ? "border-l border-[var(--landing-line)] pl-4 sm:pl-6" : ""}>
-                  <dt className="font-mono text-lg font-bold text-[var(--landing-text)] sm:text-xl">{value}</dt>
-                  <dd className="mt-1 text-[10px] leading-tight text-[var(--landing-muted)] sm:text-xs">{label}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <div className="pointer-events-none absolute bottom-16 right-5 hidden w-60 border border-[var(--landing-line-strong)] bg-[var(--landing-panel)]/72 p-4 shadow-2xl backdrop-blur-xl xl:block">
-            <div className="flex items-center justify-between font-mono text-[9px] tracking-wider text-[var(--landing-muted)]">
-              <span>BTC / USDT</span><span className="text-[var(--landing-primary)]">AO VIVO</span>
-            </div>
-            <p className="mt-3 font-mono text-2xl font-bold">$64.973,78</p>
-            <div className="mt-4 flex items-end gap-1" aria-hidden="true">
-              {[38, 62, 45, 78, 54, 86, 68, 92, 72, 98].map((height, index) => <span key={index} className="w-full bg-[var(--landing-primary)]/55" style={{ height: `${height / 3}px` }} />)}
-            </div>
-            <div className="mt-4 flex items-center justify-between font-mono text-[9px]"><span className="text-[var(--landing-muted)]">VARIAÇÃO 24H</span><span className="text-[var(--landing-primary)]">+1,47%</span></div>
-          </div>
-        </div>
-        <div id="mercado" className="relative z-10 scroll-mt-20 border-t border-[var(--landing-line)] bg-[var(--landing-bg)]/88 backdrop-blur-md">
-          <CryptoTicker />
+        <div className="relative mx-auto mt-16 max-w-5xl">
+          <div className="absolute inset-x-24 bottom-0 h-32 bg-[var(--landing-primary)]/15 blur-3xl" />
+          <Image src="/images/polex-showcase.png" alt="Plataforma POLEX Broker exibida no computador" width={1024} height={1024} className="relative mx-auto w-full max-w-4xl object-contain drop-shadow-2xl" priority />
         </div>
       </section>
 
-      <section id="plataforma" className="scroll-mt-16 border-b border-[var(--landing-line)] px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
-            <div>
-              <p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">02 / MERCADO AO VIVO</p>
-              <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-5xl">Dados claros. Decisões sem ruído.</h2>
-              <p className="mt-5 text-pretty leading-relaxed text-[var(--landing-muted)]">Uma visão direta dos principais pares, com preço, variação e volume organizados como em uma exchange profissional.</p>
-            </div>
-            <div className="overflow-hidden border border-[var(--landing-line)] bg-[var(--landing-panel)]">
-              <div className="grid grid-cols-[1fr_1fr_0.8fr_0.8fr] border-b border-[var(--landing-line)] px-4 py-3 font-mono text-[9px] tracking-wider text-[var(--landing-muted)]">
-                <span>PAR</span><span>PREÇO</span><span>24H</span><span className="text-right">VOLUME</span>
-              </div>
-              {marketRows.map((row) => (
-                <div key={row.pair} className="grid grid-cols-[1fr_1fr_0.8fr_0.8fr] items-center border-b border-[var(--landing-line)] px-4 py-4 font-mono text-xs last:border-0 sm:text-sm">
-                  <span className="flex items-center gap-2 font-bold"><Bitcoin className="size-4 text-[var(--landing-primary)]" />{row.pair}</span>
-                  <span>{row.price}</span><span className="text-[var(--landing-primary)]">{row.change}</span><span className="text-right text-[var(--landing-muted)]">{row.volume}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+      <section id="ativos" className="border-y border-[var(--landing-line)] py-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px bg-[var(--landing-line)] px-5 md:grid-cols-4 lg:px-8">
+          {assets.map(([name, price, change]) => (
+            <article key={name} className="bg-[var(--landing-bg)] p-5">
+              <div className="flex items-center justify-between"><span className="text-sm font-semibold">{name}</span><span className="text-xs text-[var(--landing-primary)]">{change}</span></div>
+              <p className="mt-3 font-mono text-xl font-bold">{price}</p>
+              <div className="mt-4 flex h-8 items-end gap-1" aria-hidden="true">{[3,6,4,8,5,10,7,12,9,14].map((h,i)=><span key={i} className="w-full bg-[var(--landing-primary)]/50" style={{height:h}} />)}</div>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section id="recursos" className="scroll-mt-16 px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">03 / INFRAESTRUTURA</p>
-            <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-5xl">Feita para quem leva o mercado a sério.</h2>
-          </div>
-          <div className="mt-12 grid border-l border-t border-[var(--landing-line)] sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature) => (
-              <article key={feature.title} className="group border-b border-r border-[var(--landing-line)] bg-[var(--landing-panel)] p-6 transition-colors hover:bg-[var(--landing-panel-raised)]">
-                <div className="flex items-center justify-between">
-                  <feature.icon className="size-6 text-[var(--landing-primary)]" />
-                  <span className="font-mono text-[9px] tracking-widest text-[var(--landing-muted)]">{feature.eyebrow}</span>
-                </div>
-                <h3 className="mt-16 text-xl font-bold">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{feature.desc}</p>
-              </article>
-            ))}
-          </div>
+      <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <div className="max-w-2xl">
+          <span className="rounded-full border border-[var(--landing-primary)]/30 px-3 py-1 text-xs text-[var(--landing-primary)]">MAIS POSSIBILIDADES</span>
+          <h2 className="mt-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl">Mais de 200 ativos em uma plataforma descomplicada</h2>
+          <p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Escolha o mercado que combina com sua estratégia e acompanhe tudo em uma única interface.</p>
+        </div>
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {assets.map(([name, price, change]) => <div key={name} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><div className="flex justify-between"><b>{name}</b><span className="text-[var(--landing-primary)]">{change}</span></div><p className="mt-8 font-mono text-2xl">{price}</p></div>)}
         </div>
       </section>
 
-      <section id="seguranca" className="scroll-mt-16 border-y border-[var(--landing-line)] bg-[var(--landing-panel)] px-5 py-20 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="relative overflow-hidden border border-[var(--landing-line-strong)] bg-[var(--landing-bg)] p-8">
-            <div className="landing-security-grid absolute inset-0 opacity-40" />
-            <LockKeyhole className="relative size-10 text-[var(--landing-primary)]" />
-            <p className="relative mt-24 font-mono text-[10px] tracking-[0.16em] text-[var(--landing-primary)]">SECURITY LAYER / ACTIVE</p>
-            <p className="relative mt-3 max-w-md text-2xl font-black">Proteção não é detalhe. É infraestrutura.</p>
-          </div>
-          <div>
-            <p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">04 / SEGURANÇA</p>
-            <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-5xl">Sua experiência protegida, ponta a ponta.</h2>
-            <div className="mt-8 flex flex-col gap-5">
-              {[
-                [Blocks, 'Arquitetura monitorada', 'Processos estruturados para manter a plataforma estável e disponível.'],
-                [CircleDollarSign, 'Movimentações transparentes', 'Histórico e saldos apresentados com clareza em cada etapa.'],
-                [Globe2, 'Acesso em qualquer dispositivo', 'Uma experiência consistente no desktop, tablet ou celular.'],
-              ].map(([Icon, title, desc]) => {
-                const ItemIcon = Icon as typeof Blocks
-                return <div key={title as string} className="flex gap-4"><ItemIcon className="mt-1 size-5 shrink-0 text-[var(--landing-primary)]" /><div><h3 className="font-bold">{title as string}</h3><p className="mt-1 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></div></div>
-              })}
-            </div>
-          </div>
+      <section className="px-5 py-20 text-center lg:px-8">
+        <p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p>
+        <h2 className="mx-auto mt-3 max-w-xl text-balance text-3xl font-bold sm:text-5xl">A POLEX pode oferecer mais para a sua forma de negociar</h2>
+        <p className="mx-auto mt-5 max-w-2xl text-[var(--landing-muted)]">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p>
+        <Link href="/auth/sign-up" className="mt-7 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Começar agora</Link>
+      </section>
+
+      <section id="vantagens" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <h2 className="max-w-2xl text-balance text-4xl font-bold tracking-tight sm:text-5xl">Por que a POLEX é uma plataforma para grandes decisões?</h2>
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {benefits.map(([Icon,title,desc]) => { const FeatureIcon=Icon as typeof Zap; return <article key={title as string} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-6"><FeatureIcon className="size-6 text-[var(--landing-primary)]"/><h3 className="mt-8 text-lg font-bold">{title as string}</h3><p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></article> })}
         </div>
       </section>
 
-      <section className="px-5 py-24 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 border border-[var(--landing-primary)]/30 bg-[var(--landing-primary)]/[0.06] p-8 sm:p-12 lg:flex-row lg:items-center">
-          <div><p className="font-mono text-xs tracking-[0.16em] text-[var(--landing-primary)]">READY TO TRADE?</p><h2 className="mt-3 text-balance text-3xl font-black sm:text-5xl">Entre no ritmo do mercado.</h2><p className="mt-4 text-[var(--landing-muted)]">Comece pela conta demo. Evolua no seu tempo.</p></div>
-          <Link href="/auth/sign-up" className="inline-flex shrink-0 items-center gap-2 rounded-md bg-[var(--landing-primary)] px-7 py-4 font-bold text-[var(--landing-primary-foreground)] transition-transform hover:-translate-y-0.5">Criar conta grátis <Sparkles className="size-4" /></Link>
+      <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <h2 className="text-center text-3xl font-bold sm:text-5xl">Condições POLEX</h2>
+        <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {specials.map(([label,value,desc]) => <article key={label} className="bullex-special rounded-xl border border-[var(--landing-line)] p-7"><p className="text-xs text-[var(--landing-primary)]">{label}</p><h3 className="mt-4 text-3xl font-bold">{value}</h3><p className="mt-2 text-sm text-[var(--landing-muted)]">{desc}</p></article>)}
         </div>
+        <div className="mt-10 text-center"><Link href="/auth/sign-up" className="inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Abrir minha conta</Link></div>
       </section>
 
-      <footer className="border-t border-[var(--landing-line)] px-5 py-8 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <img src="/images/fidelity-logo.png" alt="POLEX" className="h-7 w-auto object-contain" />
-          <p className="font-mono text-[10px] text-[var(--landing-muted)]">© {new Date().getFullYear()} POLEX. TODOS OS DIREITOS RESERVADOS.</p>
-        </div>
-      </footer>
+      <section id="plataforma" className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
+        <Image src="/images/hero-trading.png" alt="Terminal de negociação POLEX" width={1024} height={1024} className="w-full rounded-2xl border border-[var(--landing-line)]" />
+        <div><span className="text-xs font-semibold text-[var(--landing-primary)]">MERCADO NA SUA TELA</span><h2 className="mt-5 text-balance text-4xl font-bold sm:text-5xl">Negocie no mercado financeiro em tempo real</h2><p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Acesse cotações, gráficos e suas operações sem complicação. A plataforma se adapta ao seu dispositivo para você acompanhar o mercado onde estiver.</p><div className="mt-8 flex flex-col gap-4">{["Conta demo para praticar", "Gráficos e indicadores integrados", "Histórico completo de operações"].map(item=><div key={item} className="flex items-center gap-3"><Check className="size-5 text-[var(--landing-primary)]"/><span>{item}</span></div>)}</div></div>
+      </section>
+
+      <section id="duvidas" className="mx-auto max-w-3xl px-5 py-24">
+        <h2 className="text-center text-3xl font-bold sm:text-5xl">Perguntas frequentes</h2>
+        <div className="mt-10 flex flex-col gap-3">{[["O que é a conta demo?","É um ambiente de prática com saldo virtual para conhecer a plataforma sem usar dinheiro real."],["Quais mercados estão disponíveis?","Você encontra moedas, criptomoedas, ações e outros ativos disponíveis na plataforma."],["Posso acessar pelo celular?","Sim. A interface é responsiva e funciona nos principais navegadores móveis."],["Como começo?","Crie sua conta, conheça a conta demo e avance no seu ritmo."]].map(([q,a])=><details key={q} className="group rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><summary className="cursor-pointer list-none font-semibold">{q}</summary><p className="mt-4 text-sm leading-relaxed text-[var(--landing-muted)]">{a}</p></details>)}</div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8"><div className="bullex-cta rounded-2xl border border-[var(--landing-primary)]/20 px-6 py-16 text-center"><Clock3 className="mx-auto size-7 text-[var(--landing-primary)]"/><h2 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Criar conta gratuita</Link></div></section>
+
+      <footer className="border-t border-[var(--landing-line)] px-5 py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row"><div className="flex items-center gap-2"><span className="flex size-8 items-center justify-center rounded-lg bg-[var(--landing-primary)] text-[var(--landing-primary-foreground)]"><BarChart3 className="size-4" /></span><b className="tracking-tight">POLEX BROKER</b></div><div className="flex items-center gap-5 text-xs text-[var(--landing-muted)]"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} POLEX Broker</span></div></div></footer>
     </main>
   )
 }

@@ -705,6 +705,36 @@ body {
   --landing-danger: #ff5c6c;
 }
 
+.bullex-page {
+  --landing-bg: #020805;
+  --landing-panel: #06110b;
+  --landing-panel-raised: #0a1810;
+  --landing-text: #f4f8f5;
+  --landing-muted: #819087;
+  --landing-line: rgb(120 160 137 / 16%);
+  --landing-line-strong: rgb(120 160 137 / 28%);
+  --landing-primary: #42d879;
+  --landing-primary-foreground: #031008;
+}
+
+.bullex-hero-glow {
+  background:
+    radial-gradient(circle at 50% 32%, rgb(66 216 121 / 20%), transparent 32%),
+    linear-gradient(to bottom, rgb(2 8 5 / 0%), var(--landing-bg));
+}
+
+.bullex-special {
+  background:
+    radial-gradient(circle at 75% 30%, rgb(66 216 121 / 13%), transparent 40%),
+    var(--landing-panel);
+}
+
+.bullex-cta {
+  background:
+    radial-gradient(circle at 50% 120%, rgb(66 216 121 / 26%), transparent 54%),
+    var(--landing-panel);
+}
+
 .landing-chain-grid {
   background-image:
     linear-gradient(var(--landing-line) 1px, transparent 1px),

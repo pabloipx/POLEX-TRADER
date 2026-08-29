@@ -7,9 +7,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Fidelity Option - Plataforma de Trading OTC",
-  description: "Negocie opções binárias OTC com a Fidelity Option",
-  generator: "Fidelity Option",
+  title: "POLEX Broker — Plataforma de negociação",
+  description: "Acesse os mercados globais em uma plataforma simples, rápida e segura.",
+  generator: "POLEX Broker",
 }
 
 export const viewport: Viewport = {
@@ -27,9 +27,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className="bg-[#0B0F14]" style={{ height: "100%" }} data-scroll-behavior="smooth">
+    <html lang="pt-BR" className="bg-background" style={{ height: "100%" }} data-scroll-behavior="smooth">
       <body
-        className={`${inter.className} antialiased bg-[#0B0F14]`}
+        className={`${inter.className} bg-background antialiased`}
         style={{
           minHeight: "100%",
           paddingTop: "env(safe-area-inset-top)",
