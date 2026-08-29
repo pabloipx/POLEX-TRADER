@@ -760,6 +760,16 @@ body {
   to { transform: translateX(calc(-50% - .5rem)); }
 }
 
+@keyframes fidelity-market-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - .5rem)); }
+}
+
+@keyframes fidelity-market-bar {
+  0%, 100% { opacity: .45; transform: scaleY(.55); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
 .fidelity-float { animation: fidelity-float 3.4s ease-in-out infinite; }
 .fidelity-phone { animation: fidelity-phone 6s ease-in-out infinite; transform-origin: center bottom; }
 .fidelity-profit-banner { animation: fidelity-profit 4.2s ease-in-out infinite; }
@@ -768,6 +778,18 @@ body {
 .fidelity-reveal { animation: fidelity-reveal 1.1s cubic-bezier(.2,.8,.2,1) both; }
 .fidelity-testimonials { animation: fidelity-testimonials 30s linear infinite; }
 .fidelity-testimonials:hover { animation-play-state: paused; }
+.fidelity-market {
+  background: linear-gradient(90deg, var(--landing-bg), var(--landing-panel), var(--landing-bg));
+}
+.fidelity-market-marquee { animation: fidelity-market-marquee 24s linear infinite; }
+.fidelity-market:hover .fidelity-market-marquee { animation-play-state: paused; }
+.fidelity-market-card { box-shadow: inset 0 1px rgb(255 255 255 / 4%), 0 20px 50px rgb(0 0 0 / 20%); }
+.fidelity-market-bar { transform-origin: bottom; animation: fidelity-market-bar 1.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fidelity-market-marquee { animation-play-state: paused; }
+  .fidelity-market-bar { animation: none; }
+}
 
 .fidelity-hero {
   background: radial-gradient(circle at 76% 62%, rgb(34 172 75 / 31%), transparent 38%), #020805;

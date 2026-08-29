@@ -8,8 +8,10 @@ export const metadata = {
 }
 
 const assets = [
-  ["EUR/USD", "1,08342", "+0,62%"], ["Bitcoin", "$64.973", "+1,47%"],
-  ["Ethereum", "$3.481", "+2,96%"], ["Tesla", "$248,42", "+0,84%"],
+  { name: "EUR/USD", symbol: "EURUSD", price: "1,08342", change: "+0,62%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/wise/default.svg", bars: [28, 38, 34, 49, 44, 58, 52, 69, 63, 78, 72, 88] },
+  { name: "Bitcoin", symbol: "BTC", price: "$64.973", change: "+1,47%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/bitcoin/default.svg", bars: [32, 47, 39, 56, 49, 68, 61, 76, 70, 90, 82, 96] },
+  { name: "Ethereum", symbol: "ETH", price: "$3.481", change: "+2,96%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/ethereum/default.svg", bars: [24, 41, 35, 53, 46, 63, 57, 74, 66, 85, 76, 94] },
+  { name: "Tesla", symbol: "TSLA", price: "$248,42", change: "+0,84%", icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/tesla/default.svg", bars: [26, 36, 31, 45, 41, 55, 49, 67, 59, 73, 68, 84] },
 ]
 
 const benefits = [
@@ -66,13 +68,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="ativos" className="border-y border-[var(--landing-line)] py-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px bg-[var(--landing-line)] px-5 md:grid-cols-4 lg:px-8">
-          {assets.map(([name, price, change]) => (
-            <article key={name} className="bg-[var(--landing-bg)] p-5">
-              <div className="flex items-center justify-between"><span className="text-sm font-semibold">{name}</span><span className="text-xs text-[var(--landing-primary)]">{change}</span></div>
-              <p className="mt-3 font-mono text-xl font-bold">{price}</p>
-              <div className="mt-4 flex h-8 items-end gap-1" aria-hidden="true">{[3,6,4,8,5,10,7,12,9,14].map((h,i)=><span key={i} className="w-full bg-[var(--landing-primary)]/50" style={{height:h}} />)}</div>
+      <section id="ativos" className="fidelity-market overflow-hidden border-y border-[var(--landing-line)] py-10">
+        <div className="fidelity-market-marquee flex w-max gap-4 px-4">
+          {[...assets, ...assets].map((asset, cardIndex) => (
+            <article key={`${asset.symbol}-${cardIndex}`} className="fidelity-market-card group relative w-[280px] shrink-0 overflow-hidden rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-5 sm:w-[320px]">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--landing-primary)] to-transparent opacity-70" />
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-11 items-center justify-center rounded-xl border border-[var(--landing-line-strong)] bg-[var(--landing-bg)]">
+                    <img src={asset.icon} alt={`Logo ${asset.name}`} width="26" height="26" className="size-7 object-contain" />
+                  </span>
+                  <span><b className="block text-base">{asset.name}</b><small className="font-mono text-[11px] tracking-wider text-[var(--landing-muted)]">{asset.symbol}</small></span>
+                </div>
+                <span className="rounded-full bg-[var(--landing-primary)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--landing-primary)]">{asset.change}</span>
+              </div>
+              <div className="mt-6 flex items-end justify-between gap-5">
+                <p className="font-mono text-3xl font-bold tracking-tight">{asset.price}</p>
+                <div className="flex h-12 w-28 items-end gap-1" aria-hidden="true">{asset.bars.map((height, index)=><span key={index} className="fidelity-market-bar flex-1 rounded-t-sm bg-[var(--landing-primary)]" style={{height:`${height}%`, animationDelay:`${index * 70}ms`}} />)}</div>
+              </div>
             </article>
           ))}
         </div>
@@ -85,7 +98,7 @@ export default function HomePage() {
           <p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Escolha o mercado que combina com sua estratégia e acompanhe tudo em uma única interface.</p>
         </div>
         <div className="fidelity-asset-track mt-12 flex gap-3">
-          {assets.map(([name, price, change]) => <div key={name} className="w-[78vw] max-w-sm shrink-0 rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><div className="flex justify-between"><b>{name}</b><span className="text-[var(--landing-primary)]">{change}</span></div><p className="mt-8 font-mono text-2xl">{price}</p></div>)}
+          {assets.map((asset) => <div key={asset.name} className="w-[78vw] max-w-sm shrink-0 rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-lg bg-[var(--landing-bg)]"><img src={asset.icon} alt="" width="24" height="24" className="size-6 object-contain" /></span><b>{asset.name}</b></div><span className="text-[var(--landing-primary)]">{asset.change}</span></div><p className="mt-8 font-mono text-2xl">{asset.price}</p></div>)}
         </div>
       </section>
 
