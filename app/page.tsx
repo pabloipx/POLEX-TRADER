@@ -32,12 +32,12 @@ const specials = [
 
 export default function HomePage() {
   return (
-    <main className="bullex-page min-h-screen overflow-hidden bg-[var(--landing-bg)] text-[var(--landing-text)]">
+    <main className="bullex-page min-h-screen overflow-x-clip bg-[var(--landing-bg)] text-[var(--landing-text)]">
       <div className="bg-[var(--landing-primary)] px-4 py-2 text-center text-[11px] font-semibold text-[var(--landing-primary-foreground)]">
         Negociar envolve riscos. Opere com responsabilidade e utilize apenas valores que pode administrar.
       </div>
 
-      <header className="relative z-40 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 lg:px-8">
+      <header className="sticky top-0 z-40 mx-auto flex max-w-7xl items-center justify-between bg-[var(--landing-bg)]/88 px-5 py-5 backdrop-blur-xl lg:px-8">
         <Link href="#inicio" aria-label="FIDELITY BROKER — início">
           <Image src="/images/fidelity-logo.png" alt="FIDELITY BROKER" width={230} height={64} className="h-12 w-auto object-contain brightness-0 invert" priority />
         </Link>
@@ -80,25 +80,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
-        <div className="max-w-2xl">
+      <section className="fidelity-scroll-section mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <div className="fidelity-scroll-copy max-w-2xl">
           <span className="rounded-full border border-[var(--landing-primary)]/30 px-3 py-1 text-xs text-[var(--landing-primary)]">MAIS POSSIBILIDADES</span>
           <h2 className="mt-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl">Mais de 200 ativos em uma plataforma descomplicada</h2>
           <p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Escolha o mercado que combina com sua estratégia e acompanhe tudo em uma única interface.</p>
         </div>
-        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {assets.map(([name, price, change]) => <div key={name} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><div className="flex justify-between"><b>{name}</b><span className="text-[var(--landing-primary)]">{change}</span></div><p className="mt-8 font-mono text-2xl">{price}</p></div>)}
+        <div className="fidelity-asset-track mt-12 flex gap-3">
+          {assets.map(([name, price, change]) => <div key={name} className="w-[78vw] max-w-sm shrink-0 rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5"><div className="flex justify-between"><b>{name}</b><span className="text-[var(--landing-primary)]">{change}</span></div><p className="mt-8 font-mono text-2xl">{price}</p></div>)}
         </div>
       </section>
 
-      <section className="px-5 py-20 text-center lg:px-8">
+      <section className="fidelity-view-reveal px-5 py-20 text-center lg:px-8">
         <p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p>
         <h2 className="mx-auto mt-3 max-w-xl text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2>
         <p className="mx-auto mt-5 max-w-2xl text-[var(--landing-muted)]">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p>
         <Link href="/auth/sign-up" className="mt-7 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Começar agora</Link>
       </section>
 
-      <section id="vantagens" className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+      <section id="vantagens" className="fidelity-view-reveal mx-auto max-w-7xl px-5 py-24 lg:px-8">
         <h2 className="max-w-2xl text-balance text-4xl font-bold tracking-tight sm:text-5xl">Por que a FIDELITY é uma plataforma para grandes decisões?</h2>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map(([Icon,title,desc]) => { const FeatureIcon=Icon as typeof Zap; return <article key={title as string} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-6"><FeatureIcon className="size-6 text-[var(--landing-primary)]"/><h3 className="mt-8 text-lg font-bold">{title as string}</h3><p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></article> })}
