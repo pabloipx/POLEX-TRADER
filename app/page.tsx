@@ -52,10 +52,7 @@ export default function HomePage() {
 
       <section id="inicio" className="fidelity-hero relative min-h-[760px] overflow-hidden border-t border-[var(--landing-line)] px-5 py-16 lg:min-h-[860px] lg:px-8">
         <div className="bullex-hero-glow absolute inset-0" />
-        <div className="relative z-10 mx-auto flex max-w-7xl justify-center">
-          <Link href="/auth/sign-up" className="fidelity-float inline-flex min-h-16 w-full max-w-sm items-center justify-center rounded-xl border-2 border-[var(--landing-text)] bg-[var(--landing-primary)] px-8 text-center text-lg font-bold uppercase text-[var(--landing-primary-foreground)] shadow-[0_0_48px_rgb(66_216_121/0.24)] sm:max-w-md">Abra sua conta gratuita</Link>
-        </div>
-        <div className="relative z-10 mx-auto mt-24 grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="fidelity-phone-stage relative min-h-[410px] lg:min-h-[520px]">
             <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
             <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidelity Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} className="fidelity-phone relative mx-auto max-h-[570px] w-auto object-contain drop-shadow-2xl" priority />
