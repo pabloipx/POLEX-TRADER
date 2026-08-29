@@ -706,8 +706,8 @@ export default function AdminDashboardClient() {
           <Menu className="w-6 h-6 text-white" />
         </button>
         <Image
-          src="/images/uryn-fox-logo.png"
-          alt="URYNBROKER"
+          src="/images/polex-broker-logo.png"
+          alt="POLEX BROKER"
           width={130}
           height={35}
           priority
@@ -724,8 +724,8 @@ export default function AdminDashboardClient() {
           <div className="w-64 h-full bg-[#0B0F14] border-r border-[#1E2633] p-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-8">
               <Image
-          src="/images/uryn-fox-logo.png"
-          alt="URYNBROKER"
+          src="/images/polex-broker-logo.png"
+          alt="POLEX BROKER"
           width={130}
           height={35}
           priority
@@ -766,8 +766,8 @@ export default function AdminDashboardClient() {
         <div className="hidden lg:flex lg:flex-col w-64 min-h-screen border-r border-[#1E2633] p-4">
           <div className="mb-8">
             <Image
-              src="/images/uryn-fox-logo.png"
-              alt="URYNBROKER"
+              src="/images/polex-broker-logo.png"
+              alt="POLEX BROKER"
               width={180}
               height={48}
               priority
@@ -1702,14 +1702,14 @@ function StatCard({
   badge?: string
 }) {
   const accents: Record<string, string> = {
-    blue: "#fb923c",
+    blue: "#4ade80",
     green: "#22c55e",
     red: "#ef4444",
-    purple: "#fdba74",
+    purple: "#86efac",
     cyan: "#22d3ee",
     yellow: "#eab308",
   }
-  const accent = accents[color] || "#fb923c"
+  const accent = accents[color] || "#4ade80"
 
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0c121c] p-5 transition-all duration-300 hover:border-white/[0.12] hover:-translate-y-0.5">

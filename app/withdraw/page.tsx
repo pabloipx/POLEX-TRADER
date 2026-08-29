@@ -245,10 +245,10 @@ export default function WithdrawPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-[#0B0F14]">
         <div className="animate-in fade-in zoom-in duration-300 flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full bg-[#f97316] flex items-center justify-center mb-4 shadow-lg shadow-[#f97316]/30">
+          <div className="w-16 h-16 rounded-full bg-[#22c55e] flex items-center justify-center mb-4 shadow-lg shadow-[#22c55e]/30">
             <Check className="w-8 h-8 text-white" strokeWidth={3} />
           </div>
-          <p className="text-xl font-semibold text-[#fb923c] text-center">Saque solicitado com sucesso!</p>
+          <p className="text-xl font-semibold text-[#4ade80] text-center">Saque solicitado com sucesso!</p>
           <p className="text-sm text-[#6B7280] mt-2">Redirecionando...</p>
         </div>
       </div>
@@ -258,7 +258,7 @@ export default function WithdrawPage() {
   if (checkingKyc) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0B0F14]">
-        <div className="w-8 h-8 border-2 border-[#f97316]/30 border-t-[#f97316] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#22c55e]/30 border-t-[#22c55e] rounded-full animate-spin" />
       </div>
     )
   }
@@ -274,11 +274,11 @@ export default function WithdrawPage() {
 
       <div className="px-4 py-6 space-y-6 max-w-xl mx-auto">
         {isKycApproved ? (
-          <div className="p-4 rounded-xl bg-[#f97316]/10 border border-[#f97316]/30">
+          <div className="p-4 rounded-xl bg-[#22c55e]/10 border border-[#22c55e]/30">
             <div className="flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-[#f97316] flex-shrink-0 mt-0.5" />
+              <CheckCircle className="w-5 h-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-[#f97316]">Conta Verificada</p>
+                <p className="text-sm font-medium text-[#22c55e]">Conta Verificada</p>
                 <p className="text-xs text-[#9CA3AF] mt-1">
                   Sua conta está verificada. Você pode realizar saques normalmente.
                 </p>
@@ -321,8 +321,8 @@ export default function WithdrawPage() {
               onClick={() => setWithdrawMethod("pix")}
               className={`p-4 rounded-xl border-2 transition-all ${
                 withdrawMethod === "pix"
-                  ? "border-[#f97316] bg-[#f97316]/10"
-                  : "border-[#1F2933] bg-[#121826] hover:border-[#f97316]/50"
+                  ? "border-[#22c55e] bg-[#22c55e]/10"
+                  : "border-[#1F2933] bg-[#121826] hover:border-[#22c55e]/50"
               }`}
             >
               <div className="flex flex-col items-center gap-2">
@@ -332,7 +332,7 @@ export default function WithdrawPage() {
                   <Image src="/pix-logo.png" alt="PIX" width={32} height={32} className="w-7 h-7 object-contain" />
                 </div>
                 <div className="text-center">
-                  <p className={`font-semibold ${withdrawMethod === "pix" ? "text-[#f97316]" : "text-white"}`}>PIX</p>
+                  <p className={`font-semibold ${withdrawMethod === "pix" ? "text-[#22c55e]" : "text-white"}`}>PIX</p>
                   <p className="text-[#9CA3AF] text-xs">Instantâneo</p>
                 </div>
               </div>
@@ -389,8 +389,8 @@ export default function WithdrawPage() {
 
         <div className="p-5 rounded-2xl bg-gradient-to-br from-[#1A2332] to-[#121826] border border-[#1F2933]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-[#f97316]/20 flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-[#f97316]" />
+            <div className="w-10 h-10 rounded-full bg-[#22c55e]/20 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-[#22c55e]" />
             </div>
   <p className="text-sm text-[#9CA3AF]">Saldo disponível para saque</p>
   </div>
@@ -408,16 +408,16 @@ export default function WithdrawPage() {
   </div>
   {lockedBalance > 0 && (
   <div className="flex items-center justify-between text-xs">
-  <span className="text-[#fb923c]">Bônus travado (rollover)</span>
-  <span className="text-[#fb923c] font-medium">
+  <span className="text-[#4ade80]">Bônus travado (rollover)</span>
+  <span className="text-[#4ade80] font-medium">
   R$ {lockedBalance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
   </span>
   </div>
   )}
   {depositLocked > 0 && (
   <div className="flex items-center justify-between text-xs">
-  <span className="text-[#fb923c]">Depósito travado (rollover)</span>
-  <span className="text-[#fb923c] font-medium">
+  <span className="text-[#4ade80]">Depósito travado (rollover)</span>
+  <span className="text-[#4ade80] font-medium">
   R$ {depositLocked.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
   </span>
   </div>
@@ -428,11 +428,11 @@ export default function WithdrawPage() {
 
   {/* Progresso do rollover, para o usuario saber exatamente quanto falta liberar o bonus */}
   {rolloverInfo && (
-  <div className="p-4 rounded-2xl bg-[#f97316]/5 border border-[#f97316]/30 flex flex-col gap-3">
+  <div className="p-4 rounded-2xl bg-[#22c55e]/5 border border-[#22c55e]/30 flex flex-col gap-3">
   <div className="flex items-start gap-3">
-  <AlertTriangle className="w-5 h-5 text-[#fb923c] shrink-0 mt-0.5" />
+  <AlertTriangle className="w-5 h-5 text-[#4ade80] shrink-0 mt-0.5" />
   <div className="flex flex-col gap-1">
-  <p className="text-sm font-medium text-[#fb923c]">Rollover em andamento</p>
+  <p className="text-sm font-medium text-[#4ade80]">Rollover em andamento</p>
   <p className="text-xs text-[#9CA3AF] leading-relaxed">
   {rolloverInfo.cancelOnWithdrawal
   ? `Faltam R$ ${rolloverInfo.remaining.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} de volume negociado. Sacar agora acima do saldo disponível cancela o bônus e remove o valor travado.`
@@ -443,7 +443,7 @@ export default function WithdrawPage() {
   <div className="flex flex-col gap-1.5">
   <div className="h-2 rounded-full bg-[#1F2933] overflow-hidden">
   <div
-  className="h-full rounded-full bg-[#f97316] transition-all"
+  className="h-full rounded-full bg-[#22c55e] transition-all"
   style={{
   width: `${rolloverInfo.required > 0 ? Math.min(100, (rolloverInfo.progress / rolloverInfo.required) * 100) : 100}%`,
   }}
@@ -460,11 +460,11 @@ export default function WithdrawPage() {
           {/* Progresso do rollover do valor depositado. Diferente do bonus, este valor nunca e
               perdido: fica apenas indisponivel para saque ate o volume ser cumprido. */}
           {depositRollover && (
-            <div className="p-4 rounded-2xl bg-[#f97316]/5 border border-[#f97316]/30 flex flex-col gap-3">
+            <div className="p-4 rounded-2xl bg-[#22c55e]/5 border border-[#22c55e]/30 flex flex-col gap-3">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-[#fb923c] shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-[#4ade80] shrink-0 mt-0.5" />
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-[#fb923c]">
+                  <p className="text-sm font-medium text-[#4ade80]">
                     {depositRollover.depositsCount > 1
                       ? "Depósitos com rollover pendente"
                       : "Depósito com rollover pendente"}
@@ -477,7 +477,7 @@ export default function WithdrawPage() {
               <div className="flex flex-col gap-1.5">
                 <div className="h-2 rounded-full bg-[#1F2933] overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#f97316] transition-all"
+                    className="h-full rounded-full bg-[#22c55e] transition-all"
                     style={{ width: `${depositRollover.progressPercent}%` }}
                   />
                 </div>
@@ -499,11 +499,11 @@ export default function WithdrawPage() {
               onChange={handleAmountChange}
               placeholder="0,00"
               disabled={needsKyc}
-              className="w-full py-4 pl-12 pr-4 rounded-xl text-white text-lg font-semibold bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none transition-colors disabled:opacity-50"
+              className="w-full py-4 pl-12 pr-4 rounded-xl text-white text-lg font-semibold bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none transition-colors disabled:opacity-50"
             />
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#f97316]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
             <p className="text-xs text-[#9CA3AF]">Valor mínimo: R$ 100,00</p>
           </div>
         </div>
@@ -514,7 +514,7 @@ export default function WithdrawPage() {
               key={value}
               onClick={() => handleQuickAmount(value)}
               disabled={value > balance || needsKyc}
-              className="py-3 px-2 rounded-xl text-sm font-medium text-white bg-[#121826] border border-[#1F2933] hover:border-[#f97316] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="py-3 px-2 rounded-xl text-sm font-medium text-white bg-[#121826] border border-[#1F2933] hover:border-[#22c55e] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               R$ {value.toLocaleString("pt-BR")}
             </button>
@@ -538,8 +538,8 @@ export default function WithdrawPage() {
                     disabled={needsKyc}
                     className={`py-2.5 px-2 rounded-xl text-xs font-medium transition-colors disabled:opacity-50 ${
                       pixKeyType === type.value
-                        ? "bg-[#f97316] text-white"
-                        : "bg-[#121826] text-[#9CA3AF] border border-[#1F2933] hover:border-[#f97316]"
+                        ? "bg-[#22c55e] text-white"
+                        : "bg-[#121826] text-[#9CA3AF] border border-[#1F2933] hover:border-[#22c55e]"
                     }`}
                   >
                     {type.label}
@@ -564,7 +564,7 @@ export default function WithdrawPage() {
                         ? "(00) 00000-0000"
                         : "Chave aleatória"
                 }
-                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none transition-colors disabled:opacity-50"
+                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none transition-colors disabled:opacity-50"
               />
             </div>
           </>
@@ -628,7 +628,7 @@ export default function WithdrawPage() {
                 onChange={(e) => setCryptoWallet(e.target.value)}
                 disabled={needsKyc}
                 placeholder="0x..."
-                className="w-full py-4 px-4 rounded-xl text-white font-mono bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none transition-colors disabled:opacity-50"
+                className="w-full py-4 px-4 rounded-xl text-white font-mono bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none transition-colors disabled:opacity-50"
               />
               <p className="text-xs text-[#9CA3AF] mt-2">
                 Informe seu endereço de carteira Ethereum para receber {cryptoType === "usdt" ? "USDT" : "BTC"}.
@@ -696,7 +696,7 @@ export default function WithdrawPage() {
               ? cryptoType === "usdt" 
                 ? "bg-[#26A17B] hover:bg-[#1f8a68]" 
                 : "bg-[#F7931A] hover:bg-[#d97f15]"
-              : "bg-[#f97316] hover:bg-[#fb923c]"
+              : "bg-[#22c55e] hover:bg-[#4ade80]"
           }`}
         >
           {loading ? (
@@ -716,14 +716,14 @@ export default function WithdrawPage() {
         <div className="grid grid-cols-2 gap-3">
           <div className="p-4 rounded-xl bg-[#121826] border border-[#1F2933]">
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4 text-[#f97316]" />
+              <Clock className="w-4 h-4 text-[#22c55e]" />
               <p className="text-xs font-medium text-white">Prazo</p>
             </div>
             <p className="text-xs text-[#9CA3AF]">{`Até ${withdrawalHours} horas úteis`}</p>
           </div>
           <div className="p-4 rounded-xl bg-[#121826] border border-[#1F2933]">
             <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-4 h-4 text-[#f97316]" />
+              <Shield className="w-4 h-4 text-[#22c55e]" />
               <p className="text-xs font-medium text-white">Seguro</p>
             </div>
             <p className="text-xs text-[#9CA3AF]">Transferência protegida</p>

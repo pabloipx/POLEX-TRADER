@@ -9,10 +9,9 @@ function getSupabaseAdmin() {
   return createClient(url, key)
 }
 
-const supabaseAdmin = getSupabaseAdmin()
-
 export async function GET(request: NextRequest) {
-  
+  const supabaseAdmin = getSupabaseAdmin()
+
   try {
     if (!(await isAdminRequest())) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })

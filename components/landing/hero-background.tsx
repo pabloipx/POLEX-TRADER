@@ -11,18 +11,21 @@ export function HeroBackground() {
   const fastRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
 
-  // Particulas geradas uma unica vez (posicao/tamanho/tempo aleatorios estaveis).
+  // Valores determinísticos mantêm o mesmo desenho no servidor e no cliente.
   const particles = useMemo(
     () =>
-      Array.from({ length: 26 }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        top: 40 + Math.random() * 55,
-        size: 2 + Math.random() * 4,
-        duration: 7 + Math.random() * 8,
-        delay: -Math.random() * 10,
-        opacity: 0.35 + Math.random() * 0.5,
-      })),
+      Array.from({ length: 26 }, (_, i) => {
+        const seeded = (salt: number) => ((i * 47 + salt * 31) % 101) / 100
+        return {
+          id: i,
+          left: seeded(1) * 100,
+          top: 40 + seeded(2) * 55,
+          size: 2 + seeded(3) * 4,
+          duration: 7 + seeded(4) * 8,
+          delay: -seeded(5) * 10,
+          opacity: 0.35 + seeded(6) * 0.5,
+        }
+      }),
     [],
   )
 
@@ -69,23 +72,23 @@ export function HeroBackground() {
 
       {/* Camada lenta — orbe grande central */}
       <div ref={slowRef} className="absolute inset-0">
-        <div className="animate-hero-float-a absolute left-1/2 top-1/4 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[#f97316]/25 blur-[140px]" />
+        <div className="animate-hero-float-a absolute left-1/2 top-1/4 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[#22c55e]/25 blur-[140px]" />
       </div>
 
       {/* Camada média — dois orbes laterais */}
       <div ref={midRef} className="absolute inset-0">
-        <div className="animate-hero-float-b absolute left-[8%] top-[30%] h-72 w-72 rounded-full bg-[#fb923c]/20 blur-[110px]" />
-        <div className="animate-hero-float-c absolute right-[6%] top-[45%] h-80 w-80 rounded-full bg-[#f97316]/18 blur-[120px]" />
+        <div className="animate-hero-float-b absolute left-[8%] top-[30%] h-72 w-72 rounded-full bg-[#4ade80]/20 blur-[110px]" />
+        <div className="animate-hero-float-c absolute right-[6%] top-[45%] h-80 w-80 rounded-full bg-[#22c55e]/18 blur-[120px]" />
       </div>
 
       {/* Camada rápida — brilho quente inferior + partículas */}
       <div ref={fastRef} className="absolute inset-0">
-        <div className="animate-hero-pulse absolute bottom-[12%] left-1/2 h-56 w-[38rem] max-w-[92%] -translate-x-1/2 rounded-full bg-[#fdba74]/15 blur-[100px]" />
+        <div className="animate-hero-pulse absolute bottom-[12%] left-1/2 h-56 w-[38rem] max-w-[92%] -translate-x-1/2 rounded-full bg-[#86efac]/15 blur-[100px]" />
 
         {particles.map((p) => (
           <span
             key={p.id}
-            className="animate-hero-particle absolute rounded-full bg-[#fdba74] shadow-[0_0_8px_2px_rgba(251,146,60,0.6)]"
+            className="animate-hero-particle absolute rounded-full bg-[#86efac] shadow-[0_0_8px_2px_rgba(74,222,128,0.6)]"
             style={
               {
                 left: `${p.left}%`,

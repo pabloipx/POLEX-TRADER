@@ -1179,7 +1179,7 @@ export default function TradePage() {
             {/* Wallet Button */}
             <button
               onClick={() => (window.location.href = "/deposit")}
-              className="w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center bg-[#f97316] hover:bg-[#fb923c] transition-all duration-200 shadow-lg shadow-[#f97316]/20 active:scale-95 shrink-0"
+              className="w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center bg-[#22c55e] hover:bg-[#4ade80] transition-all duration-200 shadow-lg shadow-[#22c55e]/20 active:scale-95 shrink-0"
             >
               <Wallet className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
             </button>

@@ -463,10 +463,10 @@ export default function DepositPage() {
           {/* Animated spinner */}
           <div className="relative w-24 h-24 mx-auto mb-8">
             <div className="absolute inset-0 rounded-full border-4 border-[#1F2933]" />
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#f97316] animate-spin" />
-            <div className="absolute inset-3 rounded-full border-4 border-transparent border-t-[#f97316]/50 animate-spin" style={{ animationDirection: "reverse", animationDuration: "1.5s" }} />
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#22c55e] animate-spin" />
+            <div className="absolute inset-3 rounded-full border-4 border-transparent border-t-[#22c55e]/50 animate-spin" style={{ animationDirection: "reverse", animationDuration: "1.5s" }} />
             <div className="absolute inset-0 flex items-center justify-center">
-              <CreditCard className="w-8 h-8 text-[#f97316]" />
+              <CreditCard className="w-8 h-8 text-[#22c55e]" />
             </div>
           </div>
 
@@ -487,11 +487,11 @@ export default function DepositPage() {
                 }`}
               >
                 {processingStep > i ? (
-                  <div className="w-5 h-5 rounded-full bg-[#f97316]/20 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-[#f97316]" />
+                  <div className="w-5 h-5 rounded-full bg-[#22c55e]/20 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-[#22c55e]" />
                   </div>
                 ) : processingStep === i ? (
-                  <Loader2 className="w-5 h-5 text-[#f97316] animate-spin flex-shrink-0" />
+                  <Loader2 className="w-5 h-5 text-[#22c55e] animate-spin flex-shrink-0" />
                 ) : (
                   <div className="w-5 h-5 rounded-full border border-[#1F2933] flex-shrink-0" />
                 )}
@@ -530,13 +530,13 @@ export default function DepositPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleNewDeposit}
-              className="w-full py-4 rounded-xl font-semibold text-white bg-[#f97316] hover:bg-[#c2410c] transition-colors"
+              className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] transition-colors"
             >
               Tentar novamente
             </button>
             <button
               onClick={() => router.push("/trade")}
-              className="w-full py-4 rounded-xl font-semibold text-white bg-[#1A2332] border border-[#1F2933] hover:border-[#f97316] transition-colors"
+              className="w-full py-4 rounded-xl font-semibold text-white bg-[#1A2332] border border-[#1F2933] hover:border-[#22c55e] transition-colors"
             >
               Voltar para o Trade
             </button>
@@ -605,7 +605,7 @@ export default function DepositPage() {
               </div>
               <button
                 onClick={handleCopyPaste}
-                className="w-full py-4 rounded-xl font-semibold text-white bg-[#f97316] hover:bg-[#fb923c] transition-colors flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#4ade80] transition-colors flex items-center justify-center gap-2"
               >
                 {copied ? (
                   <>
@@ -625,7 +625,7 @@ export default function DepositPage() {
           <button
             onClick={handleCheckStatus}
             disabled={checkingStatus}
-            className="w-full py-4 rounded-xl font-semibold text-white bg-[#1A2332] border border-[#1F2933] hover:border-[#f97316] transition-colors flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-xl font-semibold text-white bg-[#1A2332] border border-[#1F2933] hover:border-[#22c55e] transition-colors flex items-center justify-center gap-2"
           >
             {checkingStatus ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
             <span>Ja fiz o pagamento</span>
@@ -633,14 +633,14 @@ export default function DepositPage() {
 
           <div className="bg-[#121826] border border-[#1F2933] rounded-xl p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#f97316] mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-[#22c55e] mt-2 flex-shrink-0" />
               <div>
                 <p className="text-white text-sm font-medium">Pagamento instantaneo</p>
                 <p className="text-[#9CA3AF] text-xs">Seu saldo sera creditado automaticamente apos a confirmacao</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#f97316] mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-[#22c55e] mt-2 flex-shrink-0" />
               <div>
                 <p className="text-white text-sm font-medium">Seguro e protegido</p>
                 <p className="text-[#9CA3AF] text-xs">Todas as transacoes sao criptografadas</p>
@@ -690,7 +690,7 @@ export default function DepositPage() {
             onClick={() => { setMethod("pix"); setError(null) }}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
               method === "pix"
-                ? "bg-[#f97316] text-white shadow-lg shadow-orange-500/20"
+                ? "bg-[#22c55e] text-white shadow-lg shadow-orange-500/20"
                 : "text-white/50 hover:text-white/70"
             }`}
           >
@@ -708,7 +708,7 @@ export default function DepositPage() {
               onClick={() => { setMethod("card"); setError(null); setCardAmountSelected(false) }}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
                 method === "card"
-                  ? "bg-[#f97316] text-white shadow-lg shadow-orange-500/20"
+                  ? "bg-[#22c55e] text-white shadow-lg shadow-orange-500/20"
                   : "text-white/50 hover:text-white/70"
               }`}
             >
@@ -721,7 +721,7 @@ export default function DepositPage() {
               onClick={() => { setMethod("crypto"); setError(null) }}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
                 method === "crypto"
-                  ? "bg-[#f97316] text-white shadow-lg shadow-orange-500/20"
+                  ? "bg-[#22c55e] text-white shadow-lg shadow-orange-500/20"
                   : "text-white/50 hover:text-white/70"
               }`}
             >
@@ -762,7 +762,7 @@ export default function DepositPage() {
                 value={amount}
                 onChange={handleAmountChange}
                 placeholder="50,00"
-                className="w-full py-2 pl-8 pr-4 text-white text-lg bg-transparent border-0 border-b border-[#2a2a2e] focus:border-[#f97316] outline-none"
+                className="w-full py-2 pl-8 pr-4 text-white text-lg bg-transparent border-0 border-b border-[#2a2a2e] focus:border-[#22c55e] outline-none"
                 inputMode="numeric"
               />
             </div>
@@ -776,7 +776,7 @@ export default function DepositPage() {
               <button
                 key={value}
                 onClick={() => handleQuickAmount(value)}
-                className="py-3 px-2 rounded-lg text-sm font-medium text-white bg-[#151517] border border-[#26262a] hover:border-[#f97316] transition-colors"
+                className="py-3 px-2 rounded-lg text-sm font-medium text-white bg-[#151517] border border-[#26262a] hover:border-[#22c55e] transition-colors"
               >
                 R$ {value.toLocaleString("pt-BR")}
               </button>
@@ -807,7 +807,7 @@ export default function DepositPage() {
                   setPromoMsg(null)
                 }}
                 placeholder="Insira seu código promocional"
-                className="flex-1 border-b border-[#2a2a2e] bg-transparent py-2 text-white outline-none placeholder:text-[#4b5563] focus:border-[#f97316]"
+                className="flex-1 border-b border-[#2a2a2e] bg-transparent py-2 text-white outline-none placeholder:text-[#4b5563] focus:border-[#22c55e]"
               />
               <button
                 type="button"
@@ -852,7 +852,7 @@ export default function DepositPage() {
                 value={cardName}
                 onChange={(e) => setCardName(e.target.value)}
                 placeholder="Nome como esta no cartao"
-                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none"
+                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none"
                 autoComplete="cc-name"
               />
             </div>
@@ -865,7 +865,7 @@ export default function DepositPage() {
                 onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                 placeholder="0000 0000 0000 0000"
                 maxLength={19}
-                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none font-mono tracking-wider"
+                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none font-mono tracking-wider"
                 inputMode="numeric"
                 autoComplete="cc-number"
               />
@@ -880,7 +880,7 @@ export default function DepositPage() {
                   onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
                   placeholder="MM/AA"
                   maxLength={5}
-                  className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none font-mono"
+                  className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none font-mono"
                   inputMode="numeric"
                   autoComplete="cc-exp"
                 />
@@ -893,7 +893,7 @@ export default function DepositPage() {
                   onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
                   placeholder="000"
                   maxLength={4}
-                  className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none font-mono"
+                  className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none font-mono"
                   inputMode="numeric"
                   autoComplete="cc-csc"
                 />
@@ -908,7 +908,7 @@ export default function DepositPage() {
                 onChange={(e) => setCardCpf(formatCpf(e.target.value))}
                 placeholder="000.000.000-00"
                 maxLength={14}
-                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#f97316] outline-none font-mono"
+                className="w-full py-4 px-4 rounded-xl text-white bg-[#121826] border border-[#1F2933] focus:border-[#22c55e] outline-none font-mono"
                 inputMode="numeric"
               />
             </div>
@@ -930,7 +930,7 @@ export default function DepositPage() {
                 </div>
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="w-full py-3 rounded-xl font-semibold text-white bg-[#f97316] hover:bg-[#c2410c] transition-colors"
+                  className="w-full py-3 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] transition-colors"
                 >
                   Voltar ao Dashboard
                 </button>
@@ -1136,7 +1136,7 @@ export default function DepositPage() {
                       value={cryptoTxHash}
                       onChange={(e) => setCryptoTxHash(e.target.value)}
                       placeholder="0x..."
-                      className="w-full bg-[#0B0F14] border border-[#1F2933] rounded-lg py-3 px-4 text-white text-sm font-mono placeholder:text-[#4B5563] focus:outline-none focus:border-[#f97316]"
+                      className="w-full bg-[#0B0F14] border border-[#1F2933] rounded-lg py-3 px-4 text-white text-sm font-mono placeholder:text-[#4B5563] focus:outline-none focus:border-[#22c55e]"
                     />
                     <p className="text-[#6B7280] text-xs">Copie o hash da transacao da sua carteira ou exchange</p>
                   </div>
@@ -1179,16 +1179,16 @@ export default function DepositPage() {
 
         {/* Terms - only for PIX and Card */}
         {method !== "crypto" && (
-          <div className="p-4 rounded-xl border-2 border-[#f97316] bg-[#121826]">
+          <div className="p-4 rounded-xl border-2 border-[#22c55e] bg-[#121826]">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="mt-0.5 w-5 h-5 rounded border-[#f97316] bg-[#0B0F14] text-[#f97316] focus:ring-[#f97316] focus:ring-offset-0"
+                className="mt-0.5 w-5 h-5 rounded border-[#22c55e] bg-[#0B0F14] text-[#22c55e] focus:ring-[#22c55e] focus:ring-offset-0"
               />
               <div>
-                <p className="text-[#f97316] text-sm font-medium">Termos e condicoes</p>
+                <p className="text-[#22c55e] text-sm font-medium">Termos e condicoes</p>
                 <p className="text-[#9CA3AF] text-sm mt-1">Ao continuar, concordo com os Termos e condicoes.</p>
               </div>
             </label>
@@ -1200,7 +1200,7 @@ export default function DepositPage() {
           <button
             onClick={method === "pix" ? handlePixDeposit : handleCardDeposit}
             disabled={!acceptTerms || parseAmount() < 50 || isLoading}
-            className="w-full py-4 rounded-xl font-semibold text-white bg-[#f97316] hover:bg-[#c2410c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -1219,14 +1219,14 @@ export default function DepositPage() {
         {method === "card" && (
           <div className="bg-[#121826] border border-[#1F2933] rounded-xl p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#f97316] mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-[#22c55e] mt-2 flex-shrink-0" />
               <div>
                 <p className="text-white text-sm font-medium">Processamento seguro</p>
                 <p className="text-[#9CA3AF] text-xs">Seus dados sao protegidos com criptografia de ponta a ponta</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#f97316] mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-[#22c55e] mt-2 flex-shrink-0" />
               <div>
                 <p className="text-white text-sm font-medium">Aprovacao manual</p>
                 <p className="text-[#9CA3AF] text-xs">Depositos via cartao sao verificados e aprovados pela equipe</p>

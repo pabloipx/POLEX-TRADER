@@ -60,8 +60,8 @@ export default function ForgotPasswordPage() {
       <header className="flex items-center justify-between border-b border-gray-100 px-5 py-3 sm:px-8">
         <Link href="/" className="flex items-center">
           <Image
-            src="/images/uryn-fox-logo.png"
-            alt="URYNBROKER"
+            src="/images/polex-broker-logo.png"
+            alt="POLEX BROKER"
             width={180}
             height={44}
             className="h-8 w-auto sm:h-9"

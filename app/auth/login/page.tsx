@@ -92,30 +92,30 @@ export default function LoginPage() {
 
   if (isCheckingSession) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-white">
-        <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex min-h-screen w-full items-center justify-center bg-[#07090d]">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
       </div>
     )
   }
 
   const inputClass =
-    "w-full h-12 px-4 rounded-md bg-white text-gray-800 text-[15px] border border-gray-300 outline-none transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+    "h-12 w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 text-[15px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-green-500 focus:ring-1 focus:ring-green-500 disabled:opacity-50"
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col">
+    <div className="flex min-h-screen w-full flex-col bg-[#07090d] text-white">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-gray-50/60">
+      <header className="flex items-center justify-between border-b border-white/10 bg-[#0b0f14]/90 px-6 py-3 backdrop-blur-xl">
         <Link href="/" className="flex items-center">
-          <Image src="/images/uryn-fox-logo.png" alt="URYNBROKER" width={150} height={38} className="h-9 w-auto" unoptimized />
+          <Image src="/images/polex-broker-logo.png" alt="POLEX BROKER" width={150} height={38} className="h-9 w-auto" unoptimized />
         </Link>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-600 text-sm font-medium">
+          <div className="flex items-center gap-2 text-sm font-medium text-white/60">
             <Flag code="BR" className="rounded-full w-5 h-5 object-cover" />
             Pt
           </div>
           <Link
             href="/auth/sign-up"
-            className="rounded-md border border-blue-500 text-blue-600 hover:bg-blue-50 px-6 h-10 flex items-center font-medium text-sm transition-colors"
+            className="flex h-10 items-center rounded-lg border border-green-500/50 px-6 text-sm font-medium text-green-400 transition-colors hover:bg-green-500/10"
           >
             Registrar-se
           </Link>
@@ -124,9 +124,10 @@ export default function LoginPage() {
 
       {/* Form */}
       <main className="flex-1 flex flex-col items-center px-5 py-10">
-        <h1 className="text-3xl font-semibold text-gray-500 mb-8 text-center">Entrar</h1>
+        <h1 className="mb-2 text-center text-3xl font-bold text-white">Acesse sua conta</h1>
+        <p className="mb-8 text-center text-sm text-white/50">Entre para operar na POLEX BROKER</p>
 
-        <form onSubmit={handleLogin} className="w-full max-w-[420px] flex flex-col gap-4">
+        <form onSubmit={handleLogin} className="flex w-full max-w-[420px] flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-6 shadow-2xl">
           <input
             type="email"
             placeholder="E-mail"
@@ -149,7 +150,7 @@ export default function LoginPage() {
           />
 
           <div className="text-right -mt-1">
-            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+            <Link href="/auth/forgot-password" className="text-sm text-green-400 hover:text-green-300">
               Esqueceu sua senha?
             </Link>
           </div>
@@ -178,7 +179,7 @@ export default function LoginPage() {
 
           <p className="text-center text-gray-500 text-sm pt-2">
             Não tem uma conta?{" "}
-            <Link href="/auth/sign-up" className="font-semibold text-blue-600 hover:underline">
+            <Link href="/auth/sign-up" className="font-semibold text-green-400 hover:text-green-300">
               Registrar-se
             </Link>
           </p>

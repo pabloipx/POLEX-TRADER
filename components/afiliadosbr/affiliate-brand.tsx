@@ -5,7 +5,7 @@ export function AffiliateBrand({ className = "h-7" }: { className?: string }) {
     <span className="inline-flex items-center">
       <Image
         src="/images/urynbroker-logo.png"
-        alt="URYN BROKER"
+        alt="POLEX BROKER"
         width={1500}
         height={400}
         priority

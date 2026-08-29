@@ -134,10 +134,10 @@ function SignUpForm() {
   }
 
   const inputClass =
-    "w-full h-12 px-4 rounded-md bg-white text-gray-800 text-[15px] border border-gray-300 outline-none transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+    "h-12 w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 text-[15px] text-white outline-none transition-colors placeholder:text-white/35 focus:border-green-500 focus:ring-1 focus:ring-green-500"
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col">
+    <div className="flex min-h-screen w-full flex-col bg-[#07090d] text-white">
       {/* Modal de Termos */}
       {showTerms && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
@@ -151,7 +151,7 @@ function SignUpForm() {
             <div className="flex-1 overflow-y-auto p-4 text-gray-600 text-sm leading-relaxed space-y-3">
               <p className="text-xs text-gray-400">Última atualização: Janeiro de 2026</p>
               <p>
-                Ao acessar, cadastrar-se ou utilizar a plataforma URYN BROKER, o usuário declara que leu, compreendeu e
+                Ao acessar, cadastrar-se ou utilizar a plataforma POLEX BROKER, o usuário declara que leu, compreendeu e
                 concorda integralmente com os presentes Termos e Condições.
               </p>
               <h3 className="text-gray-800 font-semibold pt-1">1. Elegibilidade</h3>
@@ -159,7 +159,7 @@ function SignUpForm() {
               <h3 className="text-gray-800 font-semibold pt-1">2. Cadastro</h3>
               <p>O usuário compromete-se a fornecer informações verdadeiras e completas.</p>
               <h3 className="text-gray-800 font-semibold pt-1">3. Riscos</h3>
-              <p>Operações financeiras envolvem riscos e podem resultar em perdas. A URYN BROKER não garante lucros.</p>
+              <p>Operações financeiras envolvem riscos e podem resultar em perdas. A POLEX BROKER não garante lucros.</p>
             </div>
             <div className="p-4 border-t border-gray-200">
               <button
@@ -174,18 +174,18 @@ function SignUpForm() {
       )}
 
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-gray-50/60">
+      <header className="flex items-center justify-between border-b border-white/10 bg-[#0b0f14]/90 px-6 py-3 backdrop-blur-xl">
         <Link href="/" className="flex items-center">
-          <Image src="/images/uryn-fox-logo.png" alt="URYNBROKER" width={150} height={38} className="h-9 w-auto" unoptimized />
+          <Image src="/images/polex-broker-logo.png" alt="POLEX BROKER" width={150} height={38} className="h-9 w-auto" unoptimized />
         </Link>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-600 text-sm font-medium">
+          <div className="flex items-center gap-2 text-sm font-medium text-white/60">
             <Flag code="BR" className="rounded-full w-5 h-5 object-cover" />
             Pt
           </div>
           <Link
             href="/auth/login"
-            className="rounded-md border border-blue-500 text-blue-600 hover:bg-blue-50 px-6 h-10 flex items-center font-medium text-sm transition-colors"
+            className="flex h-10 items-center rounded-lg border border-green-500/50 px-6 text-sm font-medium text-green-400 transition-colors hover:bg-green-500/10"
           >
             Entrar
           </Link>
@@ -194,9 +194,10 @@ function SignUpForm() {
 
       {/* Form */}
       <main className="flex-1 flex flex-col items-center px-5 py-10">
-        <h1 className="text-3xl font-semibold text-gray-500 mb-8 text-center">Registrar-se</h1>
+        <h1 className="mb-2 text-center text-3xl font-bold text-white">Crie sua conta</h1>
+        <p className="mb-8 text-center text-sm text-white/50">Comece a operar na POLEX BROKER</p>
 
-        <form onSubmit={handleSignUp} className="w-full max-w-[420px] flex flex-col gap-4">
+        <form onSubmit={handleSignUp} className="flex w-full max-w-[420px] flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-6 shadow-2xl">
           <input
             type="text"
             placeholder="Nome"
@@ -219,7 +220,7 @@ function SignUpForm() {
             <button
               type="button"
               onClick={() => setShowCountries((v) => !v)}
-              className="w-full h-12 px-4 rounded-md bg-white border border-gray-300 flex items-center justify-between text-gray-800 text-[15px] focus:border-blue-500 outline-none"
+              className="flex h-12 w-full items-center justify-between rounded-lg border border-white/10 bg-white/[0.04] px-4 text-[15px] text-white outline-none focus:border-green-500"
             >
               <span className="flex items-center gap-2">
                 <Flag code={country.code} className="rounded-full w-5 h-5 object-cover" />

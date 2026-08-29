@@ -275,7 +275,7 @@ export function OfferDetail({ offer, affiliate, onBack }: OfferDetailProps) {
             <div className="flex items-center justify-center rounded-xl border border-gray-200 p-8">
               <Image
                 src="/images/urynbroker-logo.png"
-                alt="URYN BROKER"
+                alt="POLEX BROKER"
                 width={1500}
                 height={400}
                 className="h-10 w-auto"

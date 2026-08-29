@@ -173,10 +173,10 @@ export function TraderIAModal({ isOpen, onClose, onActivate }: TraderIAModalProp
           {/* Step: Found */}
           {step === "found" && (
             <div className="text-center py-8">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#f97316]/20 flex items-center justify-center animate-in zoom-in duration-500">
-                <CheckCircle className="w-12 h-12 text-[#f97316]" />
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#22c55e]/20 flex items-center justify-center animate-in zoom-in duration-500">
+                <CheckCircle className="w-12 h-12 text-[#22c55e]" />
               </div>
-              <p className="text-[#f97316] font-bold text-lg">IA encontrada com sucesso!</p>
+              <p className="text-[#22c55e] font-bold text-lg">IA encontrada com sucesso!</p>
             </div>
           )}
 
@@ -230,10 +230,10 @@ export function TraderIAModal({ isOpen, onClose, onActivate }: TraderIAModalProp
           {/* Step: Success */}
           {step === "success" && (
             <div className="text-center py-8">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#f97316]/20 flex items-center justify-center animate-in zoom-in duration-500">
-                <CheckCircle className="w-12 h-12 text-[#f97316]" />
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#22c55e]/20 flex items-center justify-center animate-in zoom-in duration-500">
+                <CheckCircle className="w-12 h-12 text-[#22c55e]" />
               </div>
-              <p className="text-[#f97316] font-bold text-lg">IA executada com sucesso!</p>
+              <p className="text-[#22c55e] font-bold text-lg">IA executada com sucesso!</p>
             </div>
           )}
         </div>
