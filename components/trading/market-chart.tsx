@@ -1720,7 +1720,7 @@ function ChartCore({
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: "url(/images/fidelity-logo.png)",
+          backgroundImage: "url(/images/fidelity-chart-watermark.png)",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center 45%",
           backgroundSize: "55% auto",
