@@ -2,7 +2,13 @@
 
 import useSWR from "swr"
 import { useState } from "react"
-import { ArrowLeft, Bot, ShieldCheck, Unplug } from "lucide-react"
+import { ArrowLeft, Bot, BookOpen, ShieldCheck, Unplug } from "lucide-react"
+import { ApiDocumentation } from "@/components/connections/api-documentation"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Connection {
   client_id: string
@@ -12,6 +18,12 @@ interface Connection {
   allowed_symbols: string[]
   created_at: string
   oauth_clients: { name: string } | { name: string }[] | null
+}
+
+const scopeNames: Record<string, string> = {
+  "trade:write": "Compra e venda",
+  "balance:read": "Saldo",
+  "trade:read": "Histórico desta IA",
 }
 
 const fetcher = (url: string) => fetch(url).then(async (response) => {
@@ -36,29 +48,50 @@ export default function ConnectionsPage() {
 
   return (
     <main className="min-h-screen bg-background px-4 py-6 font-sans text-foreground sm:px-6">
-      <div className="mx-auto flex max-w-3xl flex-col gap-6">
+      <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <header className="flex items-center gap-4">
-          <button type="button" onClick={() => history.back()} className="flex size-10 items-center justify-center rounded-xl border border-border bg-card" aria-label="Voltar"><ArrowLeft className="size-5" /></button>
-          <div><h1 className="text-2xl font-bold text-balance">IAs conectadas</h1><p className="text-sm text-muted-foreground">Controle quais automações podem operar seu saldo real.</p></div>
+          <Button type="button" variant="outline" size="icon" onClick={() => history.back()} aria-label="Voltar"><ArrowLeft /></Button>
+          <div><h1 className="text-balance text-2xl font-bold">Integrações de IA</h1><p className="text-sm text-muted-foreground">Gerencie acessos e consulte a documentação para conectar uma IA.</p></div>
         </header>
 
-        <aside className="flex gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm leading-relaxed"><ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" /><p>Nunca informe sua senha à IA. Autorize somente por esta tela, defina limites conservadores e revogue o acesso ao primeiro comportamento inesperado.</p></aside>
+        <Tabs defaultValue="connections" className="gap-6">
+          <TabsList className="w-full sm:w-fit">
+            <TabsTrigger value="connections"><Bot /> IAs conectadas</TabsTrigger>
+            <TabsTrigger value="documentation"><BookOpen /> Documentação</TabsTrigger>
+          </TabsList>
 
-        {isLoading && <div className="rounded-2xl border border-border bg-card p-6 text-muted-foreground">Carregando conexões...</div>}
-        {error && <div className="rounded-2xl border border-destructive/40 bg-card p-6 text-destructive">Não foi possível carregar suas conexões.</div>}
-        {!isLoading && !error && data?.connections.length === 0 && <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card p-10 text-center"><Bot className="size-8 text-primary" /><h2 className="font-semibold">Nenhuma IA conectada</h2><p className="max-w-md text-sm text-muted-foreground">Quando você autorizar o outro aplicativo via OAuth, ele aparecerá aqui com os limites permitidos.</p></div>}
+          <TabsContent value="connections" className="flex flex-col gap-6">
+            <Alert><ShieldCheck /><AlertDescription>Nunca informe sua senha à IA. Autorize somente por OAuth, defina limites conservadores e revogue o acesso ao primeiro comportamento inesperado.</AlertDescription></Alert>
 
-        <div className="flex flex-col gap-4">
-          {data?.connections.map((connection) => {
-            const client = Array.isArray(connection.oauth_clients) ? connection.oauth_clients[0] : connection.oauth_clients
-            return <article key={connection.client_id} className="rounded-2xl border border-border bg-card p-5">
-              <div className="flex items-start justify-between gap-4"><div className="flex items-center gap-3"><span className="flex size-11 items-center justify-center rounded-xl bg-primary/10"><Bot className="size-5 text-primary" /></span><div><h2 className="font-semibold">{client?.name ?? connection.client_id}</h2><p className="font-mono text-xs text-muted-foreground">{connection.client_id}</p></div></div><span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">Ativa</span></div>
-              <dl className="mt-5 grid grid-cols-2 gap-3 text-sm"><div className="rounded-xl bg-background p-3"><dt className="text-muted-foreground">Máximo por ordem</dt><dd className="mt-1 font-mono font-semibold">R$ {Number(connection.max_trade_amount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</dd></div><div className="rounded-xl bg-background p-3"><dt className="text-muted-foreground">Limite diário de perda</dt><dd className="mt-1 font-mono font-semibold">R$ {Number(connection.daily_loss_limit).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</dd></div></dl>
-              <p className="mt-3 text-xs text-muted-foreground">Ativos: {connection.allowed_symbols.length ? connection.allowed_symbols.join(", ") : "todos os ativos habilitados"}</p>
-              <button type="button" onClick={() => revoke(connection.client_id)} disabled={revoking === connection.client_id} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/40 px-4 py-3 text-sm font-semibold text-destructive hover:bg-destructive/10 disabled:opacity-50"><Unplug className="size-4" />{revoking === connection.client_id ? "Revogando..." : "Revogar acesso imediatamente"}</button>
-            </article>
-          })}
-        </div>
+            {isLoading && <Card><CardContent className="p-6 text-muted-foreground">Carregando conexões...</CardContent></Card>}
+            {error && <Card><CardContent className="p-6 text-destructive">Não foi possível carregar suas conexões.</CardContent></Card>}
+            {!isLoading && !error && data?.connections.length === 0 && (
+              <Card className="border-dashed"><CardContent className="flex flex-col items-center gap-3 p-10 text-center"><Bot className="size-8 text-primary" /><h2 className="font-semibold">Nenhuma IA conectada</h2><p className="max-w-md text-sm text-muted-foreground">Abra a aba Documentação para integrar um aplicativo. Quando o usuário autorizar o OAuth, a IA aparecerá aqui.</p></CardContent></Card>
+            )}
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              {data?.connections.map((connection) => {
+                const client = Array.isArray(connection.oauth_clients) ? connection.oauth_clients[0] : connection.oauth_clients
+                return (
+                  <Card key={connection.client_id}>
+                    <CardHeader className="flex-row items-start justify-between gap-4">
+                      <div><CardTitle>{client?.name ?? connection.client_id}</CardTitle><p className="mt-1 font-mono text-xs text-muted-foreground">{connection.client_id}</p></div>
+                      <Badge>Ativa</Badge>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4">
+                      <dl className="grid grid-cols-2 gap-3 text-sm"><div className="rounded-xl bg-muted p-3"><dt className="text-muted-foreground">Máximo por ordem</dt><dd className="mt-1 font-mono font-semibold">R$ {Number(connection.max_trade_amount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</dd></div><div className="rounded-xl bg-muted p-3"><dt className="text-muted-foreground">Perda diária</dt><dd className="mt-1 font-mono font-semibold">R$ {Number(connection.daily_loss_limit).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</dd></div></dl>
+                      <div className="flex flex-wrap gap-2">{connection.scopes.map((scope) => <Badge key={scope} variant="secondary">{scopeNames[scope] ?? scope}</Badge>)}</div>
+                      <p className="text-xs text-muted-foreground">Ativos: {connection.allowed_symbols.length ? connection.allowed_symbols.join(", ") : "todos os ativos habilitados"}</p>
+                      <Button type="button" variant="destructive" onClick={() => revoke(connection.client_id)} disabled={revoking === connection.client_id}><Unplug data-icon="inline-start" />{revoking === connection.client_id ? "Revogando..." : "Revogar acesso imediatamente"}</Button>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="documentation"><ApiDocumentation /></TabsContent>
+        </Tabs>
       </div>
     </main>
   )
