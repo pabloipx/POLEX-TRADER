@@ -38,13 +38,13 @@ export default function HomePage() {
       </div>
 
       <header className="sticky top-0 z-40 mx-auto flex max-w-7xl items-center justify-between bg-[var(--landing-bg)]/88 px-5 py-5 backdrop-blur-xl lg:px-8">
-        <Link href="#inicio" aria-label="FIDELITY BROKER — início">
-          <Image src="/images/fidelity-logo.png" alt="FIDELITY BROKER" width={230} height={64} className="h-12 w-auto object-contain brightness-0 invert" priority />
+        <Link href="#inicio" aria-label="Fidelity Option — início" className="shrink-0">
+          <Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} className="h-auto w-24 object-contain sm:w-44 lg:w-56" priority />
         </Link>
 
-        <div className="flex items-center gap-2">
-          <Link href="/auth/login" className="rounded-xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel-raised)] px-5 py-3 text-xs font-semibold uppercase sm:px-8 sm:py-4 sm:text-sm">Entre agora</Link>
-          <Link href="/auth/sign-up" className="rounded-xl bg-[var(--landing-primary)] px-5 py-3 text-xs font-bold uppercase text-[var(--landing-primary-foreground)] sm:px-8 sm:py-4 sm:text-sm">Criar uma conta</Link>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Link href="/auth/login" className="rounded-lg border border-[var(--landing-line-strong)] bg-[var(--landing-panel-raised)] px-2 py-2 text-[9px] font-semibold uppercase sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Entrar</span><span className="hidden sm:inline">Entre agora</span></Link>
+          <Link href="/auth/sign-up" className="rounded-lg bg-[var(--landing-primary)] px-2 py-2 text-[9px] font-bold uppercase text-[var(--landing-primary-foreground)] sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Criar conta</span><span className="hidden sm:inline">Criar uma conta</span></Link>
         </div>
       </header>
 
@@ -133,7 +133,7 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8"><div className="bullex-cta rounded-2xl border border-[var(--landing-primary)]/20 px-6 py-16 text-center"><Clock3 className="mx-auto size-7 text-[var(--landing-primary)]"/><h2 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Criar conta gratuita</Link></div></section>
 
-      <footer className="border-t border-[var(--landing-line)] px-5 py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row"><div className="flex items-center gap-2"><span className="flex size-8 items-center justify-center rounded-lg bg-[var(--landing-primary)] text-[var(--landing-primary-foreground)]"><BarChart3 className="size-4" /></span><b className="tracking-tight">FIDELITY BROKER</b></div><div className="flex items-center gap-5 text-xs text-[var(--landing-muted)]"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
+      <footer className="border-t border-[var(--landing-line)] px-5 py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row"><Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} className="h-auto w-40 object-contain" /><div className="flex items-center gap-5 text-xs text-[var(--landing-muted)]"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
     </main>
   )
 }
