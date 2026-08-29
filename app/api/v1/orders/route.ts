@@ -53,5 +53,10 @@ export async function POST(request: Request) {
     const [message, status] = code ? publicErrors[code] : ["Não foi possível executar a ordem.", 422]
     return NextResponse.json({ error: { code: code?.toLowerCase() || "order_rejected", message } }, { status })
   }
+  if (data?.status === "rejected") {
+    const code = Object.keys(publicErrors).find((item) => data.errorCode?.includes(item))
+    const [message, status] = code ? publicErrors[code] : ["Não foi possível executar a ordem.", 422]
+    return NextResponse.json({ error: { code: code?.toLowerCase() || "order_rejected", message } }, { status })
+  }
   return NextResponse.json({ data: { ...data, symbol: order.symbol, direction: order.direction, entryPrice } }, { status: data?.replayed ? 200 : 201 })
 }
