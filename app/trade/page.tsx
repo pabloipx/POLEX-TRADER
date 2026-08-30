@@ -842,6 +842,7 @@ export default function TradePage() {
             direction,
             amount: Math.round(amount * 100) / 100,
             timeframe: expiryTime,
+            displayedPrice: price,
             isDemo,
             idempotencyKey,
           }),
