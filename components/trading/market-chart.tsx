@@ -814,10 +814,12 @@ function ChartCore({
   // trocar de aba.
   //
   // Operacoes sem `symbol` (chamadas antigas) continuam sendo desenhadas, para nao esconder nada.
-  const chartTrades = useMemo(
-    () => activeTrades.filter((t) => !t.symbol || t.symbol === symbol),
-    [activeTrades, symbol],
-  )
+  const chartTrades = useMemo(() => {
+    const normalizeSymbol = (value?: string) =>
+      (value || "").toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/OTC$/, "_OTC")
+    const currentSymbol = normalizeSymbol(symbol)
+    return activeTrades.filter((trade) => !trade.symbol || normalizeSymbol(trade.symbol) === currentSymbol)
+  }, [activeTrades, symbol])
 
   // ===== Detect new trades -> flash animation =====
   useEffect(() => {
@@ -1571,14 +1573,16 @@ function ChartCore({
     chartTrades.forEach((trade) => {
       if (trade.entryPrice <= 0) return
 
-      // Tempo restante calculado agora, sem depender do cronometro (que pode estar congelado).
+      // A presença da operação nesta lista significa que o banco ainda a considera pendente.
+      // Mesmo que o relógio local chegue a zero antes da liquidação no servidor, a linha permanece.
       const cd = Math.max(0, Math.ceil((trade.timestamp + trade.expiryTime * 1000 - now) / 1000))
-      if (cd <= 0) return
 
       const isCall = trade.direction === "call"
       const color = cd <= 10 ? "#FFC400" : isCall ? "#00E676" : "#FF5252"
       const label = isCall ? "CALL" : "PUT"
-      const timeStr = `${String(Math.floor(cd / 60)).padStart(2, "0")}:${String(cd % 60).padStart(2, "0")}`
+      const timeStr = cd > 0
+        ? `${String(Math.floor(cd / 60)).padStart(2, "0")}:${String(cd % 60).padStart(2, "0")}`
+        : "LIQUIDANDO"
       const amount = trade.amount ? ` R$${trade.amount.toFixed(0)}` : ""
       const title = ` ${label} ${timeStr}${amount} `
 
@@ -1640,7 +1644,6 @@ function ChartCore({
       chartTrades.forEach((t) => {
         if (t.entryPrice <= 0) return
         const remaining = Math.max(0, Math.ceil((t.timestamp + t.expiryTime * 1000 - now) / 1000))
-        if (remaining <= 0) return
         let y: number | null = null
         try {
           y = series.priceToCoordinate(t.entryPrice)
@@ -1659,7 +1662,7 @@ function ChartCore({
           pnl,
           inMoney,
           isCall,
-          time: `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`,
+          time: remaining > 0 ? `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : "LIQUIDANDO",
         })
       })
       setPnlOverlays(next)
