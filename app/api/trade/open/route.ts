@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     const direction = body.direction
     const amount = Number(body.amount)
     const timeframe = Number(body.timeframe)
+    const displayedPrice = Number(body.displayedPrice)
     const isDemo = body.isDemo === true
     const idempotencyKey = typeof body.idempotencyKey === "string" ? body.idempotencyKey : ""
 
@@ -58,6 +59,14 @@ export async function POST(request: Request) {
 
     if (!entryPrice || entryPrice <= 0) {
       return NextResponse.json({ error: "Cotação confiável indisponível. Tente novamente." }, { status: 503 })
+    }
+
+    // A linha deve marcar exatamente a cotação que estava visível no gráfico no clique.
+    // Aceitamos essa cotação somente quando ela permanece próxima da referência autoritativa
+    // do servidor, impedindo que o cliente envie um preço arbitrário.
+    if (Number.isFinite(displayedPrice) && displayedPrice > 0) {
+      const deviation = Math.abs(displayedPrice - entryPrice) / entryPrice
+      if (deviation <= 0.005) entryPrice = displayedPrice
     }
 
     const { data, error } = await supabase.rpc("open_trade_atomic", {
