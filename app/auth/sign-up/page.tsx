@@ -134,7 +134,7 @@ function SignUpForm() {
   }
 
   const inputClass =
-    "h-[72px] w-full rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#343434] outline-none transition-colors placeholder:text-[#8a8a8a] focus:border-[#0bb39c] focus:ring-1 focus:ring-[#0bb39c]"
+    "h-[72px] w-full rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#343434] outline-none transition-colors placeholder:text-[#8a8a8a] focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e]"
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#ffffff] font-sans text-[#343434]">
@@ -182,7 +182,7 @@ function SignUpForm() {
             <Flag code="BR" className="h-6 w-6 rounded-full object-cover" />
             PT
           </div>
-          <Link href="/auth/login" className="flex h-12 items-center rounded-sm border border-[#0bb39c] px-5 text-base font-medium text-[#0bb39c] hover:bg-[#0bb39c]/5 md:h-14 md:px-7">
+          <Link href="/auth/login" className="flex h-12 items-center rounded-sm border border-[#22c55e] px-5 text-base font-medium text-[#22c55e] hover:bg-[#22c55e]/5 md:h-14 md:px-7">
             Entrar
           </Link>
         </div>
@@ -214,7 +214,7 @@ function SignUpForm() {
             <button
               type="button"
               onClick={() => setShowCountries((v) => !v)}
-              className="flex h-[72px] w-full items-center justify-between rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#4f4f4f] outline-none focus:border-[#0bb39c] focus:ring-1 focus:ring-[#0bb39c]"
+              className="flex h-[72px] w-full items-center justify-between rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#4f4f4f] outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e]"
             >
               <span className="flex items-center gap-2">
                 <Flag code={country.code} className="rounded-full w-5 h-5 object-cover" />
@@ -261,7 +261,7 @@ function SignUpForm() {
           />
 
           {/* Telefone */}
-          <div className="flex h-[72px] overflow-hidden rounded-md border border-[#a5a5a5] bg-[#ffffff] focus-within:border-[#0bb39c] focus-within:ring-1 focus-within:ring-[#0bb39c]">
+          <div className="flex h-[72px] overflow-hidden rounded-md border border-[#a5a5a5] bg-[#ffffff] focus-within:border-[#22c55e] focus-within:ring-1 focus-within:ring-[#22c55e]">
             <div className="flex min-w-32 items-center gap-3 border-r border-[#a5a5a5] px-5 text-lg text-[#4f4f4f]">
               <Flag code={country.code} className="h-6 w-6 rounded-full object-cover" />
               {country.dial}
@@ -271,8 +271,8 @@ function SignUpForm() {
 
           <p className="text-center text-base leading-relaxed text-[#5f5f5f]">
             Ao criar uma conta, você aceita nossos{" "}
-            <button type="button" onClick={() => setShowTerms(true)} className="text-[#0bb39c] hover:underline">Termos e Condições</button>, a{" "}
-            <span className="text-[#0bb39c]">Política de Privacidade</span> e confirma que tem 18 anos ou mais.
+            <button type="button" onClick={() => setShowTerms(true)} className="text-[#22c55e] hover:underline">Termos e Condições</button>, a{" "}
+            <span className="text-[#22c55e]">Política de Privacidade</span> e confirma que tem 18 anos ou mais.
           </p>
 
           {error && (
@@ -284,7 +284,7 @@ function SignUpForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#0bb39c] text-xl font-medium text-[#ffffff] hover:bg-[#079d89] disabled:opacity-70"
+            className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#22c55e] text-xl font-medium text-[#ffffff] hover:bg-[#16a34a] disabled:opacity-70"
           >
             {isLoading ? (
               <>
@@ -298,7 +298,7 @@ function SignUpForm() {
 
           <p className="text-center text-base text-[#5f5f5f]">
             Já tem uma conta?{" "}
-            <Link href="/auth/login" className="font-medium text-[#0bb39c] hover:text-[#079d89]">Entrar agora</Link>
+            <Link href="/auth/login" className="font-medium text-[#22c55e] hover:text-[#16a34a]">Entrar agora</Link>
           </p>
 
           <fieldset className="mt-6 w-full rounded-md border border-[#b0b0b0] px-6 py-5 text-[#5d5d5d]">

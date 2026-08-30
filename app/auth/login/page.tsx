@@ -99,7 +99,7 @@ export default function LoginPage() {
   }
 
   const inputClass =
-    "h-[72px] w-full rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#343434] outline-none transition-colors placeholder:text-[#8a8a8a] focus:border-[#0bb39c] focus:ring-1 focus:ring-[#0bb39c] disabled:opacity-50"
+    "h-[72px] w-full rounded-md border border-[#a5a5a5] bg-[#ffffff] px-6 text-lg text-[#343434] outline-none transition-colors placeholder:text-[#8a8a8a] focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e] disabled:opacity-50"
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#ffffff] font-sans text-[#343434]">
@@ -112,7 +112,7 @@ export default function LoginPage() {
             <Flag code="BR" className="h-6 w-6 rounded-full object-cover" />
             PT
           </div>
-          <Link href="/auth/sign-up" className="flex h-12 items-center rounded-sm bg-[#0bb39c] px-5 text-base font-medium text-[#ffffff] hover:bg-[#079d89] md:h-14 md:px-7">
+          <Link href="/auth/sign-up" className="flex h-12 items-center rounded-sm bg-[#22c55e] px-5 text-base font-medium text-[#ffffff] hover:bg-[#16a34a] md:h-14 md:px-7">
             Criar conta
           </Link>
         </div>
@@ -128,14 +128,14 @@ export default function LoginPage() {
 
             {error && <div role="alert" className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
-            <button type="submit" disabled={isLoading} className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#0bb39c] text-xl font-medium text-[#ffffff] hover:bg-[#079d89] disabled:opacity-70">
+            <button type="submit" disabled={isLoading} className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#22c55e] text-xl font-medium text-[#ffffff] hover:bg-[#16a34a] disabled:opacity-70">
               {isLoading ? <><Loader2 className="h-5 w-5 animate-spin" /> Entrando...</> : "Entrar"}
             </button>
 
-            <Link href="/auth/forgot-password" className="mt-4 text-center text-base font-medium text-[#0bb39c] hover:text-[#079d89]">Esqueceu sua senha?</Link>
+            <Link href="/auth/forgot-password" className="mt-4 text-center text-base font-medium text-[#22c55e] hover:text-[#16a34a]">Esqueceu sua senha?</Link>
             <p className="text-center text-base text-[#5f5f5f]">
               Ainda não tem uma conta?{" "}
-              <Link href="/auth/sign-up" className="font-medium text-[#0bb39c] hover:text-[#079d89]">Criar conta</Link>
+              <Link href="/auth/sign-up" className="font-medium text-[#22c55e] hover:text-[#16a34a]">Criar conta</Link>
             </p>
           </form>
 
