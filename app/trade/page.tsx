@@ -176,6 +176,7 @@ export default function TradePage() {
   const [tradeError, setTradeError] = useState<string | null>(null)
   // Direcao apenas pre-visualizada: setada no hover de Comprar/Vender para tingir o grafico.
   const [hoverDirection, setHoverDirection] = useState<"call" | "put" | null>(null)
+  const [tradePulse, setTradePulse] = useState<{ id: string; direction: "call" | "put" } | null>(null)
   const [historyRefresh, setHistoryRefresh] = useState(0)
   // A conta demo é a experiência segura padrão. Contas sem saldo real não devem abrir a tela
   // com os controles aparentemente quebrados quando há saldo de treinamento disponível.
@@ -885,6 +886,7 @@ export default function TradePage() {
 
         locallyCreatedTradeAtRef.current.set(insertedTrade.id, Date.now())
         setActiveTrades((prev) => prev.some((trade) => trade.dbId === activeTrade.dbId) ? prev : [...prev, activeTrade])
+        setTradePulse({ id: insertedTrade.id, direction: direction.toLowerCase() as "call" | "put" })
         // Invalida qualquer leitura iniciada antes desta compra e confirma imediatamente a linha
         // usando o registro que acabou de ser persistido.
         activeTradesRequestRef.current += 1
@@ -1141,8 +1143,9 @@ export default function TradePage() {
               symbol={selectedSymbol}
               payout={payout / 100}
               reloadKey={(realReady ? 1 : 0) + (realHistoryReady ? 2 : 0)}
-                  hoverDirection={hoverDirection}
-                />
+  hoverDirection={hoverDirection}
+  tradePulse={tradePulse}
+  />
                 </div>
         </div>
 
