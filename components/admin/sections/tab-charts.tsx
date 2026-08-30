@@ -14,8 +14,6 @@ import {
   YAxis,
 } from "recharts"
 
-const ADMIN_PASSWORD = ""
-
 interface AnalyticsData {
   cashFlow: { date: string; depositos: number; depositosTotal: number; saques: number }[]
   activitySeries: { date: string; trades: number; usuarios: number }[]
@@ -46,7 +44,7 @@ function useAnalytics(refreshKey: number) {
   useEffect(() => {
     let active = true
     setLoading(true)
-    fetch("/api/admin/analytics", { headers: { "x-admin-token": ADMIN_PASSWORD } })
+    fetch("/api/admin/analytics")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (active && d && !d.error) setData(d)

@@ -2,8 +2,6 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 import { isAdminRequest } from "@/lib/admin/session"
 
-const ADMIN_EMAILS = ["pablotrader1790@gmail.com", "pabloandrade1790@gmail.com", "admin@atlasinvest.com"]
-
 async function isAdminAuthenticated(): Promise<boolean> {
   return isAdminRequest()
 }
@@ -19,18 +17,23 @@ export async function GET(request: Request) {
     // Buscar todos os usuários usando admin client (ignora RLS)
     const { data: users, error: usersError } = await adminClient
       .from("profiles")
-      .select(`
-        *,
-        user_balances (
-          balance_real,
-          balance_demo
-        )
-      `)
+      .select("*")
       .order("created_at", { ascending: false })
 
     if (usersError) {
       return NextResponse.json({ error: "Failed to fetch users", details: usersError.message }, { status: 500 })
     }
+
+    const userIds = (users || []).map((user) => user.id)
+    const { data: balances, error: balancesError } = userIds.length
+      ? await adminClient.from("user_balances").select("user_id, balance_real, balance_demo").in("user_id", userIds)
+      : { data: [], error: null }
+
+    if (balancesError) {
+      return NextResponse.json({ error: "Failed to fetch balances", details: balancesError.message }, { status: 500 })
+    }
+
+    const balancesByUser = new Map((balances || []).map((balance) => [balance.user_id, balance]))
 
     const { data: approvedDeposits, error: depositsError } = await adminClient
       .from("deposits")
@@ -53,6 +56,7 @@ export async function GET(request: Request) {
 
     const mappedUsers = (users || []).map((u: any) => {
       const depositStats = depositsByUser.get(u.id) || { count: 0, total: 0, lastAt: null }
+      const balance = balancesByUser.get(u.id)
       return {
       id: u.id,
       public_id: u.public_id,
@@ -63,8 +67,8 @@ export async function GET(request: Request) {
       is_verified: u.is_verified || false,
       is_admin: u.is_admin || false,
       created_at: u.created_at,
-      balance_real: u.user_balances?.[0]?.balance_real || 0,
-      balance_demo: u.user_balances?.[0]?.balance_demo || 0,
+      balance_real: balance?.balance_real || 0,
+      balance_demo: balance?.balance_demo || 0,
       deposit_count: depositStats.count,
       deposit_total: depositStats.total,
       last_deposit_at: depositStats.lastAt,

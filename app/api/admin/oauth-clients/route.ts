@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { checkAdmin } from "@/lib/admin/check-admin"
+import { isAdminRequest, unauthorizedResponse } from "@/lib/admin/session"
 import { randomToken, sha256 } from "@/lib/oauth"
 import { createAdminClient } from "@/lib/supabase/admin"
 
@@ -14,8 +14,7 @@ const clientSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const { isAdmin } = await checkAdmin()
-  if (!isAdmin) return NextResponse.json({ error: "Não autorizado" }, { status: 403 })
+  if (!(await isAdminRequest())) return unauthorizedResponse()
 
   const parsed = clientSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) return NextResponse.json({ error: "Dados inválidos", fields: parsed.error.flatten().fieldErrors }, { status: 400 })
