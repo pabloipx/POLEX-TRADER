@@ -77,6 +77,7 @@ interface Props {
   // Direcao pre-visualizada enquanto o mouse esta sobre Comprar/Vender. Pinta a metade do
   // grafico correspondente ao lucro daquela direcao. `null` = sem preview.
   hoverDirection?: "call" | "put" | null
+  tradePulse?: { id: string; direction: "call" | "put" } | null
 }
 interface PnlOverlay {
   id: string
@@ -422,7 +423,8 @@ function ChartCore({
   payout = 0.96,
   reloadKey = 0,
   hoverDirection = null,
-}: Props) {
+  tradePulse = null,
+  }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const countdownRef = useRef<HTMLDivElement>(null)
@@ -835,6 +837,15 @@ function ChartCore({
     }
     prevTradeIdsRef.current = ids
   }, [chartTrades])
+
+  // Disparo explícito vindo da resposta confirmada da API. Não depende da reconciliação do banco
+  // nem da detecção por diferença de arrays, portanto a animação ocorre em toda compra/venda.
+  useEffect(() => {
+    if (!tradePulse) return
+    setFlash({ id: tradePulse.id, dir: tradePulse.direction })
+    const timeout = window.setTimeout(() => setFlash(null), 900)
+    return () => window.clearTimeout(timeout)
+  }, [tradePulse])
 
   // ===== Countdown timer =====
   useEffect(() => {
@@ -2061,7 +2072,7 @@ function ChartCore({
       {flash && (
         <div
           key={flash.id}
-          className="absolute inset-0 z-10 pointer-events-none"
+          className="absolute inset-0 z-[25] pointer-events-none"
           style={{
             background: `radial-gradient(circle at center, ${flash.dir === "call" ? "rgba(0,230,118,0.25)" : "rgba(255,82,82,0.25)"} 0%, transparent 60%)`,
             animation: "chartFlash 0.7s ease-out forwards",
