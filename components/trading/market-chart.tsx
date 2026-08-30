@@ -1856,7 +1856,7 @@ function ChartCore({
       )}
 
       {/* Barra de ferramentas de desenho (estilo IQ Option) */}
-      <div className="absolute top-1/2 left-2 z-30 -translate-y-1/2 flex flex-col items-center gap-1 rounded-xl border border-[#2A2E39] bg-[#0d0d0f]/90 p-1 backdrop-blur-sm">
+      <div className="absolute left-1 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-0.5 rounded-lg border border-[#2A2E39] bg-[#0d0d0f]/90 p-0.5 backdrop-blur-sm sm:left-2 sm:gap-1 sm:rounded-xl sm:p-1">
         {DRAW_TOOLS.map((dt) => {
           const active = tool === dt.id
           return (
@@ -1866,7 +1866,7 @@ function ChartCore({
               title={dt.label}
               aria-label={dt.label}
               onClick={() => setTool(active && dt.id !== "cursor" ? "cursor" : dt.id)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+              className="flex size-6 items-center justify-center rounded-md transition-colors [&_svg]:size-3.5 sm:size-8 sm:rounded-lg sm:[&_svg]:size-4"
               style={{
                 backgroundColor: active ? "#22c55e" : "transparent",
                 color: active ? "#fff" : "#94A3B8",
@@ -1886,9 +1886,9 @@ function ChartCore({
             title="Cor"
             aria-label="Selecionar cor"
             onClick={() => setShowColors((s) => !s)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg"
+            className="flex size-6 items-center justify-center rounded-md sm:size-8 sm:rounded-lg"
           >
-            <span className="h-4 w-4 rounded-full border border-white/30" style={{ backgroundColor: drawColor }} />
+            <span className="size-3.5 rounded-full border border-white/30 sm:size-4" style={{ backgroundColor: drawColor }} />
           </button>
           {showColors && (
             <div className="absolute left-10 top-0 flex gap-1 rounded-lg border border-[#2A2E39] bg-[#0d0d0f] p-1.5">
@@ -1919,7 +1919,7 @@ function ChartCore({
             draftRef.current = null
           }}
           disabled={drawings.length === 0}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#94A3B8] transition-colors hover:text-[#FF5252] disabled:opacity-30"
+          className="flex size-6 items-center justify-center rounded-md text-[#94A3B8] transition-colors hover:text-[#FF5252] disabled:opacity-30 [&_svg]:size-3.5 sm:size-8 sm:rounded-lg sm:[&_svg]:size-4"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 6h18" />
@@ -1936,7 +1936,7 @@ function ChartCore({
             title="Indicadores"
             aria-label="Indicadores tecnicos"
             onClick={() => setShowIndicators((s) => !s)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+            className="flex size-6 items-center justify-center rounded-md transition-colors [&_svg]:size-3.5 sm:size-8 sm:rounded-lg sm:[&_svg]:size-4"
             style={{
               backgroundColor: indicators.ma || indicators.boll || indicators.fractal || indicators.macd ? "#22c55e" : "transparent",
               color: indicators.ma || indicators.boll || indicators.fractal || indicators.macd ? "#fff" : "#94A3B8",

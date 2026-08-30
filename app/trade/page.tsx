@@ -947,21 +947,21 @@ export default function TradePage() {
       {/* LEFT COLUMN: Header + Chart */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Header */}
-        <header className="flex items-center gap-2 px-2 lg:px-5 py-1.5 lg:py-2.5 border-b border-white/[0.06] shrink-0" style={{ backgroundColor: "#111114" }}>
+        <header className="flex items-center gap-1 px-1.5 py-1.5 sm:gap-2 sm:px-2 lg:px-5 lg:py-2.5 border-b border-white/[0.06] shrink-0" style={{ backgroundColor: "#111114" }}>
           {/* Left - Menu Button */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-200 active:scale-95 shrink-0"
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] transition-all duration-200 hover:bg-white/[0.08] active:scale-95 sm:size-9 sm:rounded-xl lg:size-10"
           >
-            <MoreVertical className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
+            <MoreVertical className="size-4 text-gray-400 lg:size-5" />
           </button>
 
           {/* Center (MOBILE) - Seletor simples de ativo, abre o modal */}
           <button
             onClick={() => setShowAssetModal(true)}
-            className="trade-mobile-asset-selector flex lg:hidden items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] transition-all duration-200 border border-white/[0.06] min-w-0 flex-1"
+            className="trade-mobile-asset-selector flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.04] px-1.5 py-1 transition-all duration-200 hover:bg-white/[0.07] sm:gap-2 sm:rounded-xl sm:px-2.5 sm:py-1.5 lg:hidden"
           >
-            <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-700 shrink-0 ring-2 ring-white/10">
+            <div className="size-6 shrink-0 overflow-hidden rounded-full bg-gray-700 ring-1 ring-white/10 sm:size-7 sm:ring-2">
               <Image
                 src={selectedAsset?.logo || "/placeholder.svg"}
                 alt={selectedAsset?.name || "Asset"}
@@ -971,11 +971,11 @@ export default function TradePage() {
               />
             </div>
             <div className="text-left min-w-0">
-              <p className="text-white font-bold text-xs leading-tight truncate">
+              <p className="max-w-14 truncate text-[11px] font-bold leading-tight text-white sm:max-w-none sm:text-xs">
                 {selectedAsset?.name || "Selecionar"}
               </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-[#26a69a] text-[10px] font-mono font-semibold">
+              <div className="mt-0.5 flex items-center gap-1 sm:gap-1.5">
+                <span className="font-mono text-[9px] font-semibold text-[#26a69a] sm:text-[10px]">
                   {price > 0 ? formatFixed(price, selectedAsset?.symbol?.includes("JPY") ? 3 : 5) : "..."}
                 </span>
                 <span className="text-[9px] px-1 py-[1px] bg-[#26a69a]/15 text-[#26a69a] rounded font-bold">
@@ -1065,9 +1065,9 @@ export default function TradePage() {
           </div>
 
           {/* Right - Balance & Wallet */}
-          <div className="flex items-center gap-1.5 lg:gap-2 shrink-0 ml-auto">
-            <div className="flex flex-col items-end relative">
-              <span className="text-white text-xs lg:text-lg font-bold leading-tight tracking-tight whitespace-nowrap">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5 lg:gap-2">
+            <div className="relative flex max-w-[84px] flex-col items-end sm:max-w-none">
+              <span className="max-w-full truncate whitespace-nowrap text-[11px] font-bold leading-tight tracking-tight text-white sm:text-xs lg:text-lg">
                 R$ {formatCurrency(currentBalance)}
               </span>
               <button
@@ -1124,9 +1124,9 @@ export default function TradePage() {
             {/* Wallet Button */}
             <button
               onClick={() => (window.location.href = "/deposit")}
-              className="w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center bg-[#22c55e] hover:bg-[#4ade80] transition-all duration-200 shadow-lg shadow-[#22c55e]/20 active:scale-95 shrink-0"
+              className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#22c55e] shadow-md shadow-[#22c55e]/20 transition-all duration-200 hover:bg-[#4ade80] active:scale-95 sm:size-9 sm:rounded-xl lg:size-10"
             >
-              <Wallet className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
+              <Wallet className="size-4 text-white lg:size-5" />
             </button>
           </div>
         </header>
