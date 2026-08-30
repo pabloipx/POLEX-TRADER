@@ -1,36 +1,14 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { ADMIN_EMAILS } from "@/lib/admin/check-admin"
 import { isAdminRequest } from "@/lib/admin/session"
 
-
-async function verifyAdmin(request?: Request) {
-  const adminClient = createAdminClient()
-
-  // Painel /admin001 autentica pelo cookie de sessao assinado
-  if (await isAdminRequest()) {
-    return { isAdmin: true, adminClient }
-  }
-
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { isAdmin: false, adminClient }
-
-  const { data: profile } = await adminClient.from("profiles").select("is_admin, email").eq("id", user.id).maybeSingle()
-
-  const isAdmin =
-    profile?.is_admin === true || ADMIN_EMAILS.includes(user.email || "") || ADMIN_EMAILS.includes(profile?.email || "")
-
-  return { isAdmin, adminClient }
+async function verifyAdmin() {
+  return { isAdmin: await isAdminRequest(), adminClient: createAdminClient() }
 }
 
 export async function GET(request: Request) {
   try {
-    const { isAdmin, adminClient } = await verifyAdmin(request)
+    const { isAdmin, adminClient } = await verifyAdmin()
 
     if (!isAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -48,7 +26,7 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { isAdmin, adminClient } = await verifyAdmin(request)
+    const { isAdmin, adminClient } = await verifyAdmin()
 
     if (!isAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

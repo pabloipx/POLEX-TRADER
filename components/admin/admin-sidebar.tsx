@@ -33,9 +33,10 @@ export function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarPro
   const [adminOpen, setAdminOpen] = useState(true)
   const [operacoesOpen, setOperacoesOpen] = useState(true)
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("admin_authenticated")
-    router.push("/admin001")
+  const handleLogout = async () => {
+    await fetch("/api/admin/logout", { method: "POST" })
+    router.replace("/admin001")
+    router.refresh()
   }
 
   const menuItems = [
