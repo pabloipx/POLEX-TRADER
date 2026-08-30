@@ -2020,8 +2020,8 @@ function ChartCore({
               style={{ transform: "translateY(-50%)", animation: "pnlPop 0.3s ease-out" }}
             >
               <div
-                className="flex size-7 items-center justify-center rounded-full border-2 border-white text-sm font-bold text-white shadow-lg"
-                style={{ backgroundColor: clr, boxShadow: `0 0 12px ${clr}88` }}
+                className="flex size-5 items-center justify-center rounded-full border border-white/80 text-[11px] font-medium text-white"
+                style={{ backgroundColor: clr }}
               >
                 {o.isCall ? "↑" : "↓"}
               </div>
