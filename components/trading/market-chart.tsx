@@ -1971,15 +1971,15 @@ function ChartCore({
         </div>
       </div>
 
-      {/* Relogio minimizado (UTC-3) no canto inferior esquerdo */}
+      {/* Relógio de Brasília acima do eixo de tempo, sem cobrir os horários do gráfico */}
       {clock && (
         <div
-          className="absolute bottom-2 left-3 z-20 pointer-events-none flex items-center gap-1"
+          className="pointer-events-none absolute bottom-9 left-12 z-20 flex items-center gap-1.5 rounded-md border border-[#2A2E39] bg-[#0d0d0f]/90 px-2 py-1 shadow-sm"
           style={{ fontFamily: "'SF Mono',Consolas,monospace" }}
         >
-          <span className="w-1 h-1 rounded-full bg-[#00E676]" />
-          <span className="text-[10px] font-medium text-[#787B86] tabular-nums tracking-tight">
-            {clock} UTC-3
+          <span className="size-1.5 rounded-full bg-[#00E676]" />
+          <span className="text-[10px] font-medium tabular-nums tracking-tight text-[#9CA3AF]">
+            {clock} · Brasília
           </span>
         </div>
       )}

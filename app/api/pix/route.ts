@@ -15,6 +15,18 @@ function isValidCpf(value: string) {
   return calculateDigit(9) === Number(value[9]) && calculateDigit(10) === Number(value[10])
 }
 
+function normalizeBrazilianPhone(value: unknown) {
+  let digits = typeof value === "string" ? value.replace(/\D/g, "") : ""
+  if (digits.startsWith("0")) digits = digits.slice(1)
+  if (digits.length === 10 || digits.length === 11) digits = `55${digits}`
+  return /^55\d{10,11}$/.test(digits) ? digits : null
+}
+
+function createRandomNumericId(length = 20) {
+  const bytes = crypto.getRandomValues(new Uint8Array(length))
+  return Array.from(bytes, (byte) => String(byte % 10)).join("")
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { createClient } = await import("@/lib/supabase/server")
@@ -51,11 +63,18 @@ export async function POST(request: NextRequest) {
 
     const clientName = profile?.full_name?.trim()
     const clientEmail = profile?.email?.trim() || user.email?.trim()
+    const clientPhone = normalizeBrazilianPhone(profile?.phone)
     if (!clientName || !clientEmail) {
       return NextResponse.json({ error: "Complete seu nome e e-mail no perfil antes de gerar o PIX." }, { status: 400 })
     }
+    if (!clientPhone) {
+      return NextResponse.json(
+        { error: "Cadastre um telefone brasileiro válido com DDD no perfil antes de gerar o PIX." },
+        { status: 400 },
+      )
+    }
 
-    const identifier = `DEP-${user.id.slice(0, 8)}-${Date.now()}`
+    const identifier = createRandomNumericId()
 
     // Valida o codigo promocional AQUI, no servidor, antes de gravar no deposito. Nunca confiamos
     // no que a tela envia: o bonus e recalculado a partir da campanha no banco.
@@ -96,7 +115,7 @@ export async function POST(request: NextRequest) {
         client: {
           name: clientName,
           email: clientEmail,
-          phone: profile?.phone || "",
+          phone: clientPhone,
           document: cpf,
         },
         metadata: { userId: user.id, depositId: deposit.id },

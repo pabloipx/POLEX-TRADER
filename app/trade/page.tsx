@@ -525,31 +525,29 @@ export default function TradePage() {
           .in("result", ["pending", "PENDING"])
           .not("entry_time", "is", null)
 
-        if (error || !data?.length) return
+        if (error) return
 
-        const now = Date.now()
+        const pendingRows = (data || []) as any[]
+        const pendingIds = new Set(pendingRows.map((row) => row.id))
 
         setActiveTrades((prev) => {
-          const conhecidas = new Set(prev.map((t) => t.dbId).filter(Boolean))
-          const restauradas: ActiveTrade[] = []
+          const locaisSemBanco = prev.filter((trade) => !trade.dbId)
+          const porId = new Map(
+            prev
+              .filter((trade): trade is ActiveTrade & { dbId: string } => Boolean(trade.dbId))
+              .map((trade) => [trade.dbId, trade]),
+          )
 
-          for (const row of data as any[]) {
-            if (conhecidas.has(row.id)) continue // ja esta no grafico
-            if (processedTradesRef.current.has(`db-${row.id}`)) continue // ja liquidada nesta sessao
+          for (const row of pendingRows) {
+            if (processedTradesRef.current.has(`db-${row.id}`)) continue
 
             const timestamp = new Date(row.entry_time).getTime()
             const expiryTime = Number(row.timeframe) || 60
-            if (!Number.isFinite(timestamp)) continue
-            // Ja venceu: quem encerra e o finalizeExpiredTrades, nao entra como linha ativa.
-            if (now >= timestamp + expiryTime * 1000) continue
-
             const entryPrice = Number(row.entry_price) || 0
-            if (entryPrice <= 0) continue // sem preco de entrada nao existe linha para desenhar
+            if (!Number.isFinite(timestamp) || entryPrice <= 0) continue
 
-            // Marcada como acompanhada na tela para que a liquidacao siga o caminho com animacao.
             trackedDbIdsRef.current.add(row.id)
-
-            restauradas.push({
+            porId.set(row.id, {
               id: `db-${row.id}`,
               dbId: row.id,
               symbol: row.symbol,
@@ -564,7 +562,9 @@ export default function TradePage() {
             })
           }
 
-          return restauradas.length > 0 ? [...prev, ...restauradas] : prev
+          // O banco e a fonte de verdade: uma linha so sai quando a operacao deixa de estar pendente.
+          const sincronizadas = [...porId.values()].filter((trade) => pendingIds.has(trade.dbId))
+          return [...locaisSemBanco, ...sincronizadas]
         })
       } catch {}
     },
@@ -589,6 +589,33 @@ export default function TradePage() {
       document.removeEventListener("visibilitychange", run)
       window.removeEventListener("focus", run)
       window.removeEventListener("pageshow", run)
+    }
+  }, [user?.id, hydrateActiveTrades])
+
+  // Sincroniza INSERT/UPDATE em todos os dispositivos conectados à mesma conta.
+  // A reconciliação periódica abaixo cobre quedas temporárias do canal Realtime.
+  useEffect(() => {
+    if (!user?.id) return
+    const userId = user.id
+
+    const reconcile = () => {
+      if (!mountedRef.current) return
+      void hydrateActiveTrades(userId)
+    }
+
+    const channel = supabaseRef.current
+      .channel(`trade-lines-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trades", filter: `user_id=eq.${userId}` },
+        reconcile,
+      )
+      .subscribe()
+
+    const interval = window.setInterval(reconcile, 3000)
+    return () => {
+      window.clearInterval(interval)
+      void supabaseRef.current.removeChannel(channel)
     }
   }, [user?.id, hydrateActiveTrades])
 

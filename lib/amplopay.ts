@@ -101,7 +101,10 @@ class AmploPayClient {
     console.log(`[v0] AmploPay response ${res.status}:`, JSON.stringify(data).slice(0, 500))
 
     if (!res.ok) {
-      const msg = data.message || data.errorCode || `HTTP ${res.status}`
+      const detail = Array.isArray(data.details)
+        ? data.details.map((item: { message?: string }) => item.message).filter(Boolean).join(" ")
+        : ""
+      const msg = detail || data.message || data.errorCode || `HTTP ${res.status}`
       throw new Error(`AmploPay erro (${data.errorCode || res.status}): ${msg}`)
     }
 
@@ -137,6 +140,11 @@ class AmploPayClient {
       throw new Error(`Credenciais AmploPay nao configuradas. Falta configurar: ${faltando}.`)
     }
 
+    const phone = params.client.phone.replace(/\D/g, "")
+    if (!/^55\d{10,11}$/.test(phone)) {
+      throw new Error("Telefone inválido para o PIX. Cadastre um número brasileiro com DDD.")
+    }
+
     const payload: Record<string, any> = {
       amount: params.amount,
       identifier: params.identifier,
@@ -144,7 +152,7 @@ class AmploPayClient {
       client: {
         name: params.client.name,
         email: params.client.email,
-        phone: params.client.phone.replace(/\D/g, "") || "00000000000",
+        phone,
         document: params.client.document.replace(/\D/g, ""),
       },
     }
