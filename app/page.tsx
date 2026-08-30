@@ -39,14 +39,16 @@ export default function HomePage() {
         Negociar envolve riscos. Opere com responsabilidade e utilize apenas valores que pode administrar.
       </div>
 
-      <header className="sticky top-0 z-40 mx-auto flex max-w-7xl items-center justify-between bg-[var(--landing-bg)]/88 px-5 py-5 backdrop-blur-xl lg:px-8">
-        <Link href="#inicio" aria-label="Fidelity Option — início" className="shrink-0">
-          <Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} sizes="(max-width: 639px) 96px, (max-width: 1023px) 176px, 224px" className="h-auto w-24 object-contain sm:w-44 lg:w-56" priority />
-        </Link>
+      <header className="sticky top-0 z-40 bg-[var(--landing-bg)]/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-3 sm:h-auto sm:px-5 sm:py-5 lg:px-8">
+          <Link href="#inicio" aria-label="Fidelity Option — início" className="mr-auto min-w-0">
+            <Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} sizes="(max-width: 639px) 112px, (max-width: 1023px) 176px, 224px" className="h-auto w-28 max-w-full object-contain sm:w-44 lg:w-56" priority />
+          </Link>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <Link href="/auth/login" className="rounded-lg border border-[var(--landing-line-strong)] bg-[var(--landing-panel-raised)] px-2 py-2 text-[9px] font-semibold uppercase sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Entrar</span><span className="hidden sm:inline">Entre agora</span></Link>
-          <Link href="/auth/sign-up" className="rounded-lg bg-[var(--landing-primary)] px-2 py-2 text-[9px] font-bold uppercase text-[var(--landing-primary-foreground)] sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Criar conta</span><span className="hidden sm:inline">Criar uma conta</span></Link>
+          <nav aria-label="Acesso à conta" className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <Link href="/auth/login" className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-lg border border-[var(--landing-line-strong)] bg-[var(--landing-panel-raised)] px-2.5 text-xs font-semibold sm:h-auto sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Entrar</span><span className="hidden sm:inline">Entre agora</span></Link>
+            <Link href="/auth/sign-up" className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-lg bg-[var(--landing-primary)] px-2.5 text-xs font-bold text-[var(--landing-primary-foreground)] sm:h-auto sm:rounded-xl sm:px-8 sm:py-4 sm:text-sm"><span className="sm:hidden">Criar conta</span><span className="hidden sm:inline">Criar uma conta</span></Link>
+          </nav>
         </div>
       </header>
 
