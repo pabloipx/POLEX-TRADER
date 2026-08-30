@@ -497,6 +497,10 @@ export default function TradePage() {
 
   // Track processed trade IDs to prevent double-processing
   const processedTradesRef = useRef<Set<string>>(new Set())
+  // Impede que uma consulta iniciada antes da compra apague a linha recém-criada quando sua
+  // resposta atrasada chegar. Esse race condition fazia a linha aparecer e sumir aleatoriamente.
+  const activeTradesRequestRef = useRef(0)
+  const locallyCreatedTradeAtRef = useRef<Map<string, number>>(new Map())
 
   /**
    * Recarrega do banco as operacoes que ainda estao abertas.
@@ -517,6 +521,8 @@ export default function TradePage() {
    */
   const hydrateActiveTrades = useCallback(
     async (userId: string) => {
+      const requestId = ++activeTradesRequestRef.current
+      const requestStartedAt = Date.now()
       try {
         const { data, error } = await supabaseRef.current
           .from("trades")
@@ -525,10 +531,11 @@ export default function TradePage() {
           .in("result", ["pending", "PENDING"])
           .not("entry_time", "is", null)
 
-        if (error) return
+        if (error || requestId !== activeTradesRequestRef.current) return
 
         const pendingRows = (data || []) as any[]
         const pendingIds = new Set(pendingRows.map((row) => row.id))
+        for (const id of pendingIds) locallyCreatedTradeAtRef.current.delete(id)
 
         setActiveTrades((prev) => {
           const locaisSemBanco = prev.filter((trade) => !trade.dbId)
@@ -562,8 +569,14 @@ export default function TradePage() {
             })
           }
 
-          // O banco e a fonte de verdade: uma linha so sai quando a operacao deixa de estar pendente.
-          const sincronizadas = [...porId.values()].filter((trade) => pendingIds.has(trade.dbId))
+          // Uma resposta iniciada antes da compra ainda não conhece o novo UUID. Preservamos essa
+          // linha até uma consulta posterior confirmá-la; depois disso o banco volta a ser a fonte
+          // única de verdade e a remove normalmente quando a liquidação alterar o status.
+          const sincronizadas = [...porId.values()].filter((trade) => {
+            if (pendingIds.has(trade.dbId)) return true
+            const createdAt = locallyCreatedTradeAtRef.current.get(trade.dbId)
+            return createdAt !== undefined && createdAt >= requestStartedAt
+          })
           return [...locaisSemBanco, ...sincronizadas]
         })
       } catch {}
@@ -870,7 +883,12 @@ export default function TradePage() {
           isDemo: insertedTrade.is_demo,
         }
 
+        locallyCreatedTradeAtRef.current.set(insertedTrade.id, Date.now())
         setActiveTrades((prev) => prev.some((trade) => trade.dbId === activeTrade.dbId) ? prev : [...prev, activeTrade])
+        // Invalida qualquer leitura iniciada antes desta compra e confirma imediatamente a linha
+        // usando o registro que acabou de ser persistido.
+        activeTradesRequestRef.current += 1
+        void hydrateActiveTrades(user.id)
         setHistoryRefresh((prev) => prev + 1)
       } catch (err: any) {
         setTradeError(err?.message || "Erro ao executar operação")
@@ -879,7 +897,7 @@ export default function TradePage() {
         setIsTrading(false)
       }
     },
-    [user, amount, currentBalance, selectedSymbol, price, expiryTime, accountType, payout, isTrading, marketStatus],
+    [user, amount, currentBalance, selectedSymbol, price, expiryTime, accountType, payout, isTrading, marketStatus, hydrateActiveTrades],
   )
 
   const handleExpiryChange = useCallback(
