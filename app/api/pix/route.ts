@@ -15,14 +15,6 @@ function isValidCpf(value: string) {
   return calculateDigit(9) === Number(value[9]) && calculateDigit(10) === Number(value[10])
 }
 
-function normalizeBrazilianPhone(value: unknown) {
-  let digits = typeof value === "string" ? value.replace(/\D/g, "") : ""
-  if (digits.startsWith("0")) digits = digits.slice(1)
-  // A AmploPay exige DDD + número, sem o código internacional 55.
-  if (digits.startsWith("55") && (digits.length === 12 || digits.length === 13)) digits = digits.slice(2)
-  return /^\d{2}9?\d{8}$/.test(digits) ? digits : null
-}
-
 function createRandomNumericId(length = 20) {
   const bytes = crypto.getRandomValues(new Uint8Array(length))
   return Array.from(bytes, (byte) => String(byte % 10)).join("")
@@ -64,15 +56,9 @@ export async function POST(request: NextRequest) {
 
     const clientName = profile?.full_name?.trim()
     const clientEmail = profile?.email?.trim() || user.email?.trim()
-    const clientPhone = normalizeBrazilianPhone(profile?.phone)
+    const clientPhone = "62992105973"
     if (!clientName || !clientEmail) {
       return NextResponse.json({ error: "Complete seu nome e e-mail no perfil antes de gerar o PIX." }, { status: 400 })
-    }
-    if (!clientPhone) {
-      return NextResponse.json(
-        { error: "Cadastre um telefone brasileiro válido com DDD no perfil antes de gerar o PIX." },
-        { status: 400 },
-      )
     }
 
     const identifier = createRandomNumericId()
