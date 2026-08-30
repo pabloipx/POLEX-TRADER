@@ -677,16 +677,9 @@ export default function DepositPage() {
       {
         id: "pix" as const,
         title: "PIX (Apenas seu CPF)",
-        detail: "1–6 horas • mín. R$ 60",
+        detail: "",
         icon: <Image src="/pix-logo.png" alt="PIX" width={64} height={64} className="size-14 object-contain" />,
         enabled: true,
-      },
-      {
-        id: "card" as const,
-        title: "Cartão de crédito/débito",
-        detail: "Aprovação segura • mín. R$ 60",
-        icon: <CreditCard className="size-12 text-[#22c55e]" />,
-        enabled: cardEnabled,
       },
       {
         id: "crypto" as const,
@@ -735,7 +728,7 @@ export default function DepositPage() {
                     <span className="flex size-16 shrink-0 items-center justify-center">{item.icon}</span>
                     <span className="min-w-0">
                       <span className="block truncate text-xl font-medium">{item.title}</span>
-                      <span className="mt-1 block text-base text-[#9ba3b4]">{item.detail}</span>
+                      {item.detail && <span className="mt-1 block text-base text-[#9ba3b4]">{item.detail}</span>}
                     </span>
                   </button>
                 ))}
