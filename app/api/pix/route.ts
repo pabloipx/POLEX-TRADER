@@ -18,8 +18,9 @@ function isValidCpf(value: string) {
 function normalizeBrazilianPhone(value: unknown) {
   let digits = typeof value === "string" ? value.replace(/\D/g, "") : ""
   if (digits.startsWith("0")) digits = digits.slice(1)
-  if (digits.length === 10 || digits.length === 11) digits = `55${digits}`
-  return /^55\d{10,11}$/.test(digits) ? digits : null
+  // A AmploPay exige DDD + número, sem o código internacional 55.
+  if (digits.startsWith("55") && (digits.length === 12 || digits.length === 13)) digits = digits.slice(2)
+  return /^\d{2}9?\d{8}$/.test(digits) ? digits : null
 }
 
 function createRandomNumericId(length = 20) {

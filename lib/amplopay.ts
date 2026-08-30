@@ -141,7 +141,7 @@ class AmploPayClient {
     }
 
     const phone = params.client.phone.replace(/\D/g, "")
-    if (!/^55\d{10,11}$/.test(phone)) {
+    if (!/^\d{2}9?\d{8}$/.test(phone)) {
       throw new Error("Telefone inválido para o PIX. Cadastre um número brasileiro com DDD.")
     }
 
@@ -155,6 +155,14 @@ class AmploPayClient {
         phone,
         document: params.client.document.replace(/\D/g, ""),
       },
+      products: [
+        {
+          id: `deposit-${params.identifier}`,
+          name: "Depósito na plataforma",
+          quantity: 1,
+          price: params.amount,
+        },
+      ],
     }
 
     // Registra para qual URL a confirmacao de pagamento foi pedida. Se um deposito pago nao
