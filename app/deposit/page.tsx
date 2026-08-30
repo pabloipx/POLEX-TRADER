@@ -4,10 +4,9 @@ import type React from "react"
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@supabase/ssr"
-import { ChevronLeft, Copy, Check, Loader2, Clock, RefreshCw, CreditCard, CheckCircle2, XCircle, X, Info, Sparkles, ShieldCheck, Lock } from "lucide-react"
+import { ChevronLeft, Copy, Check, Loader2, Clock, RefreshCw, CreditCard, CheckCircle2, XCircle, X, ShieldCheck, Lock } from "lucide-react"
 import Image from "next/image"
 import { QRCodeSVG } from "qrcode.react"
-import { PromoCodeInput } from "@/components/promo-code-input"
 
 const QUICK_AMOUNTS = [50, 100, 500, 1000, 5000, 10000, 50000, 100000]
 
@@ -37,11 +36,8 @@ export default function DepositPage() {
   const [amount, setAmount] = useState("50,00")
   const [acceptTerms, setAcceptTerms] = useState(false)
   // Codigo promocional ja validado pelo servidor; enviado junto ao gerar o PIX.
-  const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [promoCode, setPromoCode] = useState("")
-  const [promoMsg, setPromoMsg] = useState<string | null>(null)
 
   // PIX state
   const [pixData, setPixData] = useState<PixPaymentData | null>(null)
@@ -280,8 +276,7 @@ export default function DepositPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
   amount: depositAmount,
-  document: cleanCpf,
-  promoCode: appliedPromoCode,
+        document: cleanCpf,
 
         }),
       })
@@ -452,11 +447,6 @@ export default function DepositPage() {
     setCardProcessing(false)
     setProcessingStep(0)
     setError(null)
-  }
-
-  const handleApplyPromo = () => {
-    if (!promoCode.trim()) return
-    setPromoMsg("Código promocional inválido ou expirado.")
   }
 
   const pixCode = pixData?.copy_paste || pixData?.qr_code || ""
@@ -824,57 +814,6 @@ export default function DepositPage() {
           </div>
         )}
 
-        {/* PROMOÇÃO */}
-        {method !== "crypto" && (
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs font-semibold tracking-wider text-[#9CA3AF]">PROMOÇÃO</span>
-              <button
-                type="button"
-                onClick={() => setPromoMsg("Nenhuma promoção disponível no momento.")}
-                className="flex items-center gap-1 text-sm text-[#3b82f6] hover:text-[#60a5fa] transition-colors"
-              >
-                <Sparkles className="h-4 w-4" />
-                Exibir disponíveis
-              </button>
-            </div>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value={promoCode}
-                onChange={(e) => {
-                  setPromoCode(e.target.value)
-                  setPromoMsg(null)
-                }}
-                placeholder="Insira seu código promocional"
-                className="flex-1 border-b border-[#2a2a2e] bg-transparent py-2 text-white outline-none placeholder:text-[#4b5563] focus:border-[#22c55e]"
-              />
-              <button
-                type="button"
-                onClick={handleApplyPromo}
-                className="rounded-md bg-[#1c1c1f] px-6 text-sm text-[#9CA3AF] transition-colors hover:bg-[#26262a]"
-              >
-                Aplicar
-              </button>
-            </div>
-            <p className="mt-2 text-xs text-[#6b7280]">{promoMsg || "Um código promocional por depósito"}</p>
-          </div>
-        )}
-
-        {/* DETALHES DO PAGAMENTO */}
-        {method !== "crypto" && (
-          <div>
-            <span className="text-xs font-semibold tracking-wider text-[#9CA3AF]">DETALHES DO PAGAMENTO</span>
-            <div className="mt-3 flex items-start gap-3 rounded-lg border border-[#26262a] bg-[#151517] p-4">
-              <Info className="mt-0.5 h-5 w-5 shrink-0 text-[#9CA3AF]" />
-              <p className="text-sm leading-relaxed text-[#9CA3AF]">
-                Nossa plataforma não permite CNPJ, CPF de terceiros e/ou métodos de pagamento de terceiros. 90% dos
-                pagamentos são processados pelo provedor em até 5 minutos.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Card: prompt to select amount */}
         {method === "card" && !cardAmountSelected && (
           <div className="p-4 rounded-xl bg-[#121826] border border-[#1F2933] text-center">
@@ -1210,11 +1149,6 @@ export default function DepositPage() {
               </>
             )}
           </div>
-        )}
-
-        {/* Codigo promocional - apenas PIX, o unico metodo que concede bonus hoje */}
-        {method === "pix" && !pixData && (
-          <PromoCodeInput amount={parseAmount()} onApplied={setAppliedPromoCode} />
         )}
 
         {/* Terms - only for PIX and Card */}
