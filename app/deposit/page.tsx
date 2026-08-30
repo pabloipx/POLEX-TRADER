@@ -4,11 +4,11 @@ import type React from "react"
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@supabase/ssr"
-import { ChevronLeft, Copy, Check, Loader2, Clock, RefreshCw, CreditCard, CheckCircle2, XCircle, X, ShieldCheck, Lock } from "lucide-react"
+import { ChevronLeft, Copy, Check, Loader2, Clock, RefreshCw, CreditCard, CheckCircle2, XCircle, X } from "lucide-react"
 import Image from "next/image"
 import { QRCodeSVG } from "qrcode.react"
 
-const QUICK_AMOUNTS = [50, 100, 500, 1000, 5000, 10000, 50000, 100000]
+const QUICK_AMOUNTS = [60, 250, 1000, 2000, 100, 500, 1500, 4000]
 
   interface PixPaymentData {
   deposit_id: string
@@ -33,7 +33,8 @@ const USD_TO_BRL = 6.0 // Taxa de conversão USD para BRL
 export default function DepositPage() {
   const router = useRouter()
   const [method, setMethod] = useState<DepositMethod>("pix")
-  const [amount, setAmount] = useState("50,00")
+  const [selectingMethod, setSelectingMethod] = useState(true)
+  const [amount, setAmount] = useState("60,00")
   const [acceptTerms, setAcceptTerms] = useState(false)
   // Codigo promocional ja validado pelo servidor; enviado junto ao gerar o PIX.
   const [isLoading, setIsLoading] = useState(false)
@@ -539,7 +540,7 @@ export default function DepositPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleNewDeposit}
-              className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] transition-colors"
+              className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#16a34a] transition-colors"
             >
               Tentar novamente
             </button>
@@ -671,86 +672,111 @@ export default function DepositPage() {
           ? "USDT (Tether)"
           : "Bitcoin (BTC)"
 
-  return (
-    <div className="min-h-screen bg-[#0d0d0f]">
-      <div className="sticky top-0 z-10 px-4 sm:px-8 py-4 flex items-center gap-4 bg-[#0d0d0f]">
-        <button
-          onClick={() => router.back()}
-          aria-label="Fechar"
-          className="w-10 h-10 rounded-full bg-[#1c1c1f] hover:bg-[#26262a] flex items-center justify-center transition-colors"
-        >
-          <X className="w-5 h-5 text-white/80" />
-        </button>
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-1 text-[#9CA3AF] hover:text-white transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          <span className="text-base">Moeda</span>
-        </button>
-      </div>
+  if (selectingMethod) {
+    const methods = [
+      {
+        id: "pix" as const,
+        title: "PIX (Apenas seu CPF)",
+        detail: "1–6 horas • mín. R$ 60",
+        icon: <Image src="/pix-logo.png" alt="PIX" width={64} height={64} className="size-14 object-contain" />,
+        enabled: true,
+      },
+      {
+        id: "card" as const,
+        title: "Cartão de crédito/débito",
+        detail: "Aprovação segura • mín. R$ 60",
+        icon: <CreditCard className="size-12 text-[#22c55e]" />,
+        enabled: cardEnabled,
+      },
+      {
+        id: "crypto" as const,
+        title: "Criptomoeda",
+        detail: "USDT ou Bitcoin • mín. US$ 20",
+        icon: <Image src="/logos/tether.svg" alt="Tether" width={52} height={52} className="size-12 object-contain" />,
+        enabled: cryptoEnabled,
+      },
+    ].filter((item) => item.enabled)
 
-      <div className="px-4 sm:px-8 py-6 max-w-5xl mx-auto">
-        <div className="flex flex-col lg:flex-row lg:gap-16">
-          <div className="w-full lg:max-w-md space-y-6">
-        {/* Method selector */}
-        <div className="flex gap-2 p-1 bg-[#121826] rounded-xl border border-[#1F2933]">
-          <button
-            onClick={() => { setMethod("pix"); setError(null) }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
-              method === "pix"
-                ? "bg-[#22c55e] text-white shadow-lg shadow-orange-500/20"
-                : "text-white/50 hover:text-white/70"
-            }`}
-          >
-            <Image
-              src="/images/a57db68e-f6a1-44c5-bde8.jpeg"
-              alt="PIX"
-              width={20}
-              height={20}
-              className="w-5 h-5 rounded"
-            />
-            PIX
-          </button>
-          {cardEnabled && (
+    return (
+      <main className="min-h-screen bg-[#1a2235] px-5 py-6 text-white sm:px-10 lg:px-16 lg:py-12">
+        <div className="mx-auto max-w-6xl">
+          <header className="flex items-center gap-6">
             <button
-              onClick={() => { setMethod("card"); setError(null); setCardAmountSelected(false) }}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
-                method === "card"
-                  ? "bg-[#22c55e] text-white shadow-lg shadow-orange-500/20"
-                  : "text-white/50 hover:text-white/70"
-              }`}
+              type="button"
+              onClick={() => router.back()}
+              aria-label="Fechar"
+              className="flex size-12 items-center justify-center rounded-full bg-[#343c50] text-[#aab1c1] transition-colors hover:bg-[#414a60] hover:text-white sm:size-16"
             >
-              <CreditCard className="w-5 h-5" />
-              Cartao
+              <X className="size-7 sm:size-9" />
             </button>
-          )}
-          {cryptoEnabled && (
-            <button
-              onClick={() => { setMethod("crypto"); setError(null) }}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${
-                method === "crypto"
-                  ? "bg-[#22c55e] text-white shadow-lg shadow-orange-500/20"
-                  : "text-white/50 hover:text-white/70"
-              }`}
-            >
-              <span className="text-sm font-bold">USDT</span>
-            </button>
-          )}
+            <h1 className="text-2xl font-normal text-balance sm:text-4xl">Método de pagamento</h1>
+          </header>
+
+          <section className="mt-14 sm:ml-20 lg:mt-16">
+            <h2 className="text-sm font-bold uppercase tracking-wide sm:text-base">Métodos disponíveis</h2>
+            {methodsLoading ? (
+              <div className="mt-6 flex h-36 items-center justify-center rounded-md bg-[#2d3548]">
+                <Loader2 className="size-7 animate-spin text-[#22c55e]" />
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {methods.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setMethod(item.id)
+                      setError(null)
+                      setCardAmountSelected(false)
+                      setSelectingMethod(false)
+                    }}
+                    className="flex min-h-36 items-center gap-5 rounded-md border border-transparent bg-[#2d3548] px-7 py-6 text-left transition-colors hover:border-[#22c55e] hover:bg-[#343d52] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e]"
+                  >
+                    <span className="flex size-16 shrink-0 items-center justify-center">{item.icon}</span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-xl font-medium">{item.title}</span>
+                      <span className="mt-1 block text-base text-[#9ba3b4]">{item.detail}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
+      </main>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-[#1a2235]">
+      <header className="sticky top-0 z-10 flex items-center gap-4 bg-[#1a2235] px-5 py-5 sm:px-10 lg:px-14">
+        <button
+          type="button"
+          onClick={() => setSelectingMethod(true)}
+          aria-label="Voltar aos métodos de pagamento"
+          className="flex size-10 items-center justify-center rounded-full text-[#9ba3b4] transition-colors hover:bg-[#2d3548] hover:text-white"
+        >
+          <ChevronLeft className="size-7" />
+        </button>
+        <span className="text-xl text-[#9ba3b4] sm:text-2xl">Método de pagamento</span>
+      </header>
+
+      <div className="mx-auto max-w-6xl px-5 pb-12 pt-12 sm:px-10 lg:px-14 lg:pt-16">
+        <div className="flex flex-col lg:flex-row lg:gap-20">
+          <div className="w-full max-w-4xl space-y-8">
 
         {/* Title with icon */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center bg-white shrink-0">
+        <div className="flex items-center gap-5">
+          <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden">
             {method === "pix" ? (
-              <Image src="/images/a57db68e-f6a1-44c5-bde8.jpeg" alt="PIX" width={36} height={36} className="w-full h-full object-cover" />
+              <Image src="/pix-logo.png" alt="PIX" width={64} height={64} className="size-14 object-contain" />
             ) : method === "card" ? (
-              <CreditCard className="w-5 h-5 text-[#0d0d0f]" />
+              <CreditCard className="size-12 text-[#22c55e]" />
             ) : (
-              <span className="text-[#0d0d0f] font-bold text-lg">{cryptoType === "usdt" ? "₮" : "₿"}</span>
+              <Image src="/logos/tether.svg" alt="Criptomoeda" width={52} height={52} className="size-12 object-contain" />
             )}
           </div>
-          <h1 className="text-2xl font-semibold text-white text-balance">{methodTitle}</h1>
+          <h1 className="text-3xl font-normal text-white text-balance sm:text-4xl">{methodTitle}</h1>
         </div>
 
         {/* Error */}
@@ -763,15 +789,16 @@ export default function DepositPage() {
         {/* Amount - hide for crypto since it has its own USD input */}
         {method !== "crypto" && (
           <div>
-            <label className="block text-sm text-[#9CA3AF] mb-2">Valor</label>
+            <label htmlFor="deposit-amount" className="mb-3 block text-lg text-[#9ba3b4]">Valor</label>
             <div className="relative">
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[#6B7280] text-lg">R$</span>
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-xl text-[#9ba3b4]">R$</span>
               <input
+                id="deposit-amount"
                 type="text"
                 value={amount}
                 onChange={handleAmountChange}
-                placeholder="50,00"
-                className="w-full py-2 pl-8 pr-4 text-white text-lg bg-transparent border-0 border-b border-[#2a2a2e] focus:border-[#22c55e] outline-none"
+                placeholder="60,00"
+                className="w-full rounded-md border border-[#3d465b] bg-transparent py-5 pl-16 pr-5 text-xl text-white outline-none transition-colors focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e]"
                 inputMode="numeric"
               />
             </div>
@@ -780,22 +807,30 @@ export default function DepositPage() {
 
         {/* Quick amounts - hide for crypto */}
         {method !== "crypto" && (
-          <div className="grid grid-cols-4 gap-3">
-            {QUICK_AMOUNTS.map((value) => (
-              <button
-                key={value}
-                onClick={() => handleQuickAmount(value)}
-                className="py-3 px-2 rounded-lg text-sm font-medium text-white bg-[#151517] border border-[#26262a] hover:border-[#22c55e] transition-colors"
-              >
-                R$ {value.toLocaleString("pt-BR")}
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {QUICK_AMOUNTS.map((value) => {
+              const isSelected = parseAmount() === value
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => handleQuickAmount(value)}
+                  className={`rounded-md border bg-transparent px-3 py-4 text-lg font-normal transition-colors sm:py-5 sm:text-xl ${
+                    isSelected
+                      ? "border-[#22c55e] text-[#22c55e]"
+                      : "border-[#3d465b] text-white hover:border-[#22c55e]"
+                  }`}
+                >
+                  R$ {value.toLocaleString("pt-BR")}
+                </button>
+              )
+            })}
           </div>
         )}
 
         {method === "pix" && (
           <div>
-            <label htmlFor="pix-cpf" className="block text-sm text-[#9CA3AF] mb-2">CPF do titular</label>
+            <label htmlFor="pix-cpf" className="mb-3 block text-lg text-[#9ba3b4]">CPF do titular</label>
             <input
               id="pix-cpf"
               type="text"
@@ -808,7 +843,7 @@ export default function DepositPage() {
               maxLength={14}
               inputMode="numeric"
               autoComplete="off"
-              className="w-full py-3 text-white bg-transparent border-0 border-b border-[#2a2a2e] focus:border-[#22c55e] outline-none font-mono"
+              className="w-full rounded-md border border-[#3d465b] bg-transparent px-6 py-5 font-mono text-lg text-white outline-none transition-colors focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e]"
             />
             <p className="mt-2 text-xs text-[#6B7280]">O CPF deve pertencer ao titular da conta que fará o pagamento.</p>
           </div>
@@ -909,7 +944,7 @@ export default function DepositPage() {
                 </div>
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="w-full py-3 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] transition-colors"
+                  className="w-full py-3 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#16a34a] transition-colors"
                 >
                   Voltar ao Dashboard
                 </button>
@@ -1174,7 +1209,7 @@ export default function DepositPage() {
           <button
             onClick={method === "pix" ? handlePixDeposit : handleCardDeposit}
             disabled={!acceptTerms || parseAmount() < 50 || isLoading || (method === "pix" && pixCpf.replace(/\D/g, "").length !== 11)}
-            className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#c2410c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-xl font-semibold text-white bg-[#22c55e] hover:bg-[#16a34a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -1210,37 +1245,6 @@ export default function DepositPage() {
         )}
           </div>
 
-          {/* RIGHT COLUMN - selos de seguranca */}
-          <div className="hidden lg:flex flex-1 flex-col gap-8 pt-2 opacity-40">
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-8 w-8 text-white/70" />
-              <span className="text-sm leading-tight text-white/70">
-                mastercard
-                <br />
-                ID Check
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-8 w-8 text-white/70" />
-              <span className="text-sm leading-tight text-white/70">PCI DSS</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-8 w-8 text-white/70" />
-              <span className="text-sm leading-tight text-white/70">
-                VISA
-                <br />
-                Secure
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Lock className="h-8 w-8 text-white/70" />
-              <span className="text-sm leading-tight text-white/70">
-                SSL certified 256-bit
-                <br />
-                Security
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
