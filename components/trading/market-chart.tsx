@@ -82,6 +82,7 @@ interface PnlOverlay {
   id: string
   top: number
   pnl: number
+  amount: number
   inMoney: boolean
   isCall: boolean
   time: string
@@ -1660,6 +1661,7 @@ function ChartCore({
           id: t.id,
           top: y,
           pnl,
+          amount,
           inMoney,
           isCall,
           time: remaining > 0 ? `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : "LIQUIDANDO",
@@ -1987,25 +1989,33 @@ function ChartCore({
         </div>
       )}
 
-      {/* Live floating P&L above each open operation */}
+      {/* Linha de entrada persistente, no estilo IQ Option. Esta camada HTML garante que a
+          marcação continue visível mesmo quando a API nativa de price lines for recriada. */}
       {pnlOverlays.map((o) => {
-        const clr = o.inMoney ? "#00E676" : "#FF5252"
+        const clr = o.isCall ? "#00E676" : "#FF5252"
         return (
           <div
             key={o.id}
-            className="absolute z-20 pointer-events-none"
+            className="pointer-events-none absolute left-0 right-[62px] z-20"
             style={{
               top: o.top,
-              right: 72,
               transform: "translateY(-50%)",
               transition: "top 0.12s linear",
             }}
           >
+            <div className="absolute left-0 right-0 top-1/2 border-t border-dashed" style={{ borderColor: clr }} />
             <div
-              className="flex flex-col items-end gap-0.5"
-              style={{ animation: "pnlPop 0.3s ease-out" }}
+              className="absolute right-2 top-1/2 flex items-center gap-2"
+              style={{ transform: "translateY(-50%)", animation: "pnlPop 0.3s ease-out" }}
             >
               <div
+                className="flex size-7 items-center justify-center rounded-full border-2 border-white text-sm font-bold text-white shadow-lg"
+                style={{ backgroundColor: clr, boxShadow: `0 0 12px ${clr}88` }}
+              >
+                {o.isCall ? "↑" : "↓"}
+              </div>
+              <div className="flex flex-col items-end gap-0.5">
+                <div
                 className="px-2 py-1 rounded-md font-bold text-xs whitespace-nowrap"
                 style={{
                   background: "rgba(13,13,15,0.92)",
@@ -2015,8 +2025,8 @@ function ChartCore({
                   fontFamily: "'SF Mono',Consolas,monospace",
                 }}
               >
-                {o.pnl >= 0 ? "+" : "-"}R${" "}
-                {Math.abs(o.pnl).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                R${" "}
+                {o.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
               <div
                 className="px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
@@ -2029,6 +2039,7 @@ function ChartCore({
                 {o.time}
               </div>
             </div>
+          </div>
           </div>
         )
       })}
