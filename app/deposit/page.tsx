@@ -118,7 +118,8 @@ export default function DepositPage() {
     if (!pixData?.expires_at) return
 
     const updateTimer = () => {
-      const now = new Date().getTime()
+      if (document.hidden) return
+      const now = Date.now()
       const expires = new Date(pixData.expires_at!).getTime()
       const diff = Math.max(0, Math.floor((expires - now) / 1000))
       setTimeLeft(diff)
@@ -131,7 +132,11 @@ export default function DepositPage() {
 
     updateTimer()
     const interval = setInterval(updateTimer, 1000)
-    return () => clearInterval(interval)
+    document.addEventListener("visibilitychange", updateTimer)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener("visibilitychange", updateTimer)
+    }
   }, [pixData?.expires_at])
 
   // Verificar status do pagamento periodicamente
@@ -139,6 +144,7 @@ export default function DepositPage() {
     if (!pixData?.deposit_id) return
 
     const checkStatus = async () => {
+      if (document.hidden) return
       try {
         const response = await fetch(`/api/pix?deposit_id=${pixData.deposit_id}`)
         const data = await response.json()
@@ -152,8 +158,13 @@ export default function DepositPage() {
       }
     }
 
+    checkStatus()
     const interval = setInterval(checkStatus, 5000)
-    return () => clearInterval(interval)
+    document.addEventListener("visibilitychange", checkStatus)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener("visibilitychange", checkStatus)
+    }
   }, [pixData?.deposit_id, router])
 
   const formatCurrency = useCallback((value: string) => {

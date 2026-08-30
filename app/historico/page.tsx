@@ -73,6 +73,7 @@ export default function HistoricoPage() {
 
   useEffect(() => {
     const updateTimers = () => {
+      if (document.hidden) return
       const now = Date.now()
       const times: Record<string, number> = {}
 
@@ -90,7 +91,11 @@ export default function HistoricoPage() {
     if (trades.length > 0) {
       updateTimers()
       const interval = setInterval(updateTimers, 1000)
-      return () => clearInterval(interval)
+      document.addEventListener("visibilitychange", updateTimers)
+      return () => {
+        clearInterval(interval)
+        document.removeEventListener("visibilitychange", updateTimers)
+      }
     }
   }, [trades])
 

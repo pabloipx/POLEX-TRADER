@@ -224,7 +224,6 @@ export default function AdminDashboardClient() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchStats()
-      fetchUsers()
     }
   }, [isAuthenticated])
 
