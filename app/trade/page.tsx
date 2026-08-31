@@ -217,7 +217,7 @@ export default function TradePage() {
 
   // Trader sentiment (simulated)
 
-  const { price, candles, isConnected, realReady, realHistoryReady } = useGlobalOTC(
+  const { price, quoteProof, candles, isConnected, realReady, realHistoryReady } = useGlobalOTC(
     selectedSymbol,
     timeframe as 60 | 300 | 600 | 900,
   )
@@ -857,6 +857,7 @@ export default function TradePage() {
             amount: Math.round(amount * 100) / 100,
             timeframe: expiryTime,
             displayedPrice: price,
+            quoteProof,
             isDemo,
             idempotencyKey,
           }),
@@ -899,7 +900,7 @@ export default function TradePage() {
         setIsTrading(false)
       }
     },
-    [user, amount, currentBalance, selectedSymbol, price, expiryTime, accountType, payout, isTrading, marketStatus, hydrateActiveTrades],
+    [user, amount, currentBalance, selectedSymbol, price, quoteProof, expiryTime, accountType, payout, isTrading, marketStatus, hydrateActiveTrades],
   )
 
   const handleExpiryChange = useCallback(

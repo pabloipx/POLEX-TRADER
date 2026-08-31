@@ -29,7 +29,7 @@ async function pollPrice(symbol: string, tf: number) {
     const j = await r.json()
     if (!Number.isFinite(j?.price)) return
     const info = REAL_FEED_SYMBOLS[symbol]
-    setRealPrice(symbol, j.price)
+    setRealPrice(symbol, j.price, typeof j.quoteProof === "string" ? j.quoteProof : null)
     // Mantem a vela em formacao acompanhando o preco real entre duas cargas de historico
     if (info) pushRealTick(symbol, tf, j.price, info.decimals)
   } catch {}

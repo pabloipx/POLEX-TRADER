@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { recordTick, getRecordedCandles } from "@/lib/price-engine/tick-recorder"
+import { createQuoteProof } from "@/lib/price-engine/quote-proof"
 import {
   SYMBOLS,
   round,
@@ -251,7 +252,7 @@ export async function GET(req: Request) {
       const live = await getLivePrice(symbol)
       if (live !== null) {
         recordTick(symbol, live)
-        return NextResponse.json({ price: live })
+        return NextResponse.json({ price: live, quoteProof: createQuoteProof(symbol, live) })
       }
 
       // A fonte principal falhou. Cai no meta do Yahoo para manter o ativo negociavel.
@@ -276,7 +277,7 @@ export async function GET(req: Request) {
       // a cotacao do usuario nao pode esperar (nem falhar por causa da) gravacao.
       recordTick(symbol, price)
 
-      return NextResponse.json({ price })
+      return NextResponse.json({ price, quoteProof: createQuoteProof(symbol, price) })
     }
 
     // type === "candles"

@@ -4,6 +4,7 @@ import { getRealPriceAt } from "@/lib/price-engine/real-quote"
 import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { createClient } from "@/lib/supabase/server"
 import { isTimeframeAllowed, timeframesFor, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
+import { verifyQuoteProof } from "@/lib/price-engine/quote-proof"
 
 const errorMessages: Record<string, string> = {
   ASSET_DISABLED: "Ativo indisponível para negociação.",
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
     const amount = Number(body.amount)
     const timeframe = Number(body.timeframe)
     const displayedPrice = Number(body.displayedPrice)
+    const verifiedQuote = verifyQuoteProof(body.quoteProof, symbol)
     const isDemo = body.isDemo === true
     const idempotencyKey = typeof body.idempotencyKey === "string" ? body.idempotencyKey : ""
 
@@ -57,8 +59,15 @@ export async function POST(request: Request) {
       entryPrice = manager.getPriceAt(symbol, now)
     }
 
+    // Em serverless, a chamada da entrada pode cair em outra instância daquela que buscou a
+    // cotação do gráfico. Se as fontes bloquearem essa segunda chamada, usamos o comprovante
+    // HMAC recém-assinado pelo próprio endpoint de mercado — nunca um preço livre do cliente.
+    if ((!entryPrice || entryPrice <= 0) && verifiedQuote) {
+      entryPrice = verifiedQuote.price
+    }
+
     if (!entryPrice || entryPrice <= 0) {
-      return NextResponse.json({ error: "Cotação confiável indisponível. Tente novamente." }, { status: 503 })
+      return NextResponse.json({ error: "Cotação confiável indisponível. Aguarde a atualização do gráfico." }, { status: 503 })
     }
 
     // A linha deve marcar exatamente a cotação que estava visível no gráfico no clique.

@@ -19,6 +19,7 @@ export interface RealCandle {
 interface Entry {
   price: number
   priceTs: number
+  quoteProof: string | null
   candles: Map<number, RealCandle[]> // timeframe(s) -> candles (ordem crescente)
   revision: number
 }
@@ -57,17 +58,22 @@ export function isRealSymbol(symbol: string): boolean {
 function ensure(symbol: string): Entry {
   let e = store.get(symbol)
   if (!e) {
-    e = { price: 0, priceTs: 0, candles: new Map(), revision: 0 }
+    e = { price: 0, priceTs: 0, quoteProof: null, candles: new Map(), revision: 0 }
     store.set(symbol, e)
   }
   return e
 }
 
-export function setRealPrice(symbol: string, price: number): void {
+export function setRealPrice(symbol: string, price: number, quoteProof: string | null = null): void {
   const e = ensure(symbol)
   e.price = price
   e.priceTs = Date.now()
+  e.quoteProof = quoteProof
   e.revision++
+}
+
+export function getRealQuoteProof(symbol: string): string | null {
+  return store.get(symbol)?.quoteProof ?? null
 }
 
 export function setRealCandles(symbol: string, tf: number, candles: RealCandle[]): void {

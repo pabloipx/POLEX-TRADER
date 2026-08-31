@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react"
 import { multiAssetEngine, OTC_ASSETS, type OTCCandle } from "@/lib/price-engine/multi-asset-engine"
 import { ensureRealFeed } from "@/lib/price-engine/real-price-feed"
-import { hasRealPrice, getRealRevision, isRealSymbol, getRealCandles } from "@/lib/price-engine/real-price-store"
+import { hasRealPrice, getRealQuoteProof, getRealRevision, isRealSymbol, getRealCandles } from "@/lib/price-engine/real-price-store"
 import { ensureManipulationSync } from "@/lib/price-engine/manipulation-sync"
 
 /**
@@ -167,6 +167,7 @@ export function useGlobalOTC(symbol: string, timeframe: 60 | 300 | 600 | 900) {
     name: asset.name,
     // Nunca 0: se a suavizacao ainda nao rodou, usa o preco deterministico direto.
     price: smoothRef.current || multiAssetEngine.getCurrentPrice(validSymbol),
+    quoteProof: isRealSymbol(validSymbol) ? getRealQuoteProof(validSymbol) : null,
     candles: allCandles,
     currentCandle: live,
     timestamp: Math.floor(Date.now() / 1000),
