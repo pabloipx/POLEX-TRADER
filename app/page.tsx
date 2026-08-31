@@ -52,25 +52,25 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section id="inicio" className="fidelity-hero relative min-h-[760px] overflow-hidden border-t border-[var(--landing-line)] px-5 py-16 lg:min-h-[860px] lg:px-8">
+      <section id="inicio" className="fidelity-hero relative overflow-hidden border-t border-[var(--landing-line)] px-4 py-10 sm:px-5 sm:py-16 lg:min-h-[860px] lg:px-8">
         <div className="bullex-hero-glow absolute inset-0" />
-        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
-          <div className="fidelity-phone-stage relative min-h-[410px] lg:min-h-[520px]">
-            <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
-            <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidelity Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} sizes="(max-width: 1023px) 90vw, 540px" className="fidelity-phone relative mx-auto max-h-[570px] w-auto object-contain drop-shadow-2xl" priority />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-20">
+          <div className="fidelity-reveal order-1 text-center lg:order-2 lg:text-left">
+            <h1 className="text-balance text-4xl font-normal leading-tight tracking-[-0.04em] sm:text-6xl lg:text-7xl lg:leading-[1.18]">Negocie no mercado financeiro a qualquer momento!</h1>
+            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[var(--landing-text)] sm:mt-8 sm:text-xl lg:mx-0">Acesse oportunidades onde quer que você esteja. Negociar nunca foi tão simples.</p>
+            <p className="mt-3 text-sm text-[var(--landing-primary)] sm:mt-5 sm:text-lg">Compatível com computador, tablet e celular.</p>
           </div>
-          <div className="fidelity-reveal">
-            <h1 className="text-balance text-5xl font-normal leading-[1.18] tracking-[-0.045em] sm:text-6xl lg:text-7xl">Negocie no mercado financeiro a qualquer momento!</h1>
-            <p className="mt-8 max-w-xl text-xl leading-relaxed text-[var(--landing-text)]">Acesse oportunidades onde quer que você esteja. Negociar nunca foi tão simples.</p>
-            <p className="mt-5 text-lg text-[var(--landing-primary)]">Compatível com computador, tablet e celular.</p>
+          <div className="fidelity-phone-stage relative order-2 flex min-h-[300px] items-center justify-center sm:min-h-[410px] lg:order-1 lg:min-h-[520px]">
+            <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
+            <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidelity Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} sizes="(max-width: 639px) 82vw, (max-width: 1023px) 90vw, 540px" className="fidelity-phone relative mx-auto max-h-[360px] w-auto object-contain drop-shadow-2xl sm:max-h-[570px]" priority />
           </div>
         </div>
       </section>
 
-      <section id="ativos" className="fidelity-market overflow-hidden border-y border-[var(--landing-line)] py-10">
+      <section id="ativos" className="fidelity-market overflow-hidden border-y border-[var(--landing-line)] py-6 sm:py-10">
         <div className="fidelity-market-marquee flex w-max gap-4 px-4">
           {[...assets, ...assets].map((asset, cardIndex) => (
-            <article key={`${asset.symbol}-${cardIndex}`} className="fidelity-market-card group relative w-[280px] shrink-0 overflow-hidden rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-5 sm:w-[320px]">
+            <article key={`${asset.symbol}-${cardIndex}`} className="fidelity-market-card group relative w-[248px] shrink-0 overflow-hidden rounded-xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-4 sm:w-[320px] sm:rounded-2xl sm:p-5">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--landing-primary)] to-transparent opacity-70" />
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -90,10 +90,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="fidelity-scroll-section mx-auto max-w-7xl px-5 py-24 lg:px-8">
+      <section className="fidelity-scroll-section mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-24 lg:px-8">
         <div className="fidelity-scroll-copy max-w-2xl">
-          <span className="rounded-full border border-[var(--landing-primary)]/30 px-3 py-1 text-xs text-[var(--landing-primary)]">MAIS POSSIBILIDADES</span>
-          <h2 className="mt-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl">Mais de 200 ativos em uma plataforma descomplicada</h2>
+          <span className="rounded-full border border-[var(--landing-primary)]/30 px-3 py-1 text-[11px] text-[var(--landing-primary)] sm:text-xs">MAIS POSSIBILIDADES</span>
+          <h2 className="mt-5 text-balance text-3xl font-bold tracking-tight sm:mt-6 sm:text-5xl">Mais de 200 ativos em uma plataforma descomplicada</h2>
           <p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Escolha o mercado que combina com sua estratégia e acompanhe tudo em uma única interface.</p>
         </div>
         <div className="fidelity-asset-track mt-12 flex gap-3">
@@ -101,47 +101,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="fidelity-view-reveal mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-        <div><p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p><h2 className="mt-3 text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2><p className="mt-5 max-w-2xl text-[var(--landing-muted)]">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p><Link href="/auth/sign-up" className="mt-7 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Começar agora</Link></div>
+      <section className="fidelity-view-reveal mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:gap-10 sm:px-5 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div><p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p><h2 className="mt-3 text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2><p className="mt-4 max-w-2xl leading-relaxed text-[var(--landing-muted)] sm:mt-5">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p><Link href="/auth/sign-up" className="mt-6 inline-flex w-full justify-center rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)] sm:mt-7 sm:w-auto">Começar agora</Link></div>
         <Image src="/images/fidelity-profit.png" alt="Notificação de lucro realizado na Fidelity Option" width={2086} height={724} sizes="(max-width: 1023px) 90vw, 680px" className="fidelity-profit-banner h-auto w-full object-contain" />
       </section>
 
-      <section id="vantagens" className="fidelity-view-reveal mx-auto max-w-7xl px-5 py-24 lg:px-8">
-        <h2 className="max-w-2xl text-balance text-4xl font-bold tracking-tight sm:text-5xl">Por que a FIDELITY é uma plataforma para grandes decisões?</h2>
+      <section id="vantagens" className="fidelity-view-reveal mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-24 lg:px-8">
+        <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-5xl">Por que a FIDELITY é uma plataforma para grandes decisões?</h2>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {benefits.map(([Icon,title,desc]) => { const FeatureIcon=Icon as typeof Zap; return <article key={title as string} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-6"><FeatureIcon className="size-6 text-[var(--landing-primary)]"/><h3 className="mt-8 text-lg font-bold">{title as string}</h3><p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></article> })}
+          {benefits.map(([Icon,title,desc]) => { const FeatureIcon=Icon as typeof Zap; return <article key={title as string} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5 sm:p-6"><FeatureIcon className="size-6 text-[var(--landing-primary)]"/><h3 className="mt-5 text-lg font-bold sm:mt-8">{title as string}</h3><p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></article> })}
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-24 lg:px-8">
         <h2 className="text-center text-3xl font-bold sm:text-5xl">Condições FIDELITY</h2>
-        <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {specials.map(([label,value,desc]) => <article key={label} className="bullex-special rounded-xl border border-[var(--landing-line)] p-7"><p className="text-xs text-[var(--landing-primary)]">{label}</p><h3 className="mt-4 text-3xl font-bold">{value}</h3><p className="mt-2 text-sm text-[var(--landing-muted)]">{desc}</p></article>)}
+        <div className="mt-8 grid gap-3 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
+          {specials.map(([label,value,desc]) => <article key={label} className="bullex-special rounded-xl border border-[var(--landing-line)] p-5 sm:p-7"><p className="text-xs text-[var(--landing-primary)]">{label}</p><h3 className="mt-4 text-3xl font-bold">{value}</h3><p className="mt-2 text-sm text-[var(--landing-muted)]">{desc}</p></article>)}
         </div>
         <div className="mt-10 text-center"><Link href="/auth/sign-up" className="inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Abrir minha conta</Link></div>
       </section>
 
-      <section id="plataforma" className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
-        <Image src="/images/fidelity-platform.png" alt="Plataforma Fidelity Option no notebook e celular" width={1668} height={928} sizes="(max-width: 1023px) 90vw, 620px" className="fidelity-platform-device h-auto w-full object-contain drop-shadow-2xl" />
-        <div><span className="text-xs font-semibold text-[var(--landing-primary)]">MERCADO NA SUA TELA</span><h2 className="mt-5 text-balance text-4xl font-bold sm:text-5xl">Negocie no mercado financeiro em tempo real</h2><p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Acesse cotações, gráficos e suas operações sem complicação. A plataforma se adapta ao seu dispositivo para você acompanhar o mercado onde estiver.</p><div className="mt-8 flex flex-col gap-4">{["Conta demo para praticar", "Gráficos e indicadores integrados", "Histórico completo de operações"].map(item=><div key={item} className="flex items-center gap-3"><Check className="size-5 text-[var(--landing-primary)]"/><span>{item}</span></div>)}</div></div>
+      <section id="plataforma" className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:gap-12 sm:px-5 sm:py-24 lg:grid-cols-2 lg:px-8">
+        <Image src="/images/fidelity-platform.png" alt="Plataforma Fidelity Option no notebook e celular" width={1668} height={928} sizes="(max-width: 1023px) 92vw, 620px" className="fidelity-platform-device h-auto w-full object-contain drop-shadow-2xl" />
+        <div><span className="text-xs font-semibold text-[var(--landing-primary)]">MERCADO NA SUA TELA</span><h2 className="mt-4 text-balance text-3xl font-bold sm:mt-5 sm:text-5xl">Negocie no mercado financeiro em tempo real</h2><p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Acesse cotações, gráficos e suas operações sem complicação. A plataforma se adapta ao seu dispositivo para você acompanhar o mercado onde estiver.</p><div className="mt-8 flex flex-col gap-4">{["Conta demo para praticar", "Gráficos e indicadores integrados", "Histórico completo de operações"].map(item=><div key={item} className="flex items-center gap-3"><Check className="size-5 text-[var(--landing-primary)]"/><span>{item}</span></div>)}</div></div>
       </section>
 
-      <section className="overflow-hidden py-24">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8"><span className="text-xs font-semibold text-[var(--landing-primary)]">FLEXIBILIDADE</span><h2 className="mt-5 max-w-2xl text-balance text-4xl font-normal sm:text-6xl">Negocie diretamente do seu celular.</h2><p className="mt-6 text-xl">Experiência perfeita em todas as telas.</p></div>
-        <div className="fidelity-testimonials mt-16 flex w-max gap-4 px-4">
+      <section className="overflow-hidden py-14 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8"><span className="text-xs font-semibold text-[var(--landing-primary)]">FLEXIBILIDADE</span><h2 className="mt-4 max-w-2xl text-balance text-3xl font-normal sm:mt-5 sm:text-6xl">Negocie diretamente do seu celular.</h2><p className="mt-4 text-base sm:mt-6 sm:text-xl">Experiência perfeita em todas as telas.</p></div>
+        <div className="fidelity-testimonials mt-10 flex w-max gap-3 px-4 sm:mt-16 sm:gap-4">
           {[...Array(2)].flatMap((_, copy) => [["Estou encantado com as ferramentas de análise da plataforma. Os indicadores me ajudam a identificar tendências e tomar decisões mais informadas.","J. G. Marins"],["Minha rotina sempre dificultou encontrar tempo para investir. A FIDELITY transformou essa experiência com uma plataforma intuitiva e acessível pelo celular.","David Gama"],["Eu estava perdido no mercado até conhecer esta plataforma. Os gráficos são claros e a equipe de suporte sempre me ajuda quando preciso.","Maria Elisa Cara"]].map(([quote,name],i)=><article key={`${copy}-${i}`} className="w-[86vw] max-w-xl shrink-0 rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-8 sm:p-12"><p className="text-lg leading-relaxed sm:text-xl">{quote}</p><p className="mt-10 text-lg font-semibold text-[var(--landing-primary)]">{name}</p></article>))}
         </div>
         <div className="mt-8 flex justify-center gap-3" aria-hidden="true"><span className="size-2 rounded-full bg-[var(--landing-text)]"/><span className="size-2 rounded-full bg-[var(--landing-primary)]"/><span className="size-2 rounded-full bg-[var(--landing-text)]"/></div>
       </section>
 
-      <section id="duvidas" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-        <div><span className="inline-flex rounded-full border border-[var(--landing-primary)] px-6 py-3 text-sm font-medium">PERGUNTAS FREQUENTES</span><h2 className="mt-5 text-5xl font-normal sm:text-6xl">Sobre a FIDELITY</h2></div>
-        <div className="flex flex-col">{[["O que é a conta demo?","É um ambiente de prática com saldo virtual para conhecer a plataforma sem usar dinheiro real."],["Quais mercados estão disponíveis?","Você encontra moedas, criptomoedas, ações e outros ativos disponíveis na plataforma."],["Posso acessar pelo celular?","Sim. A interface é responsiva e funciona nos principais navegadores móveis."],["Como começo?","Crie sua conta, conheça a conta demo e avance no seu ritmo."]].map(([q,a],i)=><details key={q} className="group border-b border-[var(--landing-line-strong)] py-7"><summary className="cursor-pointer list-none text-lg font-medium marker:hidden">{String(i + 1).padStart(2,"0")}. {q}<span className="float-right text-2xl text-[var(--landing-primary)] transition-transform group-open:rotate-45">+</span></summary><p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--landing-muted)]">{a}</p></details>)}</div>
+      <section id="duvidas" className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:gap-12 sm:px-5 sm:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div><span className="inline-flex rounded-full border border-[var(--landing-primary)] px-4 py-2 text-xs font-medium sm:px-6 sm:py-3 sm:text-sm">PERGUNTAS FREQUENTES</span><h2 className="mt-4 text-4xl font-normal sm:mt-5 sm:text-6xl">Sobre a FIDELITY</h2></div>
+        <div className="flex flex-col">{[["O que é a conta demo?","É um ambiente de prática com saldo virtual para conhecer a plataforma sem usar dinheiro real."],["Quais mercados estão disponíveis?","Você encontra moedas, criptomoedas, ações e outros ativos disponíveis na plataforma."],["Posso acessar pelo celular?","Sim. A interface é responsiva e funciona nos principais navegadores móveis."],["Como começo?","Crie sua conta, conheça a conta demo e avance no seu ritmo."]].map(([q,a],i)=><details key={q} className="group border-b border-[var(--landing-line-strong)] py-5 sm:py-7"><summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-base font-medium marker:hidden sm:text-lg"><span>{String(i + 1).padStart(2,"0")}. {q}</span><span className="shrink-0 text-2xl text-[var(--landing-primary)] transition-transform group-open:rotate-45">+</span></summary><p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--landing-muted)]">{a}</p></details>)}</div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 pb-24 lg:px-8"><div className="bullex-cta overflow-hidden rounded-2xl border border-[var(--landing-primary)]/20 px-6 py-12 text-center"><Image src="/images/fidelity-withdrawal.png" alt="Saque Fidelity Option em até 24 horas" width={2086} height={750} sizes="(max-width: 1023px) 90vw, 1024px" className="fidelity-withdrawal mx-auto h-auto w-full max-w-5xl object-contain"/><h2 className="mx-auto mt-6 max-w-2xl text-balance text-3xl font-bold sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-8 inline-flex rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)]">Criar conta gratuita</Link></div></section>
+      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-5 sm:pb-24 lg:px-8"><div className="bullex-cta overflow-hidden rounded-xl border border-[var(--landing-primary)]/20 px-4 py-8 text-center sm:rounded-2xl sm:px-6 sm:py-12"><Image src="/images/fidelity-withdrawal.png" alt="Saque Fidelity Option em até 24 horas" width={2086} height={750} sizes="(max-width: 1023px) 92vw, 1024px" className="fidelity-withdrawal mx-auto h-auto w-full max-w-5xl object-contain"/><h2 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold sm:mt-6 sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-6 inline-flex w-full justify-center rounded-lg bg-[var(--landing-primary)] px-6 py-3.5 font-bold text-[var(--landing-primary-foreground)] sm:mt-8 sm:w-auto sm:px-8">Criar conta gratuita</Link></div></section>
 
-      <footer className="border-t border-[var(--landing-line)] px-5 py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row"><Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} sizes="160px" className="h-auto w-40 object-contain" /><div className="flex items-center gap-5 text-xs text-[var(--landing-muted)]"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
+      <footer className="border-t border-[var(--landing-line)] px-4 py-8 sm:px-5 sm:py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row sm:gap-6"><Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} sizes="160px" className="h-auto w-36 object-contain sm:w-40" /><div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-[var(--landing-muted)] sm:gap-5"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
     </main>
   )
 }

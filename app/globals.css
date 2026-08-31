@@ -820,6 +820,36 @@ body {
   will-change: transform;
 }
 
+/* Em telas pequenas, scroll-driven animations podem manter seções fora da viewport e criar
+   grandes áreas vazias. O conteúdo fica imediatamente disponível e os trilhos viram scroll tátil. */
+@media (max-width: 639px) {
+  .fidelity-view-reveal,
+  .fidelity-scroll-copy,
+  .fidelity-withdrawal,
+  .fidelity-asset-track {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
+  .fidelity-asset-track {
+    max-width: calc(100vw - 1rem);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+  }
+
+  .fidelity-asset-track > * {
+    scroll-snap-align: start;
+  }
+
+  .fidelity-asset-track::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .landing-chain-grid {
   background-image:
     linear-gradient(var(--landing-line) 1px, transparent 1px),
