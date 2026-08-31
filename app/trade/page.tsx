@@ -935,7 +935,7 @@ export default function TradePage() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#0e0e0e" }}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+          <div className="h-12 w-12 animate-spin rounded-full border-2 border-[#22c55e] border-t-transparent" />
           <p className="text-gray-400 text-sm">Carregando...</p>
         </div>
       </div>
