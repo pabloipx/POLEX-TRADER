@@ -355,7 +355,30 @@ export async function fetchTradingViewPrice(info: SymbolInfo): Promise<number> {
 const PRICE_TTL_MS = 1000
 const priceCache = new Map<string, { price: number; at: number }>()
 
-/** Preco ao vivo com cache de 1s. Devolve `null` se a fonte falhar. */
+/** Cotação independente de reserva quando o scanner do TradingView limita ou bloqueia a chamada. */
+async function fetchYahooPrice(info: SymbolInfo): Promise<number> {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(info.yahoo)}?interval=1m&range=1d`
+  const response = await fetch(url, {
+    cache: "no-store",
+    headers: { "User-Agent": "Mozilla/5.0" },
+    signal: AbortSignal.timeout(5_000),
+  })
+  if (!response.ok) throw new Error(`yahoo ${response.status}`)
+
+  const json = await response.json()
+  const result = json?.chart?.result?.[0]
+  const metaPrice = Number(result?.meta?.regularMarketPrice)
+  if (Number.isFinite(metaPrice) && metaPrice > 0) return metaPrice
+
+  const closes: unknown[] = result?.indicators?.quote?.[0]?.close ?? []
+  for (let index = closes.length - 1; index >= 0; index--) {
+    const price = Number(closes[index])
+    if (Number.isFinite(price) && price > 0) return price
+  }
+  throw new Error("preço inválido no Yahoo")
+}
+
+/** Preço ao vivo com cache e duas fontes reais. Devolve `null` apenas se ambas falharem. */
 export async function getLivePrice(symbol: string): Promise<number | null> {
   const info = SYMBOLS[symbol]
   if (!info) return null
@@ -368,7 +391,15 @@ export async function getLivePrice(symbol: string): Promise<number | null> {
     priceCache.set(symbol, { price, at: Date.now() })
     return price
   } catch {
-    return null
+    try {
+      const price = round(await fetchYahooPrice(info), info.decimals)
+      priceCache.set(symbol, { price, at: Date.now() })
+      return price
+    } catch {
+      // Uma cotação real recém-obtida continua confiável durante uma interrupção breve das fontes.
+      if (hit && Date.now() - hit.at < 60_000) return hit.price
+      return null
+    }
   }
 }
 

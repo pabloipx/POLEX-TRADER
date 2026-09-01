@@ -4,6 +4,8 @@ import { getRealPriceAt } from "@/lib/price-engine/real-quote"
 import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { createClient } from "@/lib/supabase/server"
 import { isTimeframeAllowed, timeframesFor, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
+import { verifyQuoteProof } from "@/lib/price-engine/quote-proof"
+import { injectFault } from "@/lib/testing/fault-injection"
 
 const errorMessages: Record<string, string> = {
   ASSET_DISABLED: "Ativo indisponível para negociação.",
@@ -28,6 +30,7 @@ export async function POST(request: Request) {
     const amount = Number(body.amount)
     const timeframe = Number(body.timeframe)
     const displayedPrice = Number(body.displayedPrice)
+    const verifiedQuote = verifyQuoteProof(body.quoteProof, symbol)
     const isDemo = body.isDemo === true
     const idempotencyKey = typeof body.idempotencyKey === "string" ? body.idempotencyKey : ""
 
@@ -41,6 +44,7 @@ export async function POST(request: Request) {
     }
 
     const now = Date.now()
+    if (isDemo) await injectFault("quote")
     let entryPrice: number | null
     if (isRealSymbol(symbol)) {
       entryPrice = await getRealPriceAt(symbol, now)
@@ -57,8 +61,15 @@ export async function POST(request: Request) {
       entryPrice = manager.getPriceAt(symbol, now)
     }
 
+    // Em serverless, a chamada da entrada pode cair em outra instância daquela que buscou a
+    // cotação do gráfico. Se as fontes bloquearem essa segunda chamada, usamos o comprovante
+    // HMAC recém-assinado pelo próprio endpoint de mercado — nunca um preço livre do cliente.
+    if ((!entryPrice || entryPrice <= 0) && verifiedQuote) {
+      entryPrice = verifiedQuote.price
+    }
+
     if (!entryPrice || entryPrice <= 0) {
-      return NextResponse.json({ error: "Cotação confiável indisponível. Tente novamente." }, { status: 503 })
+      return NextResponse.json({ error: "Cotação confiável indisponível. Aguarde a atualização do gráfico." }, { status: 503 })
     }
 
     // A linha deve marcar exatamente a cotação que estava visível no gráfico no clique.
@@ -69,6 +80,7 @@ export async function POST(request: Request) {
       if (deviation <= 0.005) entryPrice = displayedPrice
     }
 
+    if (isDemo) await injectFault("database-before")
     const { data, error } = await supabase.rpc("open_trade_atomic", {
       p_symbol: symbol,
       p_direction: direction,
@@ -84,8 +96,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: code ? errorMessages[code] : "Não foi possível abrir a operação." }, { status: 400 })
     }
 
+    if (isDemo) await injectFault("database-after")
     return NextResponse.json({ success: true, ...data })
   } catch (error) {
+    if (error instanceof Error && error.message.startsWith("RESILIENCE_FAULT:")) {
+      return NextResponse.json({ error: "Dependência temporariamente indisponível." }, { status: 503 })
+    }
     console.error("[trade/open] Falha ao abrir operação:", error)
     return NextResponse.json({ error: "Erro interno ao abrir a operação." }, { status: 500 })
   }

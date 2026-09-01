@@ -217,7 +217,7 @@ export default function TradePage() {
 
   // Trader sentiment (simulated)
 
-  const { price, candles, isConnected, realReady, realHistoryReady } = useGlobalOTC(
+  const { price, quoteProof, candles, isConnected, realReady, realHistoryReady } = useGlobalOTC(
     selectedSymbol,
     timeframe as 60 | 300 | 600 | 900,
   )
@@ -857,6 +857,7 @@ export default function TradePage() {
             amount: Math.round(amount * 100) / 100,
             timeframe: expiryTime,
             displayedPrice: price,
+            quoteProof,
             isDemo,
             idempotencyKey,
           }),
@@ -899,7 +900,7 @@ export default function TradePage() {
         setIsTrading(false)
       }
     },
-    [user, amount, currentBalance, selectedSymbol, price, expiryTime, accountType, payout, isTrading, marketStatus, hydrateActiveTrades],
+    [user, amount, currentBalance, selectedSymbol, price, quoteProof, expiryTime, accountType, payout, isTrading, marketStatus, hydrateActiveTrades],
   )
 
   const handleExpiryChange = useCallback(
@@ -935,7 +936,7 @@ export default function TradePage() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#0e0e0e" }}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+          <div className="h-12 w-12 animate-spin rounded-full border-2 border-[#22c55e] border-t-transparent" />
           <p className="text-gray-400 text-sm">Carregando...</p>
         </div>
       </div>
@@ -1074,7 +1075,7 @@ export default function TradePage() {
                 onClick={() => setShowAccountDropdown(!showAccountDropdown)}
                 className="flex items-center gap-0.5 text-[10px] lg:text-xs hover:text-white transition-colors mt-0.5"
               >
-                <span className={accountType === "demo" ? "text-amber-400" : "text-[#26a69a]"}>
+                <span className={accountType === "demo" ? "text-[#22c55e]" : "text-[#26a69a]"}>
                   {accountType === "demo" ? "Demo" : "Real"}
                 </span>
                 <ChevronDown className="w-3 h-3 text-gray-500" />
@@ -1108,11 +1109,11 @@ export default function TradePage() {
                         setShowAccountDropdown(false)
                       }}
                       className={`w-full px-4 py-3 text-left text-sm hover:bg-white/5 transition flex items-center gap-2.5 ${
-                        accountType === "demo" ? "text-amber-400" : "text-gray-300"
+                        accountType === "demo" ? "text-[#22c55e]" : "text-gray-300"
                       }`}
                     >
                       <div
-                        className={`w-2 h-2 rounded-full ${accountType === "demo" ? "bg-amber-400" : "bg-gray-600"}`}
+                        className={`w-2 h-2 rounded-full ${accountType === "demo" ? "bg-[#22c55e]" : "bg-gray-600"}`}
                       />
                       Conta Demo
                     </button>
@@ -1569,7 +1570,7 @@ export default function TradePage() {
                           Fechado
                         </span>
                       ) : (
-                        <span className="text-orange-500 font-semibold text-sm">{asset.payout}%</span>
+                        <span className="text-[#22c55e] font-semibold text-sm">{asset.payout}%</span>
                       )}
                     </button>
                   )

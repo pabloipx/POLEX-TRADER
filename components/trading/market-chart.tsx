@@ -1191,6 +1191,14 @@ function ChartCore({
             })
           } catch {}
           loadedSymbolRef.current = sym
+          // `setData` pode invalidar internamente linhas de preço nativas. Removemos os handles
+          // anteriores para que o efeito abaixo recrie todas as marcações do ativo carregado.
+          tradeLinesRef.current.forEach((line) => {
+            try {
+              seriesRef.current?.removePriceLine(line)
+            } catch {}
+          })
+          tradeLinesRef.current.clear()
           setLoading(false)
         } else {
           // Sem velas para este (ativo, timeframe) ainda.
@@ -1572,6 +1580,19 @@ function ChartCore({
     const lwc = lwcRef.current
     if (!series) return
 
+    // Na troca de aba, aguarda as velas do ativo solicitado entrarem na série. Antes a linha era
+    // criada sobre os dados do ativo anterior e podia ser invalidada silenciosamente pelo setData.
+    if (loadedSymbolRef.current !== symbol) {
+      tradeLinesRef.current.forEach((line) => {
+        try {
+          series.removePriceLine(line)
+        } catch {}
+      })
+      tradeLinesRef.current.clear()
+      setPnlOverlays([])
+      return
+    }
+
     // Se a serie foi recriada, os handles guardados apontam para um objeto morto: descarta.
     if (linesSeriesRef.current !== series) {
       tradeLinesRef.current.clear()
@@ -1638,11 +1659,11 @@ function ChartCore({
       } catch {}
       tradeLinesRef.current.delete(id)
     })
-  }, [chartTrades, cds, seriesReady, resyncKey])
+  }, [chartTrades, cds, seriesReady, resyncKey, symbol])
 
   // ===== Live floating P&L overlays (IQ Option style) =====
   useEffect(() => {
-    if (!chartTrades.length) {
+    if (!chartTrades.length || loadedSymbolRef.current !== symbol) {
       setPnlOverlays([])
       return
     }
@@ -1683,7 +1704,7 @@ function ChartCore({
     update()
     const iv = setInterval(update, 60)
     return () => clearInterval(iv)
-  }, [chartTrades, payout, seriesReady])
+  }, [chartTrades, payout, seriesReady, symbol])
 
   // ===== Preview de direcao no hover de Comprar/Vender =====
   // Acompanha a altura do preco atual enquanto o mouse esta sobre um dos botoes, para que a

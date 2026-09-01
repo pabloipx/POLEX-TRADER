@@ -174,7 +174,7 @@ export function AssetPanel({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar ativo"
-              className="w-full rounded-lg border border-white/[0.06] py-2.5 pl-9 pr-9 text-sm text-white outline-none transition-colors placeholder:text-gray-500 focus:border-[#ff8a00]/60"
+              className="w-full rounded-lg border border-white/[0.06] py-2.5 pl-9 pr-9 text-sm text-white outline-none transition-colors placeholder:text-gray-500 focus:border-[#22c55e]/60"
               style={{ backgroundColor: "#1a1a1e" }}
             />
             {search && (
@@ -208,7 +208,7 @@ export function AssetPanel({
                   {tab.label}
                   <span
                     className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full transition-colors ${
-                      active ? "bg-[#ff8a00]" : "bg-transparent"
+                      active ? "bg-[#22c55e]" : "bg-transparent"
                     }`}
                   />
                 </button>
@@ -269,11 +269,11 @@ export function AssetPanel({
                           : "hover:bg-white/[0.035]"
                     }`}
                   >
-                    {/* Trilha laranja: marca o ativo em tela e acompanha o hover. */}
+                    {/* Trilha verde: marca o ativo em tela e acompanha o hover. */}
                     <span
                       className={`absolute bottom-1 left-0 top-1 w-[3px] rounded-r-full transition-colors ${
                         isSelected
-                          ? "bg-[#ff8a00]"
+                          ? "bg-[#22c55e]"
                           : closed
                             ? "bg-transparent"
                             : "bg-transparent group-hover:bg-white/20"
@@ -305,7 +305,7 @@ export function AssetPanel({
                         {isOpenTab && !closed && (
                           <span
                             title="Já aberto em uma aba"
-                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#ff8a00]"
+                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#22c55e]"
                           />
                         )}
                       </p>
@@ -327,11 +327,11 @@ export function AssetPanel({
                           Fechado
                         </span>
                       ) : (
-                        <span className="font-mono text-[13px] font-bold text-[#ff8a00]">
+                        <span className="font-mono text-[13px] font-bold text-[#22c55e]">
                           {asset.payout}%
                         </span>
                       )}
-                      {isSelected && !closed && <Check className="h-3.5 w-3.5 text-[#ff8a00]" />}
+                      {isSelected && !closed && <Check className="h-3.5 w-3.5 text-[#22c55e]" />}
                     </div>
                   </button>
                 )
