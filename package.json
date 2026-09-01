@@ -7,6 +7,10 @@
     "dev": "next dev",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:resilience:load": "node --env-file-if-exists=/vercel/share/.env.project scripts/resilience/run.mjs load",
+    "test:resilience:faults": "node --env-file-if-exists=/vercel/share/.env.project scripts/resilience/run.mjs faults",
+    "test:resilience:recovery": "node --env-file-if-exists=/vercel/share/.env.project scripts/resilience/run.mjs recovery",
+    "test:resilience": "node --env-file-if-exists=/vercel/share/.env.project scripts/resilience/run.mjs full",
     "start": "next start"
   },
   "dependencies": {
