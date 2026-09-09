@@ -6,6 +6,7 @@ import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { AssetPicker, type RoboAsset } from "@/components/robotradermax/asset-picker"
 import { AnalyzingAnimation } from "@/components/robotradermax/analyzing-animation"
+import { SyncGate } from "@/components/robotradermax/sync-gate"
 import { timeframesFor, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
 import {
   ArrowLeft,
@@ -19,7 +20,7 @@ import {
   ShieldCheck,
 } from "lucide-react"
 
-type Phase = "select" | "analyzing" | "signal"
+type Phase = "gate" | "select" | "analyzing" | "signal"
 
 interface RoboSignal {
   id: string
@@ -56,7 +57,8 @@ export default function RoboTraderMaxPage() {
   const [balanceReal, setBalanceReal] = useState(0)
   const [balanceDemo, setBalanceDemo] = useState(0)
 
-  const [phase, setPhase] = useState<Phase>("select")
+  const [phase, setPhase] = useState<Phase>("gate")
+  const [userEmail, setUserEmail] = useState("")
   const [asset, setAsset] = useState<RoboAsset | null>(null)
   const [signal, setSignal] = useState<RoboSignal | null>(null)
 
@@ -91,6 +93,7 @@ export default function RoboTraderMaxPage() {
           .eq("user_id", user.id)
           .maybeSingle()
         if (!mountedRef.current) return
+        setUserEmail(user.email || "")
         setBalanceReal(Number(balanceData?.balance_real || 0))
         setBalanceDemo(Number(balanceData?.balance_demo || 0))
         setLoading(false)
@@ -251,6 +254,7 @@ export default function RoboTraderMaxPage() {
 
       <div className="mx-auto max-w-2xl px-4 py-6">
         {/* Banner de identidade da IA */}
+        {phase !== "gate" && (
         <div className="mb-6 flex items-center gap-4 rounded-2xl border border-[#22c55e]/20 bg-gradient-to-br from-[#22c55e]/10 via-[#0f1419] to-[#0a0e13] p-4">
           <div className="relative shrink-0">
             <div className="w-14 h-14 rounded-2xl bg-[#22c55e]/15 ring-2 ring-[#22c55e]/40 flex items-center justify-center">
@@ -267,8 +271,17 @@ export default function RoboTraderMaxPage() {
             </p>
           </div>
         </div>
+        )}
 
         {/* Conteúdo por fase */}
+        {phase === "gate" && (
+          <SyncGate
+            defaultEmail={userEmail}
+            onSynced={() => setPhase("select")}
+            onDeposit={() => router.push("/deposit")}
+          />
+        )}
+
         {phase === "select" && <AssetPicker assets={assets} onSelect={handleSelectAsset} />}
 
         {phase === "analyzing" && asset && <AnalyzingAnimation asset={asset} />}
