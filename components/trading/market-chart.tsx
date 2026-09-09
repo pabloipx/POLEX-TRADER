@@ -1753,7 +1753,7 @@ function ChartCore({
 
   return (
     <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: "#0d0d0f" }}>
-      {/* Marca d'água Fidelity Option no fundo do gráfico */}
+      {/* Marca d'água Fidex Option no fundo do gráfico */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{

@@ -721,7 +721,7 @@ export default function AdminDashboardClient() {
         </button>
         <Image
           src="/images/fidelity-logo.png"
-          alt="Fidelity Option"
+          alt="Fidex Option"
           width={130}
           height={35}
           priority
@@ -739,7 +739,7 @@ export default function AdminDashboardClient() {
             <div className="flex items-center justify-between mb-8">
               <Image
           src="/images/fidelity-logo.png"
-          alt="Fidelity Option"
+          alt="Fidex Option"
           width={130}
           height={35}
           priority
@@ -781,7 +781,7 @@ export default function AdminDashboardClient() {
           <div className="mb-8">
             <Image
               src="/images/fidelity-logo.png"
-              alt="Fidelity Option"
+              alt="Fidex Option"
               width={180}
               height={48}
               priority

@@ -5,7 +5,7 @@ export function AffiliateBrand({ className = "h-7" }: { className?: string }) {
     <span className="inline-flex items-center">
       <Image
         src="/images/fidelity-logo.png"
-        alt="Fidelity Option"
+        alt="Fidex Option"
         width={1500}
         height={400}
         priority

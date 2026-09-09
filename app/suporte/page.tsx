@@ -10,7 +10,7 @@ const supportFlow: Record<
   { message: string; options?: { label: string; value: string }[]; input?: boolean; inputPlaceholder?: string }
 > = {
   START: {
-    message: `👋 Olá! Bem-vindo ao suporte da Fidelity Option.
+    message: `👋 Olá! Bem-vindo ao suporte da Fidex Option.
 
 Antes de começarmos, como posso te chamar?`,
     input: true,
@@ -672,7 +672,7 @@ export default function SupportPage() {
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-white font-semibold">Suporte Fidelity Option</h1>
+            <h1 className="text-white font-semibold">Suporte Fidex Option</h1>
             <p className="text-xs text-[#4ade80]">{isTyping ? "Digitando..." : "Online agora"}</p>
           </div>
         </div>

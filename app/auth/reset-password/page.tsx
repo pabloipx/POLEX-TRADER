@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
         <Link href="/" className="flex items-center">
           <Image
             src="/images/fidelity-logo.png"
-            alt="Fidelity Option"
+            alt="Fidex Option"
             width={160}
             height={40}
             className="h-10 w-auto"
