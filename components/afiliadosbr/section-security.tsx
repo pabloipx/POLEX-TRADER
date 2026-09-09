@@ -90,7 +90,7 @@ export function SectionSecurity({ email }: { email: string }) {
       const supabase = createClient()
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: `Fidelity Option ${Date.now()}`,
+        friendlyName: `Fidex Option ${Date.now()}`,
       })
       if (error) throw error
       setFactorId(data.id)

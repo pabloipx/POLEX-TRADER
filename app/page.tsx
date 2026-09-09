@@ -3,7 +3,7 @@ import Link from "next/link"
 import { BarChart3, Check, Clock3, Globe2, Headphones, ShieldCheck, Smartphone, WalletCards, Zap } from "lucide-react"
 
 export const metadata = {
-  title: "FIDELITY Broker — Negocie nos mercados globais",
+  title: "Fidex Option — Negocie nos mercados globais",
   description: "Acesse mais de 200 ativos em uma plataforma de negociação simples, rápida e segura.",
 }
 
@@ -41,8 +41,8 @@ export default function HomePage() {
 
       <header className="sticky top-0 z-40 bg-[var(--landing-bg)]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-3 sm:h-auto sm:px-5 sm:py-5 lg:px-8">
-          <Link href="#inicio" aria-label="Fidelity Option — início" className="mr-auto min-w-0">
-            <Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} sizes="(max-width: 639px) 112px, (max-width: 1023px) 176px, 224px" className="h-auto w-28 max-w-full object-contain sm:w-44 lg:w-56" priority />
+          <Link href="#inicio" aria-label="Fidex Option — início" className="mr-auto min-w-0">
+            <Image src="/images/fidelity-option-logo.png" alt="Fidex Option" width={2176} height={734} sizes="(max-width: 639px) 112px, (max-width: 1023px) 176px, 224px" className="h-auto w-28 max-w-full object-contain sm:w-44 lg:w-56" priority />
           </Link>
 
           <nav aria-label="Acesso à conta" className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -62,7 +62,7 @@ export default function HomePage() {
           </div>
           <div className="fidelity-phone-stage relative order-2 flex min-h-[300px] items-center justify-center sm:min-h-[410px] lg:order-1 lg:min-h-[520px]">
             <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
-            <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidelity Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} sizes="(max-width: 639px) 82vw, (max-width: 1023px) 90vw, 540px" className="fidelity-phone relative mx-auto max-h-[360px] w-auto object-contain drop-shadow-2xl sm:max-h-[570px]" priority />
+            <Image src="/images/fidelity-mobile-platform.png" alt="Três celulares com o aplicativo Fidex Option exibindo histórico de lucros, gráfico EUR/USD e notificações de lucro realizado" width={1137} height={1387} sizes="(max-width: 639px) 82vw, (max-width: 1023px) 90vw, 540px" className="fidelity-phone relative mx-auto max-h-[360px] w-auto object-contain drop-shadow-2xl sm:max-h-[570px]" priority />
           </div>
         </div>
       </section>
@@ -102,19 +102,19 @@ export default function HomePage() {
       </section>
 
       <section className="fidelity-view-reveal mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:gap-10 sm:px-5 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-        <div><p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p><h2 className="mt-3 text-balance text-3xl font-bold sm:text-5xl">A FIDELITY pode oferecer mais para a sua forma de negociar</h2><p className="mt-4 max-w-2xl leading-relaxed text-[var(--landing-muted)] sm:mt-5">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p><Link href="/auth/sign-up" className="mt-6 inline-flex w-full justify-center rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)] sm:mt-7 sm:w-auto">Começar agora</Link></div>
-        <Image src="/images/fidelity-profit.png" alt="Notificação de lucro realizado na Fidelity Option" width={2086} height={724} sizes="(max-width: 1023px) 90vw, 680px" className="fidelity-profit-banner h-auto w-full object-contain" />
+        <div><p className="text-sm text-[var(--landing-muted)]">Quer saber o que você recebe?</p><h2 className="mt-3 text-balance text-3xl font-bold sm:text-5xl">A Fidex Option pode oferecer mais para a sua forma de negociar</h2><p className="mt-4 max-w-2xl leading-relaxed text-[var(--landing-muted)] sm:mt-5">Abra sua conta e conheça uma experiência construída para você evoluir no mercado.</p><Link href="/auth/sign-up" className="mt-6 inline-flex w-full justify-center rounded-lg bg-[var(--landing-primary)] px-8 py-3.5 font-bold text-[var(--landing-primary-foreground)] sm:mt-7 sm:w-auto">Começar agora</Link></div>
+        <Image src="/images/fidelity-profit.png" alt="Notificação de lucro realizado na Fidex Option" width={2086} height={724} sizes="(max-width: 1023px) 90vw, 680px" className="fidelity-profit-banner h-auto w-full object-contain" />
       </section>
 
       <section id="vantagens" className="fidelity-view-reveal mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-24 lg:px-8">
-        <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-5xl">Por que a FIDELITY é uma plataforma para grandes decisões?</h2>
+        <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-5xl">Por que a Fidex Option é uma plataforma para grandes decisões?</h2>
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map(([Icon,title,desc]) => { const FeatureIcon=Icon as typeof Zap; return <article key={title as string} className="rounded-xl border border-[var(--landing-line)] bg-[var(--landing-panel)] p-5 sm:p-6"><FeatureIcon className="size-6 text-[var(--landing-primary)]"/><h3 className="mt-5 text-lg font-bold sm:mt-8">{title as string}</h3><p className="mt-3 text-sm leading-relaxed text-[var(--landing-muted)]">{desc as string}</p></article> })}
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-24 lg:px-8">
-        <h2 className="text-center text-3xl font-bold sm:text-5xl">Condições FIDELITY</h2>
+        <h2 className="text-center text-3xl font-bold sm:text-5xl">Condições Fidex Option</h2>
         <div className="mt-8 grid gap-3 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
           {specials.map(([label,value,desc]) => <article key={label} className="bullex-special rounded-xl border border-[var(--landing-line)] p-5 sm:p-7"><p className="text-xs text-[var(--landing-primary)]">{label}</p><h3 className="mt-4 text-3xl font-bold">{value}</h3><p className="mt-2 text-sm text-[var(--landing-muted)]">{desc}</p></article>)}
         </div>
@@ -122,26 +122,26 @@ export default function HomePage() {
       </section>
 
       <section id="plataforma" className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:gap-12 sm:px-5 sm:py-24 lg:grid-cols-2 lg:px-8">
-        <Image src="/images/fidelity-platform.png" alt="Plataforma Fidelity Option no notebook e celular" width={1668} height={928} sizes="(max-width: 1023px) 92vw, 620px" className="fidelity-platform-device h-auto w-full object-contain drop-shadow-2xl" />
+        <Image src="/images/fidelity-platform.png" alt="Plataforma Fidex Option no notebook e celular" width={1668} height={928} sizes="(max-width: 1023px) 92vw, 620px" className="fidelity-platform-device h-auto w-full object-contain drop-shadow-2xl" />
         <div><span className="text-xs font-semibold text-[var(--landing-primary)]">MERCADO NA SUA TELA</span><h2 className="mt-4 text-balance text-3xl font-bold sm:mt-5 sm:text-5xl">Negocie no mercado financeiro em tempo real</h2><p className="mt-5 leading-relaxed text-[var(--landing-muted)]">Acesse cotações, gráficos e suas operações sem complicação. A plataforma se adapta ao seu dispositivo para você acompanhar o mercado onde estiver.</p><div className="mt-8 flex flex-col gap-4">{["Conta demo para praticar", "Gráficos e indicadores integrados", "Histórico completo de operações"].map(item=><div key={item} className="flex items-center gap-3"><Check className="size-5 text-[var(--landing-primary)]"/><span>{item}</span></div>)}</div></div>
       </section>
 
       <section className="overflow-hidden py-14 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8"><span className="text-xs font-semibold text-[var(--landing-primary)]">FLEXIBILIDADE</span><h2 className="mt-4 max-w-2xl text-balance text-3xl font-normal sm:mt-5 sm:text-6xl">Negocie diretamente do seu celular.</h2><p className="mt-4 text-base sm:mt-6 sm:text-xl">Experiência perfeita em todas as telas.</p></div>
         <div className="fidelity-testimonials mt-10 flex w-max gap-3 px-4 sm:mt-16 sm:gap-4">
-          {[...Array(2)].flatMap((_, copy) => [["Estou encantado com as ferramentas de análise da plataforma. Os indicadores me ajudam a identificar tendências e tomar decisões mais informadas.","J. G. Marins"],["Minha rotina sempre dificultou encontrar tempo para investir. A FIDELITY transformou essa experiência com uma plataforma intuitiva e acessível pelo celular.","David Gama"],["Eu estava perdido no mercado até conhecer esta plataforma. Os gráficos são claros e a equipe de suporte sempre me ajuda quando preciso.","Maria Elisa Cara"]].map(([quote,name],i)=><article key={`${copy}-${i}`} className="w-[86vw] max-w-xl shrink-0 rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-8 sm:p-12"><p className="text-lg leading-relaxed sm:text-xl">{quote}</p><p className="mt-10 text-lg font-semibold text-[var(--landing-primary)]">{name}</p></article>))}
+          {[...Array(2)].flatMap((_, copy) => [["Estou encantado com as ferramentas de análise da plataforma. Os indicadores me ajudam a identificar tendências e tomar decisões mais informadas.","J. G. Marins"],["Minha rotina sempre dificultou encontrar tempo para investir. A Fidex Option transformou essa experiência com uma plataforma intuitiva e acessível pelo celular.","David Gama"],["Eu estava perdido no mercado até conhecer esta plataforma. Os gráficos são claros e a equipe de suporte sempre me ajuda quando preciso.","Maria Elisa Cara"]].map(([quote,name],i)=><article key={`${copy}-${i}`} className="w-[86vw] max-w-xl shrink-0 rounded-2xl border border-[var(--landing-line-strong)] bg-[var(--landing-panel)] p-8 sm:p-12"><p className="text-lg leading-relaxed sm:text-xl">{quote}</p><p className="mt-10 text-lg font-semibold text-[var(--landing-primary)]">{name}</p></article>))}
         </div>
         <div className="mt-8 flex justify-center gap-3" aria-hidden="true"><span className="size-2 rounded-full bg-[var(--landing-text)]"/><span className="size-2 rounded-full bg-[var(--landing-primary)]"/><span className="size-2 rounded-full bg-[var(--landing-text)]"/></div>
       </section>
 
       <section id="duvidas" className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:gap-12 sm:px-5 sm:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-        <div><span className="inline-flex rounded-full border border-[var(--landing-primary)] px-4 py-2 text-xs font-medium sm:px-6 sm:py-3 sm:text-sm">PERGUNTAS FREQUENTES</span><h2 className="mt-4 text-4xl font-normal sm:mt-5 sm:text-6xl">Sobre a FIDELITY</h2></div>
+        <div><span className="inline-flex rounded-full border border-[var(--landing-primary)] px-4 py-2 text-xs font-medium sm:px-6 sm:py-3 sm:text-sm">PERGUNTAS FREQUENTES</span><h2 className="mt-4 text-4xl font-normal sm:mt-5 sm:text-6xl">Sobre a Fidex Option</h2></div>
         <div className="flex flex-col">{[["O que é a conta demo?","É um ambiente de prática com saldo virtual para conhecer a plataforma sem usar dinheiro real."],["Quais mercados estão disponíveis?","Você encontra moedas, criptomoedas, ações e outros ativos disponíveis na plataforma."],["Posso acessar pelo celular?","Sim. A interface é responsiva e funciona nos principais navegadores móveis."],["Como começo?","Crie sua conta, conheça a conta demo e avance no seu ritmo."]].map(([q,a],i)=><details key={q} className="group border-b border-[var(--landing-line-strong)] py-5 sm:py-7"><summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-base font-medium marker:hidden sm:text-lg"><span>{String(i + 1).padStart(2,"0")}. {q}</span><span className="shrink-0 text-2xl text-[var(--landing-primary)] transition-transform group-open:rotate-45">+</span></summary><p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--landing-muted)]">{a}</p></details>)}</div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-5 sm:pb-24 lg:px-8"><div className="bullex-cta overflow-hidden rounded-xl border border-[var(--landing-primary)]/20 px-4 py-8 text-center sm:rounded-2xl sm:px-6 sm:py-12"><Image src="/images/fidelity-withdrawal.png" alt="Saque Fidelity Option em até 24 horas" width={2086} height={750} sizes="(max-width: 1023px) 92vw, 1024px" className="fidelity-withdrawal mx-auto h-auto w-full max-w-5xl object-contain"/><h2 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold sm:mt-6 sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-6 inline-flex w-full justify-center rounded-lg bg-[var(--landing-primary)] px-6 py-3.5 font-bold text-[var(--landing-primary-foreground)] sm:mt-8 sm:w-auto sm:px-8">Criar conta gratuita</Link></div></section>
+      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-5 sm:pb-24 lg:px-8"><div className="bullex-cta overflow-hidden rounded-xl border border-[var(--landing-primary)]/20 px-4 py-8 text-center sm:rounded-2xl sm:px-6 sm:py-12"><Image src="/images/fidelity-withdrawal.png" alt="Saque Fidex Option em até 24 horas" width={2086} height={750} sizes="(max-width: 1023px) 92vw, 1024px" className="fidelity-withdrawal mx-auto h-auto w-full max-w-5xl object-contain"/><h2 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold sm:mt-6 sm:text-5xl">O mercado não para. Sua próxima decisão começa agora.</h2><Link href="/auth/sign-up" className="mt-6 inline-flex w-full justify-center rounded-lg bg-[var(--landing-primary)] px-6 py-3.5 font-bold text-[var(--landing-primary-foreground)] sm:mt-8 sm:w-auto sm:px-8">Criar conta gratuita</Link></div></section>
 
-      <footer className="border-t border-[var(--landing-line)] px-4 py-8 sm:px-5 sm:py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row sm:gap-6"><Image src="/images/fidelity-option-logo.png" alt="Fidelity Option" width={2176} height={734} sizes="160px" className="h-auto w-36 object-contain sm:w-40" /><div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-[var(--landing-muted)] sm:gap-5"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} FIDELITY Broker</span></div></div></footer>
+      <footer className="border-t border-[var(--landing-line)] px-4 py-8 sm:px-5 sm:py-10 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row sm:gap-6"><Image src="/images/fidelity-option-logo.png" alt="Fidex Option" width={2176} height={734} sizes="160px" className="h-auto w-36 object-contain sm:w-40" /><div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs text-[var(--landing-muted)] sm:gap-5"><Globe2 className="size-4"/><span>Português</span><span>© {new Date().getFullYear()} Fidex Option</span></div></div></footer>
     </main>
   )
 }

@@ -7,9 +7,9 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "FIDELITY BROKER — Plataforma de negociação",
+  title: "Fidex Option — Plataforma de negociação",
   description: "Acesse os mercados globais em uma plataforma simples, rápida e segura.",
-  generator: "FIDELITY BROKER",
+  generator: "Fidex Option",
 }
 
 export const viewport: Viewport = {

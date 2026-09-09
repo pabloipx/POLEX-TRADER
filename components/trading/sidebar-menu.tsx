@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { computeRank, applyRankOverride, type Rank } from "@/lib/ranks"
 import {
   X,
   History,
@@ -32,8 +33,58 @@ export function SidebarMenu({
   onClose,
   userName,
   balance,
+  userId,
 }: SidebarMenuProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [vipRank, setVipRank] = useState<Rank | null>(null)
+
+  useEffect(() => {
+    if (!isOpen || !userId) return
+    let active = true
+
+    async function loadRank() {
+      try {
+        const supabase = createClient()
+
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("vip_level_override")
+          .eq("id", userId)
+          .single()
+
+        const { data: depositsData } = await supabase
+          .from("deposits")
+          .select("amount, status")
+          .eq("user_id", userId)
+          .in("status", ["approved", "completed"])
+
+        const totalDeposited = (depositsData || []).reduce(
+          (sum: number, d: { amount: number | null }) => sum + Number(d.amount || 0),
+          0,
+        )
+
+        const { count: entriesCount } = await supabase
+          .from("trades")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("is_demo", false)
+
+        const baseRank = computeRank(totalDeposited, entriesCount || 0)
+        const resolved = applyRankOverride(
+          baseRank,
+          (profileData as { vip_level_override?: string | null })?.vip_level_override,
+        )
+        if (active) setVipRank(resolved.current)
+      } catch (error) {
+        console.error("Rank load error:", error)
+      }
+    }
+
+    loadRank()
+    return () => {
+      active = false
+    }
+  }, [isOpen, userId])
 
   const handleNavigation = (href: string) => {
     onClose()
@@ -94,7 +145,7 @@ export function SidebarMenu({
           <div className="flex items-center justify-between mb-5">
             <img
               src="/images/fidelity-logo.png"
-              alt="Fidelity Option"
+              alt="Fidex Option"
               className="h-8 w-auto"
             />
             <button
@@ -106,28 +157,45 @@ export function SidebarMenu({
           </div>
 
           {/* User Profile Card */}
-          <div className="relative rounded-2xl overflow-hidden mb-5">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/20 via-[#7c2d12]/30 to-transparent" />
-            <div className="relative p-4 border border-[#22c55e]/20 rounded-2xl">
+          <div className="relative rounded-2xl overflow-hidden mb-5 bg-[#111820] border border-white/[0.08]">
+            {/* subtle top glow */}
+            <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-32 bg-[#22c55e]/15 blur-3xl" />
+            <div className="relative p-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#c2410c] flex items-center justify-center shadow-lg shadow-orange-500/20">
-                  <span className="text-white font-bold text-lg">
-                    {userName ? userName.charAt(0).toUpperCase() : "U"}
-                  </span>
+                <div className="relative flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[#0d1117] ring-2 ring-[#22c55e]/60 flex items-center justify-center">
+                    <span className="text-[#4ade80] font-bold text-lg">
+                      {userName ? userName.charAt(0).toUpperCase() : "U"}
+                    </span>
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#22c55e] ring-2 ring-[#111820]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-white font-semibold text-sm truncate">{userName || "Trader"}</div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <Shield className="w-3 h-3 text-[#4ade80]" />
-                    <span className="text-[#4ade80] text-[11px] font-medium">VIP Bronze</span>
+                  <div
+                    className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full border"
+                    style={{
+                      backgroundColor: `${vipRank?.color ?? "#22c55e"}1a`,
+                      borderColor: `${vipRank?.color ?? "#22c55e"}33`,
+                    }}
+                  >
+                    <Shield className="w-2.5 h-2.5" style={{ color: vipRank?.color ?? "#4ade80" }} />
+                    <span
+                      className="text-[10px] font-semibold tracking-wide"
+                      style={{ color: vipRank?.color ?? "#4ade80" }}
+                    >
+                      VIP {vipRank?.name ?? "Bronze"}
+                    </span>
                   </div>
                 </div>
               </div>
 
+              <div className="h-px bg-white/[0.06] mb-3" />
+
               <div className="flex items-end justify-between">
                 <div>
-                  <div className="text-white/40 text-[10px] uppercase tracking-wider font-medium mb-0.5">Saldo Disponivel</div>
-                  <div className="text-white font-bold text-xl tracking-tight">{formatBRL(balance)}</div>
+                  <div className="text-white/40 text-[10px] uppercase tracking-wider font-medium mb-1">Saldo Disponivel</div>
+                  <div className="text-white font-bold text-2xl tracking-tight tabular-nums">{formatBRL(balance)}</div>
                 </div>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#22c55e]/15 rounded-lg">
                   <TrendingUp className="w-3 h-3 text-[#4ade80]" />

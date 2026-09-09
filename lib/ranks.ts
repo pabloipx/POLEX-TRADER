@@ -92,3 +92,30 @@ function clampPct(n: number): number {
   if (!Number.isFinite(n)) return 0
   return Math.max(0, Math.min(100, n))
 }
+
+/** Busca um rank pelo nome (case-insensitive). Retorna null se nao existir. */
+export function getRankByName(name: string | null | undefined): Rank | null {
+  if (!name) return null
+  return RANKS.find((r) => r.name.toLowerCase() === name.trim().toLowerCase()) ?? null
+}
+
+/**
+ * Aplica um override manual de nivel VIP sobre o progresso calculado.
+ * Quando ha override valido, o rank atual passa a ser o do override (e o proximo
+ * rank e recalculado), mas os totais/progresso reais sao preservados para exibicao.
+ */
+export function applyRankOverride(
+  progress: RankProgress,
+  overrideName: string | null | undefined,
+): RankProgress {
+  const override = getRankByName(overrideName)
+  if (!override || override.id <= progress.current.id) return progress
+
+  const next = override.id < RANKS.length - 1 ? RANKS[override.id + 1] : null
+  return {
+    ...progress,
+    current: override,
+    next,
+    overallPct: next ? progress.overallPct : 100,
+  }
+}

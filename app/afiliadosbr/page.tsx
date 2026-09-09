@@ -182,7 +182,7 @@ export default function AffiliateLoginPage() {
         </div>
         <p className="flex items-center gap-4 text-sm text-gray-500">
           <span>afiliados@fidelityoption.com</span>
-          <span>© Fidelity Option 2026</span>
+          <span>© Fidex Option 2026</span>
         </p>
       </footer>
     </div>

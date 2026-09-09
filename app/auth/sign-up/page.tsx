@@ -151,7 +151,7 @@ function SignUpForm() {
             <div className="flex-1 overflow-y-auto p-4 text-gray-600 text-sm leading-relaxed space-y-3">
               <p className="text-xs text-gray-400">Última atualização: Janeiro de 2026</p>
               <p>
-                Ao acessar, cadastrar-se ou utilizar a plataforma Fidelity Option, o usuário declara que leu, compreendeu e
+                Ao acessar, cadastrar-se ou utilizar a plataforma Fidex Option, o usuário declara que leu, compreendeu e
                 concorda integralmente com os presentes Termos e Condições.
               </p>
               <h3 className="text-gray-800 font-semibold pt-1">1. Elegibilidade</h3>
@@ -159,7 +159,7 @@ function SignUpForm() {
               <h3 className="text-gray-800 font-semibold pt-1">2. Cadastro</h3>
               <p>O usuário compromete-se a fornecer informações verdadeiras e completas.</p>
               <h3 className="text-gray-800 font-semibold pt-1">3. Riscos</h3>
-              <p>Operações financeiras envolvem riscos e podem resultar em perdas. A Fidelity Option não garante lucros.</p>
+              <p>Operações financeiras envolvem riscos e podem resultar em perdas. A Fidex Option não garante lucros.</p>
             </div>
             <div className="p-4 border-t border-gray-200">
               <button
@@ -174,8 +174,8 @@ function SignUpForm() {
       )}
 
       <header className="flex h-20 items-center justify-between border-b border-[#eeeeee] bg-[#fbfafb] px-5 md:h-24 md:px-8">
-        <Link href="/" className="flex items-center" aria-label="Fidelity Option — início">
-          <Image src="/images/fidelity-auth-logo.png" alt="Fidelity Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
+        <Link href="/" className="flex items-center" aria-label="Fidex Option — início">
+          <Image src="/images/fidelity-auth-logo.png" alt="Fidex Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
         </Link>
         <div className="flex items-center gap-4 md:gap-8">
           <div className="flex items-center gap-2 text-base font-medium text-[#343434]">
@@ -307,7 +307,7 @@ function SignUpForm() {
           </fieldset>
         </form>
       </main>
-      <footer className="border-t border-[#c7c7c7] bg-[#fbfafb] py-8 text-center text-base text-[#5d5d5d]">Fidelity Option</footer>
+      <footer className="border-t border-[#c7c7c7] bg-[#fbfafb] py-8 text-center text-base text-[#5d5d5d]">Fidex Option</footer>
     </div>
   )
 }

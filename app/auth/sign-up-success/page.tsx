@@ -9,7 +9,7 @@ export default function SignUpSuccessPage() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-2xl font-bold text-white">
-              Fidelity<span className="text-[#22c55e]"> Broker</span>
+              Fidex<span className="text-[#22c55e]"> Option</span>
             </h1>
           </div>
 

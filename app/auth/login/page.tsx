@@ -104,8 +104,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#ffffff] font-sans text-[#343434]">
       <header className="flex h-20 items-center justify-between border-b border-[#eeeeee] bg-[#fbfafb] px-5 md:h-24 md:px-8">
-        <Link href="/" className="flex items-center" aria-label="Fidelity Option — início">
-          <Image src="/images/fidelity-auth-logo.png" alt="Fidelity Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
+        <Link href="/" className="flex items-center" aria-label="Fidex Option — início">
+          <Image src="/images/fidelity-auth-logo.png" alt="Fidex Option" width={883} height={245} className="h-14 w-auto object-contain md:h-16" unoptimized />
         </Link>
         <div className="flex items-center gap-4 md:gap-8">
           <div className="flex items-center gap-2 text-base font-medium text-[#343434]">
@@ -146,7 +146,7 @@ export default function LoginPage() {
         </section>
       </main>
 
-      <footer className="border-t border-[#c7c7c7] bg-[#fbfafb] py-8 text-center text-base text-[#5d5d5d]">Fidelity Option</footer>
+      <footer className="border-t border-[#c7c7c7] bg-[#fbfafb] py-8 text-center text-base text-[#5d5d5d]">Fidex Option</footer>
     </div>
   )
 }

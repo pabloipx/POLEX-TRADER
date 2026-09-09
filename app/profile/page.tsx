@@ -26,7 +26,7 @@ import {
   Lock,
   Check,
 } from "lucide-react"
-import { computeRank, RANKS, type RankProgress } from "@/lib/ranks"
+import { computeRank, applyRankOverride, RANKS, type RankProgress } from "@/lib/ranks"
 
 interface UserProfile {
   id: string
@@ -140,7 +140,8 @@ export default function ProfilePage() {
           .eq("is_demo", false)
 
         if (isMounted) {
-          setRank(computeRank(totalDeposited, entriesCount || 0))
+          const baseRank = computeRank(totalDeposited, entriesCount || 0)
+          setRank(applyRankOverride(baseRank, (profileData as { vip_level_override?: string | null })?.vip_level_override))
         }
 
         // Load recent withdrawals (last 5)
