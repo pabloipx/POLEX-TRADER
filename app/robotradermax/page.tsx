@@ -255,18 +255,17 @@ export default function RoboTraderMaxPage() {
       <div className="mx-auto max-w-2xl px-4 py-6">
         {/* Banner de identidade da IA */}
         {phase !== "gate" && (
-        <div className="mb-6 flex items-center gap-4 rounded-2xl border border-[#22c55e]/20 bg-gradient-to-br from-[#22c55e]/10 via-[#0f1419] to-[#0a0e13] p-4">
-          <div className="relative shrink-0">
-            <div className="w-14 h-14 rounded-2xl bg-[#22c55e]/15 ring-2 ring-[#22c55e]/40 flex items-center justify-center">
-              <TrendingUp className="w-7 h-7 text-[#22c55e]" />
-            </div>
-            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#22c55e] border-2 border-[#0a0e13] flex items-center justify-center">
-              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            </span>
-          </div>
-          <div className="min-w-0">
-            <h1 className="text-lg font-bold text-white">Robo Trader Max</h1>
-            <p className="text-sm text-white/50 text-pretty">
+        <div className="mb-6 overflow-hidden rounded-2xl border border-[#22c55e]/20 bg-gradient-to-br from-[#22c55e]/10 via-[#0f1419] to-[#0a0e13]">
+          <div className="flex flex-col items-center gap-4 p-6 text-center">
+            <Image
+              src="/images/trader-max-logo.png"
+              alt="Trader Max"
+              width={280}
+              height={130}
+              priority
+              className="h-20 w-auto object-contain drop-shadow-[0_0_25px_rgba(34,197,94,0.35)]"
+            />
+            <p className="max-w-md text-sm text-white/50 text-pretty">
               Inteligência artificial que analisa o ativo e envia o sinal de entrada para você operar na corretora.
             </p>
           </div>
