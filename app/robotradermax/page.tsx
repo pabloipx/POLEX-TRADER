@@ -72,41 +72,36 @@ export default function RoboTraderMaxPage() {
   const [confirmError, setConfirmError] = useState<string | null>(null)
   const [confirmed, setConfirmed] = useState(false)
 
+  // Carrega usuário + saldo se houver sessão. Não redireciona: o próprio gate faz o login da corretora.
+  const loadUserData = useCallback(async () => {
+    const supabase = supabaseRef.current
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return false
+    const { data: balanceData } = await supabase
+      .from("user_balances")
+      .select("balance_real, balance_demo")
+      .eq("user_id", user.id)
+      .maybeSingle()
+    if (!mountedRef.current) return true
+    setUserEmail(user.email || "")
+    setBalanceReal(Number(balanceData?.balance_real || 0))
+    setBalanceDemo(Number(balanceData?.balance_demo || 0))
+    return true
+  }, [])
+
   // Autenticação + saldo
   useEffect(() => {
     mountedRef.current = true
-    const supabase = supabaseRef.current
-
-    const init = async () => {
-      try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser()
-        if (error || !user) {
-          router.replace("/auth/login")
-          return
-        }
-        const { data: balanceData } = await supabase
-          .from("user_balances")
-          .select("balance_real, balance_demo")
-          .eq("user_id", user.id)
-          .maybeSingle()
-        if (!mountedRef.current) return
-        setUserEmail(user.email || "")
-        setBalanceReal(Number(balanceData?.balance_real || 0))
-        setBalanceDemo(Number(balanceData?.balance_demo || 0))
-        setLoading(false)
-      } catch {
-        if (mountedRef.current) router.replace("/auth/login")
-      }
-    }
-    init()
+    loadUserData().finally(() => {
+      if (mountedRef.current) setLoading(false)
+    })
 
     return () => {
       mountedRef.current = false
     }
-  }, [router])
+  }, [loadUserData])
 
   // Carrega ativos habilitados pelo admin
   useEffect(() => {
@@ -276,7 +271,10 @@ export default function RoboTraderMaxPage() {
         {phase === "gate" && (
           <SyncGate
             defaultEmail={userEmail}
-            onSynced={() => setPhase("select")}
+            onSynced={async () => {
+              await loadUserData()
+              setPhase("select")
+            }}
             onDeposit={() => router.push("/deposit")}
           />
         )}

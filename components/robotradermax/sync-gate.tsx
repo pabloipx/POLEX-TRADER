@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Lock, Mail, Loader2, ShieldCheck, TrendingUp, AlertCircle, Eye, EyeOff, Wallet, LineChart } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
 interface SyncGateProps {
   defaultEmail?: string
@@ -36,6 +37,19 @@ export function SyncGate({ defaultEmail = "", onSynced, onDeposit }: SyncGatePro
 
     setLoading(true)
     try {
+      // 1. Faz o login na corretora (estabelece a sessão) — sem depender de sessão prévia.
+      const supabase = createClient()
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      })
+      if (signInError) {
+        setError("E-mail ou senha da corretora inválidos.")
+        setLoading(false)
+        return
+      }
+
+      // 2. Com a sessão ativa, valida a titularidade e o depósito mínimo no servidor.
       const response = await fetch("/api/robotradermax/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
