@@ -498,6 +498,10 @@ export default function TradePage() {
 
   // Track processed trade IDs to prevent double-processing
   const processedTradesRef = useRef<Set<string>>(new Set())
+  // Preco EXATO renderizado pelo grafico (cotacao suavizada). O grafico escreve nele a cada frame.
+  // Usamos este valor — e nao o `price` cru do feed — como cotacao de entrada, para a linha cair
+  // sobre o candle visivel no momento do clique.
+  const chartLivePriceRef = useRef(0)
   // Impede que uma consulta iniciada antes da compra apague a linha recém-criada quando sua
   // resposta atrasada chegar. Esse race condition fazia a linha aparecer e sumir aleatoriamente.
   const activeTradesRequestRef = useRef(0)
@@ -856,7 +860,7 @@ export default function TradePage() {
             direction,
             amount: Math.round(amount * 100) / 100,
             timeframe: expiryTime,
-            displayedPrice: price,
+            displayedPrice: chartLivePriceRef.current > 0 ? chartLivePriceRef.current : price,
             quoteProof,
             isDemo,
             idempotencyKey,
@@ -1146,6 +1150,7 @@ export default function TradePage() {
               reloadKey={(realReady ? 1 : 0) + (realHistoryReady ? 2 : 0)}
   hoverDirection={hoverDirection}
   tradePulse={tradePulse}
+  livePriceRef={chartLivePriceRef}
   />
                 </div>
         </div>

@@ -78,6 +78,10 @@ interface Props {
   // grafico correspondente ao lucro daquela direcao. `null` = sem preview.
   hoverDirection?: "call" | "put" | null
   tradePulse?: { id: string; direction: "call" | "put" } | null
+  // Espelha, a cada frame, o preco EXATO que o grafico esta renderizando (a cotacao suavizada,
+  // nao o alvo cru do feed). A pagina le esse valor no clique de Comprar/Vender para que a linha
+  // de entrada caia sobre o candle visivel, e nao no preco cru que ainda nao chegou na tela.
+  livePriceRef?: React.MutableRefObject<number>
 }
 interface PnlOverlay {
   id: string
@@ -424,6 +428,7 @@ function ChartCore({
   reloadKey = 0,
   hoverDirection = null,
   tradePulse = null,
+  livePriceRef,
   }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -1274,6 +1279,7 @@ function ChartCore({
           else if (cur.close < prevTargetRef.current) dirRef.current = "down"
           prevTargetRef.current = cur.close
           smoothPriceRef.current = cur.close
+          if (livePriceRef) livePriceRef.current = cur.close
 
           const arr = candleArrayRef.current
           if (arr.length && arr[arr.length - 1].time === cur.time) {
@@ -1307,6 +1313,7 @@ function ChartCore({
           const alpha = ratio > 0.01 ? 0.8 : ratio > 0.002 ? 0.15 : ratio > 0.0005 ? 0.08 : 0.05
           smoothPriceRef.current += (target - smoothPriceRef.current) * alpha
           const price = smoothPriceRef.current
+          if (livePriceRef) livePriceRef.current = price
 
           const moveRatio = Math.abs(target - prevTargetRef.current) / Math.max(Math.abs(prevTargetRef.current), 1e-12)
           if (moveRatio > 0.00005) {
