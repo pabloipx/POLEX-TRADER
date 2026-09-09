@@ -62,7 +62,7 @@ export default function HomePage() {
           </div>
           <div className="fidelity-phone-stage relative order-2 flex min-h-[300px] items-center justify-center sm:min-h-[410px] lg:order-1 lg:min-h-[520px]">
             <div className="absolute inset-12 rounded-full bg-[var(--landing-primary)]/15 blur-3xl" />
-            <Image src="/images/fidelity-mobile-platform.png" alt="Aplicativo Fidex Option exibindo histórico de lucros e plataforma de negociação" width={1137} height={1387} sizes="(max-width: 639px) 82vw, (max-width: 1023px) 90vw, 540px" className="fidelity-phone relative mx-auto max-h-[360px] w-auto object-contain drop-shadow-2xl sm:max-h-[570px]" priority />
+            <Image src="/images/fidelity-mobile-platform.png" alt="Três celulares com o aplicativo Fidex Option exibindo histórico de lucros, gráfico EUR/USD e notificações de lucro realizado" width={1137} height={1387} sizes="(max-width: 639px) 82vw, (max-width: 1023px) 90vw, 540px" className="fidelity-phone relative mx-auto max-h-[360px] w-auto object-contain drop-shadow-2xl sm:max-h-[570px]" priority />
           </div>
         </div>
       </section>
