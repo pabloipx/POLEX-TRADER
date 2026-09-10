@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
-import { AssetPicker, type RoboAsset } from "@/components/robotradermax/asset-picker"
+import { AssetPicker, type RoboAsset, type RoboConfig } from "@/components/robotradermax/asset-picker"
 import { AnalyzingAnimation } from "@/components/robotradermax/analyzing-animation"
 import { SyncGate } from "@/components/robotradermax/sync-gate"
 import { ExecutionOverlay } from "@/components/robotradermax/execution-overlay"
-import { timeframesFor, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
+import { timeframesFor, normalizeTimeframe, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
 import {
   ArrowLeft,
   TrendingUp,
@@ -65,6 +65,7 @@ export default function RoboTraderMaxPage() {
   const [userEmail, setUserEmail] = useState("")
   const [asset, setAsset] = useState<RoboAsset | null>(null)
   const [signal, setSignal] = useState<RoboSignal | null>(null)
+  const [config, setConfig] = useState<RoboConfig>({ risk: "moderado", strategy: "smart", expiration: "auto" })
 
   // Relógio para a contagem regressiva
   const [now, setNow] = useState(() => Date.now())
@@ -139,20 +140,29 @@ export default function RoboTraderMaxPage() {
     setConfirmError(null)
     setPhase("analyzing")
 
-    // A IA "analisa" e depois gera o sinal
-    const timeframe = timeframesFor(selected.symbol)[0]
+    // Expiração: no modo "auto" a IA usa a duração recomendada do ativo; caso contrário,
+    // ajusta a preferência do usuário para uma duração válida no símbolo.
+    const timeframe =
+      config.expiration === "auto"
+        ? timeframesFor(selected.symbol)[0]
+        : normalizeTimeframe(selected.symbol, config.expiration)
+
+    // Faixa de confiança conforme o nível de risco escolhido.
+    const confidenceRange =
+      config.risk === "conservador" ? { min: 91, span: 8 } : config.risk === "agressivo" ? { min: 78, span: 13 } : { min: 85, span: 11 }
+
     const analyzeMs = 3800
     setTimeout(() => {
       if (!mountedRef.current) return
       const direction: "CALL" | "PUT" = Math.random() > 0.5 ? "CALL" : "PUT"
-      const confidence = Math.floor(Math.random() * 12) + 87 // 87-98%
+      const confidence = Math.floor(Math.random() * confidenceRange.span) + confidenceRange.min
       // Entrada agendada para daqui a ~35s, dando tempo de a contagem correr.
       const entryAt = Date.now() + 35000
       setSignal({ id: Date.now().toString(), direction, confidence, timeframe, entryAt })
       setNow(Date.now())
       setPhase("signal")
     }, analyzeMs)
-  }, [])
+  }, [config])
 
   const resetToSelect = useCallback(() => {
     setPhase("select")
@@ -186,10 +196,6 @@ export default function RoboTraderMaxPage() {
       setConfirmError("Informe um valor de pelo menos R$ 1,00.")
       return
     }
-    if (amount > currentBalance) {
-      setConfirmError("Saldo insuficiente para esse valor.")
-      return
-    }
 
     setConfirming(true)
     try {
@@ -220,7 +226,7 @@ export default function RoboTraderMaxPage() {
     } finally {
       setConfirming(false)
     }
-  }, [asset, signal, amount, accountType, currentBalance])
+  }, [asset, signal, amount, accountType])
 
   if (loading) {
     return (
@@ -284,7 +290,9 @@ export default function RoboTraderMaxPage() {
           />
         )}
 
-        {phase === "select" && <AssetPicker assets={assets} onSelect={handleSelectAsset} />}
+        {phase === "select" && (
+          <AssetPicker assets={assets} config={config} onConfigChange={setConfig} onSelect={handleSelectAsset} />
+        )}
 
         {phase === "analyzing" && asset && <AnalyzingAnimation asset={asset} />}
 
