@@ -72,7 +72,7 @@ export default function RoboTraderMaxPage() {
   const [now, setNow] = useState(() => Date.now())
 
   // Confirmação opcional da entrada
-  const [accountType, setAccountType] = useState<"demo" | "real">("demo")
+  const [accountType] = useState<"demo" | "real">("real")
   const [amount, setAmount] = useState(10)
   const [confirming, setConfirming] = useState(false)
   const [confirmError, setConfirmError] = useState<string | null>(null)
@@ -151,8 +151,8 @@ export default function RoboTraderMaxPage() {
       if (!mountedRef.current) return
       const direction: "CALL" | "PUT" = Math.random() > 0.5 ? "CALL" : "PUT"
       const confidence = Math.floor(Math.random() * confidenceRange.span) + confidenceRange.min
-      // Entrada agendada para daqui a ~35s, dando tempo de a contagem correr.
-      const entryAt = Date.now() + 35000
+      // Entrada agendada entre 1:11 e 2:14, dando tempo de configurar o valor da entrada.
+      const entryAt = Date.now() + 71000 + Math.floor(Math.random() * 63001)
       setSignal({ id: Date.now().toString(), direction, confidence, timeframe, entryAt })
       setNow(Date.now())
       setPhase("signal")
@@ -423,41 +423,32 @@ export default function RoboTraderMaxPage() {
 
             {/* Confirmação opcional com valor */}
             {!confirmed ? (
-              <div className="rounded-2xl border border-white/10 bg-[#0f1419] p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-white font-semibold">Confirmar entrada (opcional)</h3>
-                  <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                    <Wallet className="w-3.5 h-3.5" />
-                    R$ {formatCurrency(currentBalance)}
-                  </div>
-                </div>
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#111a22] to-[#0a0e13] p-5 shadow-[0_0_50px_-16px_rgba(34,197,94,0.35)]">
+                <div
+                  className="pointer-events-none absolute -top-px left-0 right-0 h-px"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(34,197,94,0.6), transparent)" }}
+                />
 
-                {/* Tipo de conta */}
-                <div className="flex items-center gap-2 mb-3">
-                  <button
-                    onClick={() => setAccountType("demo")}
-                    className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
-                      accountType === "demo" ? "bg-[#22c55e] text-[#04120a]" : "bg-white/5 text-white/60 hover:bg-white/10"
-                    }`}
-                  >
-                    Conta Demo
-                  </button>
-                  <button
-                    onClick={() => setAccountType("real")}
-                    className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
-                      accountType === "real" ? "bg-[#22c55e] text-[#04120a]" : "bg-white/5 text-white/60 hover:bg-white/10"
-                    }`}
-                  >
-                    Conta Real
-                  </button>
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div>
+                    <h3 className="text-white font-semibold leading-tight">Confirmar entrada</h3>
+                    <p className="text-white/40 text-xs mt-0.5">Envie a ordem direto para a corretora</p>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-xl border border-[#22c55e]/25 bg-[#22c55e]/10 px-3 py-1.5">
+                    <Wallet className="w-4 h-4 text-[#22c55e]" />
+                    <div className="text-right leading-tight">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#22c55e]/70">Conta Real</span>
+                      <span className="block text-sm font-bold text-white">R$ {formatCurrency(currentBalance)}</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Valor */}
                 <label className="block text-white/50 text-xs mb-1.5">Valor da entrada</label>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => setAmount((v) => Math.max(1, Math.round((v - 5) * 100) / 100))}
-                    className="w-11 h-11 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xl font-bold transition"
+                    className="w-12 h-12 shrink-0 rounded-xl bg-white/5 hover:bg-white/10 text-white text-2xl font-bold transition"
                     aria-label="Diminuir valor"
                   >
                     −
@@ -469,25 +460,44 @@ export default function RoboTraderMaxPage() {
                       min={1}
                       value={amount}
                       onChange={(e) => setAmount(Number(e.target.value))}
-                      className="w-full text-center py-2.5 pl-9 pr-3 bg-black/40 border border-white/10 rounded-xl text-white font-bold focus:outline-none focus:border-[#22c55e] transition"
+                      className="w-full text-center py-3 pl-9 pr-3 bg-black/50 border border-white/10 rounded-xl text-white text-lg font-bold focus:outline-none focus:border-[#22c55e] transition"
                     />
                   </div>
                   <button
                     onClick={() => setAmount((v) => Math.round((v + 5) * 100) / 100)}
-                    className="w-11 h-11 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xl font-bold transition"
+                    className="w-12 h-12 shrink-0 rounded-xl bg-white/5 hover:bg-white/10 text-white text-2xl font-bold transition"
                     aria-label="Aumentar valor"
                   >
                     +
                   </button>
                 </div>
 
-                {confirmError && <p className="text-[#EF4444] text-sm mb-3 text-center">{confirmError}</p>}
+                {/* Valores rápidos */}
+                <div className="grid grid-cols-4 gap-2 mt-2.5">
+                  {[10, 25, 50, 100].map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setAmount(v)}
+                      className={`py-2 rounded-lg text-sm font-semibold border transition ${
+                        amount === v
+                          ? "bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/40"
+                          : "bg-white/5 text-white/60 border-transparent hover:bg-white/10"
+                      }`}
+                    >
+                      R$ {v}
+                    </button>
+                  ))}
+                </div>
+
+                {confirmError && <p className="text-[#EF4444] text-sm mt-3 text-center">{confirmError}</p>}
 
                 <button
                   onClick={handleConfirmEntry}
                   disabled={confirming || entryState.expired}
-                  className={`w-full py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 disabled:opacity-50 ${
-                    isCall ? "bg-[#22c55e] text-[#04120a] hover:brightness-110" : "bg-[#EF4444] text-white hover:brightness-110"
+                  className={`mt-4 w-full py-4 rounded-xl font-bold text-base transition flex items-center justify-center gap-2 disabled:opacity-50 ${
+                    isCall
+                      ? "bg-[#22c55e] text-[#04120a] hover:brightness-110 shadow-[0_8px_30px_-8px_rgba(34,197,94,0.6)]"
+                      : "bg-[#EF4444] text-white hover:brightness-110 shadow-[0_8px_30px_-8px_rgba(239,68,68,0.6)]"
                   }`}
                 >
                   {confirming ? (
@@ -497,6 +507,7 @@ export default function RoboTraderMaxPage() {
                     </>
                   ) : (
                     <>
+                      {isCall ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
                       Confirmar entrada de {isCall ? "COMPRA" : "VENDA"}
                     </>
                   )}
