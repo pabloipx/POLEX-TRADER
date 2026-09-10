@@ -905,3 +905,134 @@ body {
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   ROBO TRADER MAX - cartão de sinal tecnológico + overlay de execução
+   ========================================================================== */
+
+/* Grade tecnológica deslizando dentro do cartão de sinal */
+@keyframes rtm-grid {
+  from { background-position: 0 0; }
+  to { background-position: 36px 36px; }
+}
+.rtm-grid {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 36px 36px;
+  animation: rtm-grid 6s linear infinite;
+  will-change: background-position;
+}
+
+/* Linha de varredura horizontal (HUD) que percorre o cartão */
+@keyframes rtm-scan {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(360px); opacity: 0; }
+}
+.rtm-scan { animation: rtm-scan 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; will-change: transform, opacity; }
+
+/* Borda com glow pulsante (cor definida via variável --rtm-glow) */
+@keyframes rtm-border-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px var(--rtm-glow), 0 0 22px -6px var(--rtm-glow); }
+  50% { box-shadow: 0 0 0 1px var(--rtm-glow), 0 0 42px 0px var(--rtm-glow); }
+}
+.rtm-border-pulse { animation: rtm-border-pulse 2.6s ease-in-out infinite; }
+
+/* Seta de direção com leve flutuação */
+@keyframes rtm-arrow-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes rtm-arrow-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+.rtm-arrow-up { animation: rtm-arrow-up 1.4s ease-in-out infinite; }
+.rtm-arrow-down { animation: rtm-arrow-down 1.4s ease-in-out infinite; }
+
+/* Badge de confiança pulsando */
+@keyframes rtm-badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.rtm-badge-pulse { animation: rtm-badge-pulse 1.8s ease-in-out infinite; }
+
+/* Barra de progresso da entrada (brilho deslizante) */
+@keyframes rtm-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.rtm-shimmer { animation: rtm-shimmer 1.6s ease-in-out infinite; }
+
+/* ---- Overlay de execução ---- */
+@keyframes rtm-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.rtm-overlay-in { animation: rtm-overlay-in 220ms ease-out both; }
+
+@keyframes rtm-overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.rtm-overlay-out { animation: rtm-overlay-out 300ms ease-in both; }
+
+/* Núcleo central entra com pop elástico */
+@keyframes rtm-core-in {
+  0% { opacity: 0; transform: scale(0.5); }
+  60% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.rtm-core-in { animation: rtm-core-in 560ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Anéis de energia expandindo */
+@keyframes rtm-ring {
+  0% { opacity: 0.7; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(2.4); }
+}
+.rtm-ring { animation: rtm-ring 1.5s ease-out infinite; }
+
+/* Candles subindo/descendo em sequência dentro do overlay */
+@keyframes rtm-candle-in {
+  0% { opacity: 0; transform: translateY(var(--rtm-candle-from, 20px)) scaleY(0.2); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+.rtm-candle-in { transform-origin: bottom; animation: rtm-candle-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Texto grande da direção deslizando */
+@keyframes rtm-word-in {
+  0% { opacity: 0; transform: translateY(16px) scale(0.9); letter-spacing: 0.3em; }
+  100% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: 0.05em; }
+}
+.rtm-word-in { animation: rtm-word-in 520ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both; }
+
+/* Seta grande do overlay dispara na direção */
+@keyframes rtm-launch-up {
+  0% { opacity: 0; transform: translateY(30px) scale(0.6); }
+  55% { opacity: 1; transform: translateY(-6px) scale(1.15); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes rtm-launch-down {
+  0% { opacity: 0; transform: translateY(-30px) scale(0.6); }
+  55% { opacity: 1; transform: translateY(6px) scale(1.15); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.rtm-launch-up { animation: rtm-launch-up 560ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.rtm-launch-down { animation: rtm-launch-down 560ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Barra de progresso "enviando ordem" */
+@keyframes rtm-progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.rtm-progress { animation: rtm-progress 1.8s cubic-bezier(0.4, 0, 0.2, 1) 260ms both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rtm-grid, .rtm-scan, .rtm-border-pulse, .rtm-arrow-up, .rtm-arrow-down,
+  .rtm-badge-pulse, .rtm-shimmer, .rtm-ring, .rtm-candle-in, .rtm-word-in,
+  .rtm-launch-up, .rtm-launch-down, .rtm-core-in {
+    animation: none !important;
+  }
+}

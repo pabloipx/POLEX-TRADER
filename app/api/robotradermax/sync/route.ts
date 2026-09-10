@@ -41,7 +41,10 @@ export async function POST(request: Request) {
       auth: { persistSession: false, autoRefreshToken: false },
     })
     const { data: signIn, error: signInError } = await verifier.auth.signInWithPassword({ email, password })
-    await verifier.auth.signOut().catch(() => {})
+    // IMPORTANTE: escopo "local" revoga apenas a sessão recém-criada por este verificador.
+    // O padrão ("global") revogaria TODOS os refresh tokens do usuário — inclusive a sessão
+    // real do navegador —, derrubando a conta e causando 401 nas próximas chamadas.
+    await verifier.auth.signOut({ scope: "local" }).catch(() => {})
 
     if (signInError || !signIn?.user || signIn.user.id !== user.id) {
       return NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 })

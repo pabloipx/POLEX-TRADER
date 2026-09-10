@@ -4,10 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
-import { AssetPicker, type RoboAsset } from "@/components/robotradermax/asset-picker"
+import { AssetPicker, type RoboAsset, type RoboConfig } from "@/components/robotradermax/asset-picker"
 import { AnalyzingAnimation } from "@/components/robotradermax/analyzing-animation"
 import { SyncGate } from "@/components/robotradermax/sync-gate"
-import { timeframesFor, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
+import { ExecutionOverlay } from "@/components/robotradermax/execution-overlay"
+import { timeframesFor, normalizeTimeframe, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
 import {
   ArrowLeft,
   TrendingUp,
@@ -18,6 +19,9 @@ import {
   Loader2,
   CheckCircle2,
   ShieldCheck,
+  Activity,
+  Cpu,
+  Zap,
 } from "lucide-react"
 
 type Phase = "gate" | "select" | "analyzing" | "signal"
@@ -61,6 +65,7 @@ export default function RoboTraderMaxPage() {
   const [userEmail, setUserEmail] = useState("")
   const [asset, setAsset] = useState<RoboAsset | null>(null)
   const [signal, setSignal] = useState<RoboSignal | null>(null)
+  const [config, setConfig] = useState<RoboConfig>({ risk: "moderado", strategy: "smart", expiration: "auto" })
 
   // Relógio para a contagem regressiva
   const [now, setNow] = useState(() => Date.now())
@@ -71,6 +76,7 @@ export default function RoboTraderMaxPage() {
   const [confirming, setConfirming] = useState(false)
   const [confirmError, setConfirmError] = useState<string | null>(null)
   const [confirmed, setConfirmed] = useState(false)
+  const [executing, setExecuting] = useState(false)
 
   // Carrega usuário + saldo se houver sessão. Não redireciona: o próprio gate faz o login da corretora.
   const loadUserData = useCallback(async () => {
@@ -134,20 +140,29 @@ export default function RoboTraderMaxPage() {
     setConfirmError(null)
     setPhase("analyzing")
 
-    // A IA "analisa" e depois gera o sinal
-    const timeframe = timeframesFor(selected.symbol)[0]
+    // Expiração: no modo "auto" a IA usa a duração recomendada do ativo; caso contrário,
+    // ajusta a preferência do usuário para uma duração válida no símbolo.
+    const timeframe =
+      config.expiration === "auto"
+        ? timeframesFor(selected.symbol)[0]
+        : normalizeTimeframe(selected.symbol, config.expiration)
+
+    // Faixa de confiança conforme o nível de risco escolhido.
+    const confidenceRange =
+      config.risk === "conservador" ? { min: 91, span: 8 } : config.risk === "agressivo" ? { min: 78, span: 13 } : { min: 85, span: 11 }
+
     const analyzeMs = 3800
     setTimeout(() => {
       if (!mountedRef.current) return
       const direction: "CALL" | "PUT" = Math.random() > 0.5 ? "CALL" : "PUT"
-      const confidence = Math.floor(Math.random() * 12) + 87 // 87-98%
+      const confidence = Math.floor(Math.random() * confidenceRange.span) + confidenceRange.min
       // Entrada agendada para daqui a ~35s, dando tempo de a contagem correr.
       const entryAt = Date.now() + 35000
       setSignal({ id: Date.now().toString(), direction, confidence, timeframe, entryAt })
       setNow(Date.now())
       setPhase("signal")
     }, analyzeMs)
-  }, [])
+  }, [config])
 
   const resetToSelect = useCallback(() => {
     setPhase("select")
@@ -181,10 +196,6 @@ export default function RoboTraderMaxPage() {
       setConfirmError("Informe um valor de pelo menos R$ 1,00.")
       return
     }
-    if (amount > currentBalance) {
-      setConfirmError("Saldo insuficiente para esse valor.")
-      return
-    }
 
     setConfirming(true)
     try {
@@ -209,13 +220,13 @@ export default function RoboTraderMaxPage() {
       const newBalance = Number(data.newBalance)
       if (accountType === "demo") setBalanceDemo(newBalance)
       else setBalanceReal(newBalance)
-      setConfirmed(true)
+      setExecuting(true)
     } catch {
       setConfirmError("Erro de conexão ao confirmar a entrada.")
     } finally {
       setConfirming(false)
     }
-  }, [asset, signal, amount, accountType, currentBalance])
+  }, [asset, signal, amount, accountType])
 
   if (loading) {
     return (
@@ -279,65 +290,134 @@ export default function RoboTraderMaxPage() {
           />
         )}
 
-        {phase === "select" && <AssetPicker assets={assets} onSelect={handleSelectAsset} />}
+        {phase === "select" && (
+          <AssetPicker assets={assets} config={config} onConfigChange={setConfig} onSelect={handleSelectAsset} />
+        )}
 
         {phase === "analyzing" && asset && <AnalyzingAnimation asset={asset} />}
 
         {phase === "signal" && asset && signal && (
           <div className="space-y-4">
-            {/* Card do sinal */}
+            {/* Card do sinal - HUD tecnológico */}
             <div
-              className={`relative overflow-hidden rounded-2xl border p-5 ${
-                isCall ? "border-[#22c55e]/50 bg-[#22c55e]/5" : "border-[#EF4444]/50 bg-[#EF4444]/5"
-              }`}
+              className="rtm-border-pulse relative overflow-hidden rounded-2xl border bg-[#0b1016] p-5"
+              style={
+                {
+                  borderColor: isCall ? "rgba(34,197,94,0.5)" : "rgba(239,68,68,0.5)",
+                  "--rtm-glow": isCall ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)",
+                } as React.CSSProperties
+              }
             >
-              <div className="flex items-center gap-3">
-                <img src={asset.logo || "/placeholder.svg"} alt={asset.name} className="w-12 h-12 rounded-full object-cover bg-black/40" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-lg truncate">{asset.name}</p>
-                  <p className="text-white/50 text-xs">Sinal gerado pela IA</p>
-                </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-bold ${isCall ? "bg-[#22c55e] text-[#04120a]" : "bg-[#EF4444] text-white"}`}>
-                  {signal.confidence}% de confiança
-                </div>
-              </div>
+              {/* Camadas tecnológicas de fundo */}
+              <div className="pointer-events-none absolute inset-0 rtm-grid opacity-70" />
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background: isCall
+                    ? "radial-gradient(circle at 50% 0%, rgba(34,197,94,0.14), transparent 60%)"
+                    : "radial-gradient(circle at 50% 0%, rgba(239,68,68,0.14), transparent 60%)",
+                }}
+              />
+              <div
+                className="rtm-scan pointer-events-none absolute inset-x-0 top-0 h-16 opacity-40"
+                style={{
+                  background: isCall
+                    ? "linear-gradient(to bottom, rgba(34,197,94,0.35), transparent)"
+                    : "linear-gradient(to bottom, rgba(239,68,68,0.35), transparent)",
+                }}
+              />
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-black/30 p-4 flex flex-col items-center justify-center">
-                  <span className="text-white/40 text-xs mb-1">Direção</span>
-                  <div className={`flex items-center gap-2 font-black text-2xl ${isCall ? "text-[#22c55e]" : "text-[#EF4444]"}`}>
-                    {isCall ? <TrendingUp className="w-6 h-6" /> : <TrendingDown className="w-6 h-6" />}
-                    {isCall ? "COMPRA" : "VENDA"}
+              <div className="relative">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img
+                      src={asset.logo || "/placeholder.svg"}
+                      alt={asset.name}
+                      className="w-12 h-12 rounded-full object-cover bg-black/40 ring-2"
+                      style={{ boxShadow: isCall ? "0 0 18px -4px rgba(34,197,94,0.6)" : "0 0 18px -4px rgba(239,68,68,0.6)" }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-lg truncate">{asset.name}</p>
+                    <p className="text-white/50 text-xs flex items-center gap-1.5">
+                      <Cpu className="w-3 h-3 text-[#22c55e]" />
+                      Sinal gerado pela IA
+                    </p>
+                  </div>
+                  <div
+                    className={`rtm-badge-pulse px-3 py-1 rounded-full text-xs font-bold ${
+                      isCall ? "bg-[#22c55e] text-[#04120a]" : "bg-[#EF4444] text-white"
+                    }`}
+                  >
+                    {signal.confidence}% de confiança
                   </div>
                 </div>
-                <div className="rounded-xl bg-black/30 p-4 flex flex-col items-center justify-center">
-                  <span className="text-white/40 text-xs mb-1">Expiração</span>
-                  <span className="font-black text-2xl text-white">{TIMEFRAME_LABELS[signal.timeframe]}</span>
-                </div>
-              </div>
 
-              {/* Contagem regressiva para a entrada */}
-              <div className="mt-3 rounded-xl bg-black/40 p-4 text-center">
-                {entryState.expired ? (
-                  <p className="text-white/60 text-sm">Tempo da entrada expirou. Gere uma nova análise.</p>
-                ) : entryState.live ? (
-                  <div className="flex flex-col items-center">
-                    <span className="text-[#22c55e] text-xs font-semibold mb-1 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
-                      HORA DE ENTRAR AGORA
-                    </span>
-                    <span className="text-[#22c55e] font-black text-3xl tabular-nums">00:00</span>
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="relative overflow-hidden rounded-xl border border-white/5 bg-black/40 p-4 flex flex-col items-center justify-center">
+                    <span className="text-white/40 text-[10px] uppercase tracking-widest mb-1">Direção</span>
+                    <div className={`flex items-center gap-2 font-black text-2xl ${isCall ? "text-[#22c55e]" : "text-[#EF4444]"}`}>
+                      {isCall ? (
+                        <TrendingUp className="rtm-arrow-up w-6 h-6" />
+                      ) : (
+                        <TrendingDown className="rtm-arrow-down w-6 h-6" />
+                      )}
+                      {isCall ? "COMPRA" : "VENDA"}
+                    </div>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <span className="text-white/40 text-xs mb-1 flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      Faça a entrada em
-                    </span>
-                    <span className="text-white font-black text-4xl tabular-nums">{countdownLabel}</span>
-                    <span className="text-white/40 text-xs mt-1">minutos : segundos</span>
+                  <div className="rounded-xl border border-white/5 bg-black/40 p-4 flex flex-col items-center justify-center">
+                    <span className="text-white/40 text-[10px] uppercase tracking-widest mb-1">Expiração</span>
+                    <span className="font-black text-2xl text-white">{TIMEFRAME_LABELS[signal.timeframe]}</span>
                   </div>
-                )}
+                </div>
+
+                {/* Contagem regressiva para a entrada */}
+                <div className="mt-3 rounded-xl border border-white/5 bg-black/50 p-4 text-center">
+                  {entryState.expired ? (
+                    <p className="text-white/60 text-sm">Tempo da entrada expirou. Gere uma nova análise.</p>
+                  ) : entryState.live ? (
+                    <div className="flex flex-col items-center">
+                      <span className="text-[#22c55e] text-xs font-semibold mb-1 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
+                        HORA DE ENTRAR AGORA
+                      </span>
+                      <span className="text-[#22c55e] font-black text-3xl tabular-nums">00:00</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <span className="text-white/40 text-xs mb-2 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" />
+                        Faça a entrada em
+                      </span>
+                      <span
+                        className="font-black text-4xl tabular-nums"
+                        style={{
+                          color: isCall ? "#22c55e" : "#ef4444",
+                          textShadow: isCall ? "0 0 24px rgba(34,197,94,0.45)" : "0 0 24px rgba(239,68,68,0.45)",
+                        }}
+                      >
+                        {countdownLabel}
+                      </span>
+                      <span className="text-white/40 text-[10px] uppercase tracking-widest mt-1">minutos : segundos</span>
+                      {/* Barra de progresso com shimmer */}
+                      <div className="mt-3 h-1 w-full max-w-[220px] overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className="relative h-full w-full"
+                          style={{ background: isCall ? "rgba(34,197,94,0.4)" : "rgba(239,68,68,0.4)" }}
+                        >
+                          <div
+                            className="rtm-shimmer absolute inset-y-0 w-1/3"
+                            style={{
+                              background: isCall
+                                ? "linear-gradient(90deg, transparent, #22c55e, transparent)"
+                                : "linear-gradient(90deg, transparent, #ef4444, transparent)",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -453,6 +533,20 @@ export default function RoboTraderMaxPage() {
           </div>
         )}
       </div>
+
+      {/* Animação de execução da entrada */}
+      {executing && signal && asset && (
+        <ExecutionOverlay
+          direction={signal.direction}
+          assetName={asset.name}
+          amount={amount}
+          accountLabel={accountType === "demo" ? "Demo" : "Real"}
+          onDone={() => {
+            setExecuting(false)
+            setConfirmed(true)
+          }}
+        />
+      )}
     </main>
   )
 }
