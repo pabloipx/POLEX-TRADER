@@ -103,6 +103,9 @@ export function SignalChart({ isCall, pair }: { isCall: boolean; pair: string })
   const last = candles[candles.length - 1]
   const lastX = padX + slot * (candles.length - 1) + slot / 2
   const lastY = y(last.close)
+  // Fração vertical (0..1) da linha de entrada dentro da área do gráfico,
+  // usada para posicionar a etiqueta em HTML sem sofrer a distorção do SVG.
+  const entryTopPct = Math.min(94, Math.max(6, (lastY / height) * 100))
 
   const linePath = candles
     .map((c, i) => {
@@ -173,7 +176,7 @@ export function SignalChart({ isCall, pair }: { isCall: boolean; pair: string })
             )
           })}
 
-          {/* Linha de preço atual */}
+          {/* Linha de entrada (COMPRA/VENDA) — fixada no preço atual */}
           <line
             x1={0}
             x2={width}
@@ -182,7 +185,7 @@ export function SignalChart({ isCall, pair }: { isCall: boolean; pair: string })
             stroke={accent}
             strokeWidth={0.75}
             strokeDasharray="4 4"
-            opacity={0.5}
+            opacity={0.6}
           />
 
           {/* Linha de tendência */}
@@ -203,6 +206,19 @@ export function SignalChart({ isCall, pair }: { isCall: boolean; pair: string })
           </circle>
           <circle cx={lastX} cy={lastY} r={2.6} fill={accent} />
         </svg>
+
+        {/* Etiqueta da linha de entrada, alinhada ao nível do preço atual */}
+        <div
+          className="pointer-events-none absolute right-1 -translate-y-1/2 flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold shadow-lg"
+          style={{
+            top: `${entryTopPct}%`,
+            backgroundColor: accent,
+            color: "#04140a",
+          }}
+        >
+          {isCall ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+          {isCall ? "COMPRA" : "VENDA"}
+        </div>
       </div>
     </div>
   )
