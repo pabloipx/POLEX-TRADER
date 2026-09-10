@@ -27,8 +27,8 @@ export function ExecutionOverlay({ direction, assetName, amount, accountLabel, o
   const heights = isCall ? CANDLE_STEPS : [...CANDLE_STEPS].reverse()
 
   useEffect(() => {
-    const leaveTimer = setTimeout(() => setLeaving(true), 2300)
-    const doneTimer = setTimeout(() => onDone(), 2650)
+    const leaveTimer = setTimeout(() => setLeaving(true), 1050)
+    const doneTimer = setTimeout(() => onDone(), 1350)
     return () => {
       clearTimeout(leaveTimer)
       clearTimeout(doneTimer)
