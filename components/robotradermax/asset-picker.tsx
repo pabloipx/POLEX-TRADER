@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Search, ChevronRight, Shield, Gauge, Zap, Target, Repeat, Sparkles, Clock } from "lucide-react"
+import { Search, ChevronRight, Target, Repeat, Sparkles, Clock, Cpu } from "lucide-react"
 import { TIMEFRAME_LABELS, type Timeframe } from "@/lib/trading/timeframes"
 
 export interface RoboAsset {
@@ -13,12 +13,12 @@ export interface RoboAsset {
   market?: "otc" | "open"
 }
 
-export type RiskLevel = "conservador" | "moderado" | "agressivo"
+export type AiModel = "openai" | "gemini" | "claude" | "kimi"
 export type Strategy = "tendencia" | "reversao" | "smart"
-export type ExpirationPref = "auto" | Timeframe
+export type ExpirationPref = Extract<Timeframe, 60 | 300 | 600>
 
 export interface RoboConfig {
-  risk: RiskLevel
+  model: AiModel
   strategy: Strategy
   expiration: ExpirationPref
 }
@@ -30,10 +30,11 @@ interface AssetPickerProps {
   onSelect: (asset: RoboAsset) => void
 }
 
-const RISK_OPTIONS: { value: RiskLevel; label: string; icon: typeof Shield; desc: string }[] = [
-  { value: "conservador", label: "Conservador", icon: Shield, desc: "Entradas de maior confiança, menos sinais." },
-  { value: "moderado", label: "Moderado", icon: Gauge, desc: "Equilíbrio entre frequência e precisão." },
-  { value: "agressivo", label: "Agressivo", icon: Zap, desc: "Mais sinais, tolera maior volatilidade." },
+const MODEL_OPTIONS: { value: AiModel; label: string; provider: string }[] = [
+  { value: "openai", label: "OpenAI", provider: "GPT" },
+  { value: "gemini", label: "Gemini 3.6 Flash", provider: "Google" },
+  { value: "claude", label: "Claude Opus 4.7", provider: "Anthropic" },
+  { value: "kimi", label: "Kimi K3", provider: "Moonshot" },
 ]
 
 const STRATEGY_OPTIONS: { value: Strategy; label: string; icon: typeof Target; desc: string }[] = [
@@ -43,11 +44,9 @@ const STRATEGY_OPTIONS: { value: Strategy; label: string; icon: typeof Target; d
 ]
 
 const EXPIRATION_OPTIONS: { value: ExpirationPref; label: string }[] = [
-  { value: "auto", label: "Auto" },
   { value: 60, label: TIMEFRAME_LABELS[60] },
   { value: 300, label: TIMEFRAME_LABELS[300] },
   { value: 600, label: TIMEFRAME_LABELS[600] },
-  { value: 900, label: TIMEFRAME_LABELS[900] },
 ]
 
 export function AssetPicker({ assets, config, onConfigChange, onSelect }: AssetPickerProps) {
@@ -61,7 +60,6 @@ export function AssetPicker({ assets, config, onConfigChange, onSelect }: AssetP
     return byMarket.filter((a) => a.name.toLowerCase().includes(q) || a.symbol.toLowerCase().includes(q))
   }, [assets, search, tab])
 
-  const riskDesc = RISK_OPTIONS.find((o) => o.value === config.risk)?.desc
   const strategyDesc = STRATEGY_OPTIONS.find((o) => o.value === config.strategy)?.desc
 
   return (
@@ -74,28 +72,42 @@ export function AssetPicker({ assets, config, onConfigChange, onSelect }: AssetP
         </div>
 
         <div className="space-y-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-          {/* Nível de risco */}
+          {/* Modelo de IA */}
           <div>
             <div className="mb-2.5 flex items-baseline justify-between">
-              <span className="text-sm font-medium text-white">Nível de risco</span>
-              <span className="text-xs text-white/40">{riskDesc}</span>
+              <span className="text-sm font-medium text-white">Modelo de IA</span>
+              <span className="text-xs text-white/40">Escolha a IA que vai analisar os ativos.</span>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {RISK_OPTIONS.map((o) => {
-                const active = config.risk === o.value
-                const Icon = o.icon
+            <div className="grid grid-cols-2 gap-2">
+              {MODEL_OPTIONS.map((o) => {
+                const active = config.model === o.value
                 return (
                   <button
                     key={o.value}
-                    onClick={() => onConfigChange({ ...config, risk: o.value })}
-                    className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-xs font-semibold transition ${
+                    onClick={() => onConfigChange({ ...config, model: o.value })}
+                    className={`flex items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
                       active
-                        ? "border-[#22c55e]/60 bg-[#22c55e]/10 text-[#22c55e]"
-                        : "border-white/[0.06] bg-transparent text-white/50 hover:border-white/15 hover:text-white/80"
+                        ? "border-[#22c55e]/60 bg-[#22c55e]/10"
+                        : "border-white/[0.06] bg-transparent hover:border-white/15"
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
-                    {o.label}
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition ${
+                        active
+                          ? "border-[#22c55e]/50 bg-[#22c55e]/15 text-[#22c55e]"
+                          : "border-white/[0.06] bg-white/[0.03] text-white/40"
+                      }`}
+                    >
+                      <Cpu className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span
+                        className={`block truncate text-sm font-semibold ${active ? "text-[#22c55e]" : "text-white/80"}`}
+                      >
+                        {o.label}
+                      </span>
+                      <span className="block text-[11px] text-white/35">{o.provider}</span>
+                    </span>
                   </button>
                 )
               })}

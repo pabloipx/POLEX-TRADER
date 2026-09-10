@@ -8,7 +8,7 @@ import { AssetPicker, type RoboAsset, type RoboConfig } from "@/components/robot
 import { AnalyzingAnimation } from "@/components/robotradermax/analyzing-animation"
 import { SyncGate } from "@/components/robotradermax/sync-gate"
 import { ExecutionOverlay } from "@/components/robotradermax/execution-overlay"
-import { timeframesFor, normalizeTimeframe, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
+import { normalizeTimeframe, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
 import {
   ArrowLeft,
   TrendingUp,
@@ -65,7 +65,7 @@ export default function RoboTraderMaxPage() {
   const [userEmail, setUserEmail] = useState("")
   const [asset, setAsset] = useState<RoboAsset | null>(null)
   const [signal, setSignal] = useState<RoboSignal | null>(null)
-  const [config, setConfig] = useState<RoboConfig>({ risk: "moderado", strategy: "smart", expiration: "auto" })
+  const [config, setConfig] = useState<RoboConfig>({ model: "openai", strategy: "smart", expiration: 60 })
 
   // Relógio para a contagem regressiva
   const [now, setNow] = useState(() => Date.now())
@@ -140,16 +140,10 @@ export default function RoboTraderMaxPage() {
     setConfirmError(null)
     setPhase("analyzing")
 
-    // Expiração: no modo "auto" a IA usa a duração recomendada do ativo; caso contrário,
-    // ajusta a preferência do usuário para uma duração válida no símbolo.
-    const timeframe =
-      config.expiration === "auto"
-        ? timeframesFor(selected.symbol)[0]
-        : normalizeTimeframe(selected.symbol, config.expiration)
+    // Expiração escolhida pelo usuário, ajustada para uma duração válida no símbolo.
+    const timeframe = normalizeTimeframe(selected.symbol, config.expiration)
 
-    // Faixa de confiança conforme o nível de risco escolhido.
-    const confidenceRange =
-      config.risk === "conservador" ? { min: 91, span: 8 } : config.risk === "agressivo" ? { min: 78, span: 13 } : { min: 85, span: 11 }
+    const confidenceRange = { min: 85, span: 11 }
 
     const analyzeMs = 3800
     setTimeout(() => {
