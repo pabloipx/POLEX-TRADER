@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Search, ChevronDown, Target, Repeat, Sparkles, Clock, Cpu, Check } from "lucide-react"
+import { Search, ChevronDown, Target, Repeat, Sparkles, Clock, Check } from "lucide-react"
 import { TIMEFRAME_LABELS, type Timeframe } from "@/lib/trading/timeframes"
 
 export interface RoboAsset {
@@ -30,11 +30,46 @@ interface AssetPickerProps {
   onSelect: (asset: RoboAsset) => void
 }
 
-const MODEL_OPTIONS: { value: AiModel; label: string; provider: string }[] = [
-  { value: "openai", label: "OpenAI", provider: "GPT" },
-  { value: "gemini", label: "Gemini 3.6 Flash", provider: "Google" },
-  { value: "claude", label: "Claude Opus 4.7", provider: "Anthropic" },
-  { value: "kimi", label: "Kimi K3", provider: "Moonshot" },
+const MODEL_OPTIONS: {
+  value: AiModel
+  label: string
+  provider: string
+  image: string
+  accent: string
+  precision: string
+}[] = [
+  {
+    value: "openai",
+    label: "OpenAI",
+    provider: "GPT Core",
+    image: "/robotradermax/agents/openai.png",
+    accent: "#22c55e",
+    precision: "94.2%",
+  },
+  {
+    value: "gemini",
+    label: "Gemini 3.6 Flash",
+    provider: "Google DeepMind",
+    image: "/robotradermax/agents/gemini.png",
+    accent: "#38bdf8",
+    precision: "92.8%",
+  },
+  {
+    value: "claude",
+    label: "Claude Opus 4.7",
+    provider: "Anthropic",
+    image: "/robotradermax/agents/claude.png",
+    accent: "#fb923c",
+    precision: "93.5%",
+  },
+  {
+    value: "kimi",
+    label: "Kimi K3",
+    provider: "Moonshot AI",
+    image: "/robotradermax/agents/kimi.png",
+    accent: "#a78bfa",
+    precision: "91.6%",
+  },
 ]
 
 export const MODEL_LABELS: Record<AiModel, string> = {
@@ -42,6 +77,13 @@ export const MODEL_LABELS: Record<AiModel, string> = {
   gemini: "Gemini 3.6 Flash",
   claude: "Claude Opus 4.7",
   kimi: "Kimi K3",
+}
+
+export const MODEL_META: Record<AiModel, { image: string; accent: string; provider: string }> = {
+  openai: { image: "/robotradermax/agents/openai.png", accent: "#22c55e", provider: "GPT Core" },
+  gemini: { image: "/robotradermax/agents/gemini.png", accent: "#38bdf8", provider: "Google DeepMind" },
+  claude: { image: "/robotradermax/agents/claude.png", accent: "#fb923c", provider: "Anthropic" },
+  kimi: { image: "/robotradermax/agents/kimi.png", accent: "#a78bfa", provider: "Moonshot AI" },
 }
 
 const STRATEGY_OPTIONS: { value: Strategy; label: string; icon: typeof Target; desc: string }[] = [
@@ -93,39 +135,91 @@ export function AssetPicker({ assets, config, onConfigChange, onSelect }: AssetP
           {/* Modelo de IA */}
           <div>
             <div className="mb-2.5 flex items-baseline justify-between">
-              <span className="text-sm font-medium text-white">Modelo de IA</span>
-              <span className="text-xs text-white/40">Escolha a IA que vai analisar os ativos.</span>
+              <span className="text-sm font-medium text-white">Agente de IA</span>
+              <span className="text-xs text-white/40">Escolha o agente que vai analisar os ativos.</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               {MODEL_OPTIONS.map((o) => {
                 const active = config.model === o.value
                 return (
                   <button
                     key={o.value}
                     onClick={() => onConfigChange({ ...config, model: o.value })}
-                    className={`flex items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
+                    style={
                       active
-                        ? "border-[#22c55e]/60 bg-[#22c55e]/10"
-                        : "border-white/[0.06] bg-transparent hover:border-white/15"
+                        ? {
+                            borderColor: `${o.accent}80`,
+                            boxShadow: `0 0 24px ${o.accent}22, inset 0 0 20px ${o.accent}14`,
+                          }
+                        : undefined
+                    }
+                    className={`group relative overflow-hidden rounded-xl border p-3 text-left transition ${
+                      active ? "bg-white/[0.03]" : "border-white/[0.06] bg-transparent hover:border-white/15"
                     }`}
                   >
+                    {/* grade tecnológica de fundo */}
                     <span
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition ${
-                        active
-                          ? "border-[#22c55e]/50 bg-[#22c55e]/15 text-[#22c55e]"
-                          : "border-white/[0.06] bg-white/[0.03] text-white/40"
-                      }`}
-                    >
-                      <Cpu className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0">
+                      className="pointer-events-none absolute inset-0 opacity-[0.07]"
+                      style={{
+                        backgroundImage:
+                          "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+                        backgroundSize: "14px 14px",
+                        color: o.accent,
+                      }}
+                    />
+                    {/* varredura ao selecionar */}
+                    {active && (
                       <span
-                        className={`block truncate text-sm font-semibold ${active ? "text-[#22c55e]" : "text-white/80"}`}
-                      >
-                        {o.label}
+                        className="pointer-events-none absolute inset-x-0 top-0 h-px animate-[rtmScan_2.4s_linear_infinite]"
+                        style={{ background: `linear-gradient(90deg, transparent, ${o.accent}, transparent)` }}
+                      />
+                    )}
+
+                    <div className="relative flex items-center gap-3">
+                      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+                        {active && (
+                          <span
+                            className="absolute inset-0 rounded-full animate-ping"
+                            style={{ border: `1px solid ${o.accent}55` }}
+                          />
+                        )}
+                        <span
+                          className="absolute inset-0 rounded-full border transition"
+                          style={{ borderColor: active ? `${o.accent}80` : "rgba(255,255,255,0.08)" }}
+                        />
+                        <img
+                          src={o.image || "/placeholder.svg"}
+                          alt={`Agente ${o.label}`}
+                          className={`h-11 w-11 rounded-full object-cover transition ${active ? "" : "grayscale group-hover:grayscale-0"}`}
+                        />
+                        {active && (
+                          <span
+                            className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-[#04120a]"
+                            style={{ background: o.accent }}
+                          >
+                            <Check className="h-2.5 w-2.5 text-[#04120a]" />
+                          </span>
+                        )}
                       </span>
-                      <span className="block text-[11px] text-white/35">{o.provider}</span>
-                    </span>
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className="block truncate text-sm font-semibold"
+                          style={{ color: active ? o.accent : "rgba(255,255,255,0.82)" }}
+                        >
+                          {o.label}
+                        </span>
+                        <span className="block text-[11px] text-white/35">{o.provider}</span>
+                        <span className="mt-1 flex items-center gap-1">
+                          <span
+                            className="h-1 w-1 rounded-full"
+                            style={{ background: o.accent, boxShadow: `0 0 6px ${o.accent}` }}
+                          />
+                          <span className="text-[10px] font-medium tabular-nums text-white/45">
+                            Precisão {o.precision}
+                          </span>
+                        </span>
+                      </span>
+                    </div>
                   </button>
                 )
               })}

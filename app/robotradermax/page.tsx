@@ -290,7 +290,7 @@ export default function RoboTraderMaxPage() {
         )}
 
         {phase === "analyzing" && asset && (
-          <ConnectingAnimation asset={asset} modelLabel={MODEL_LABELS[config.model]} />
+          <ConnectingAnimation asset={asset} model={config.model} modelLabel={MODEL_LABELS[config.model]} />
         )}
 
         {phase === "signal" && asset && signal && (

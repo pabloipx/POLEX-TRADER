@@ -933,6 +933,14 @@ body {
 }
 .rtm-scan { animation: rtm-scan 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; will-change: transform, opacity; }
 
+/* Linha de varredura horizontal (percorre a largura de um card) */
+@keyframes rtmScan {
+  0% { transform: translateX(-100%); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
 /* Borda com glow pulsante (cor definida via variável --rtm-glow) */
 @keyframes rtm-border-pulse {
   0%, 100% { box-shadow: 0 0 0 1px var(--rtm-glow), 0 0 22px -6px var(--rtm-glow); }
