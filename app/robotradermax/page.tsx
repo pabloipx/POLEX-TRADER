@@ -522,14 +522,16 @@ export default function RoboTraderMaxPage() {
               </div>
             )}
 
-            {/* Nova análise */}
-            <button
-              onClick={resetToSelect}
-              className="w-full py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold transition flex items-center justify-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Nova análise
-            </button>
+            {/* Nova análise — só aparece quando o tempo da entrada expira */}
+            {entryState.expired && (
+              <button
+                onClick={resetToSelect}
+                className="w-full py-3 rounded-xl border border-[#22c55e]/40 bg-[#22c55e]/10 hover:bg-[#22c55e]/20 text-[#22c55e] font-semibold transition flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Nova análise
+              </button>
+            )}
           </div>
         )}
       </div>
