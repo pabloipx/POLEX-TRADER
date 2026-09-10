@@ -2,8 +2,29 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Lock, Mail, Loader2, ShieldCheck, TrendingUp, AlertCircle, Eye, EyeOff, Wallet, LineChart } from "lucide-react"
+import {
+  Lock,
+  Mail,
+  Loader2,
+  ShieldCheck,
+  TrendingUp,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Wallet,
+  LineChart,
+  CheckCircle2,
+} from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+
+const SYNC_STEPS = [
+  "Conectando à Fidex Option",
+  "Verificando credenciais",
+  "Sincronizando sua conta",
+  "Conta sincronizada",
+]
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 interface SyncGateProps {
   defaultEmail?: string
@@ -24,6 +45,8 @@ export function SyncGate({ defaultEmail = "", onSynced, onDeposit }: SyncGatePro
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [needsDeposit, setNeedsDeposit] = useState<{ min: number; total: number } | null>(null)
+  const [syncing, setSyncing] = useState(false)
+  const [syncStep, setSyncStep] = useState(0)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +59,20 @@ export function SyncGate({ defaultEmail = "", onSynced, onDeposit }: SyncGatePro
     }
 
     setLoading(true)
+    setSyncing(true)
+    setSyncStep(0)
+
+    // Anima as etapas de sincronização em paralelo com a requisição real.
+    const stepTimer = setInterval(() => {
+      setSyncStep((s) => (s < 2 ? s + 1 : s))
+    }, 750)
+
+    const stopSyncing = () => {
+      clearInterval(stepTimer)
+      setSyncing(false)
+      setLoading(false)
+    }
+
     try {
       // 1. Faz o login na corretora (estabelece a sessão) — sem depender de sessão prévia.
       const supabase = createClient()
@@ -44,8 +81,8 @@ export function SyncGate({ defaultEmail = "", onSynced, onDeposit }: SyncGatePro
         password,
       })
       if (signInError) {
+        stopSyncing()
         setError("E-mail ou senha da corretora inválidos.")
-        setLoading(false)
         return
       }
 
@@ -58,22 +95,132 @@ export function SyncGate({ defaultEmail = "", onSynced, onDeposit }: SyncGatePro
       const data = await response.json()
 
       if (response.ok && data?.ok) {
+        // Garante que as etapas sejam vistas antes de concluir, então mostra o "check" final.
+        clearInterval(stepTimer)
+        setSyncStep(2)
+        await wait(500)
+        setSyncStep(3)
+        await wait(750)
         onSynced()
         return
       }
 
       if (data?.error === "deposit_required") {
+        stopSyncing()
         setNeedsDeposit({ min: Number(data.minDeposit) || 200, total: Number(data.totalDeposited) || 0 })
-        setLoading(false)
         return
       }
 
+      stopSyncing()
       setError(data?.error || "Não foi possível sincronizar a conta.")
     } catch {
+      stopSyncing()
       setError("Erro de conexão. Tente novamente.")
-    } finally {
-      setLoading(false)
     }
+  }
+
+  if (syncing) {
+    const done = syncStep >= 3
+    return (
+      <div className="mx-auto max-w-md">
+        <div className="relative overflow-hidden rounded-2xl border border-[#22c55e]/25 bg-gradient-to-b from-[#0f1a14] to-[#0a0e13] p-8 text-center">
+          {/* Grid tecnológico de fundo */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage:
+                "linear-gradient(#22c55e 1px, transparent 1px), linear-gradient(90deg, #22c55e 1px, transparent 1px)",
+              backgroundSize: "22px 22px",
+            }}
+          />
+          {/* Brilho */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-[#22c55e]/20 blur-3xl"
+          />
+
+          <div className="relative">
+            {/* Logo com anéis de radar */}
+            <div className="relative mx-auto mb-8 flex h-40 w-40 items-center justify-center">
+              {!done && (
+                <>
+                  <span className="absolute inset-0 rounded-full border border-[#22c55e]/40 animate-ping" />
+                  <span
+                    className="absolute inset-4 rounded-full border border-[#22c55e]/30 animate-ping"
+                    style={{ animationDelay: "0.4s" }}
+                  />
+                  <span
+                    className="absolute inset-8 rounded-full border border-[#22c55e]/20 animate-ping"
+                    style={{ animationDelay: "0.8s" }}
+                  />
+                </>
+              )}
+              <div
+                className={`relative flex h-24 w-24 items-center justify-center rounded-full bg-[#22c55e]/10 ring-2 transition-all duration-500 ${
+                  done ? "ring-[#22c55e] scale-105" : "ring-[#22c55e]/40"
+                }`}
+              >
+                {done ? (
+                  <CheckCircle2 className="w-14 h-14 text-[#22c55e] animate-in zoom-in duration-500" />
+                ) : (
+                  <Image
+                    src="/images/fidelity-auth-logo.png"
+                    alt="Fidex Option"
+                    width={72}
+                    height={72}
+                    className="object-contain animate-pulse"
+                  />
+                )}
+              </div>
+            </div>
+
+            <h2 className="text-white font-bold text-xl tracking-tight text-balance">
+              {done ? "Conta sincronizada!" : "Sincronizando com a Fidex Option"}
+            </h2>
+            <p className="text-white/50 text-sm mt-2 text-pretty max-w-xs mx-auto leading-relaxed">
+              {done
+                ? "Sua conta foi conectada ao Robo Trader Max. Liberando a inteligência artificial..."
+                : "Conectando sua conta da corretora ao Robo Trader Max com segurança."}
+            </p>
+
+            {/* Etapas */}
+            <div className="mt-7 space-y-2.5 text-left max-w-xs mx-auto">
+              {SYNC_STEPS.slice(0, 3).map((label, i) => {
+                const state = syncStep > i ? "done" : syncStep === i ? "active" : "pending"
+                return (
+                  <div
+                    key={label}
+                    className={`flex items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-all duration-300 ${
+                      state === "pending"
+                        ? "border-white/5 bg-white/[0.02] opacity-50"
+                        : "border-[#22c55e]/25 bg-[#22c55e]/[0.06]"
+                    }`}
+                  >
+                    <span className="shrink-0">
+                      {state === "done" ? (
+                        <CheckCircle2 className="w-5 h-5 text-[#22c55e]" />
+                      ) : state === "active" ? (
+                        <Loader2 className="w-5 h-5 text-[#22c55e] animate-spin" />
+                      ) : (
+                        <span className="block w-5 h-5 rounded-full border-2 border-white/15" />
+                      )}
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        state === "pending" ? "text-white/40" : "text-white"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
