@@ -7,7 +7,8 @@ import { createClient } from "@/lib/supabase/client"
 import { AssetPicker, MODEL_LABELS, type RoboAsset, type RoboConfig } from "@/components/robotradermax/asset-picker"
 import { ConnectingAnimation } from "@/components/robotradermax/connecting-animation"
 import { SyncGate } from "@/components/robotradermax/sync-gate"
-import { ExecutionOverlay } from "@/components/robotradermax/execution-overlay"
+  import { ExecutionOverlay } from "@/components/robotradermax/execution-overlay"
+  import { SignalChart } from "@/components/robotradermax/signal-chart"
 import { normalizeTimeframe, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
 import {
   ArrowLeft,
@@ -416,6 +417,9 @@ export default function RoboTraderMaxPage() {
                 </div>
               </div>
             </div>
+
+            {/* Gráfico do ativo */}
+            <SignalChart isCall={isCall} pair={asset.name} />
 
             {/* Confirmação opcional com valor */}
             {!confirmed ? (
