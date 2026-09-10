@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Search, ChevronRight, Target, Repeat, Sparkles, Clock, Cpu } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Search, ChevronDown, Target, Repeat, Sparkles, Clock, Cpu, Check } from "lucide-react"
 import { TIMEFRAME_LABELS, type Timeframe } from "@/lib/trading/timeframes"
 
 export interface RoboAsset {
@@ -37,6 +37,13 @@ const MODEL_OPTIONS: { value: AiModel; label: string; provider: string }[] = [
   { value: "kimi", label: "Kimi K3", provider: "Moonshot" },
 ]
 
+export const MODEL_LABELS: Record<AiModel, string> = {
+  openai: "OpenAI",
+  gemini: "Gemini 3.6 Flash",
+  claude: "Claude Opus 4.7",
+  kimi: "Kimi K3",
+}
+
 const STRATEGY_OPTIONS: { value: Strategy; label: string; icon: typeof Target; desc: string }[] = [
   { value: "tendencia", label: "Tendência", icon: Target, desc: "Segue a força do movimento atual." },
   { value: "reversao", label: "Reversão", icon: Repeat, desc: "Busca pontos de virada do preço." },
@@ -52,6 +59,17 @@ const EXPIRATION_OPTIONS: { value: ExpirationPref; label: string }[] = [
 export function AssetPicker({ assets, config, onConfigChange, onSelect }: AssetPickerProps) {
   const [search, setSearch] = useState("")
   const [tab, setTab] = useState<"otc" | "open">("otc")
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", onClick)
+    return () => document.removeEventListener("mousedown", onClick)
+  }, [open])
 
   const filtered = useMemo(() => {
     const byMarket = assets.filter((a) => (a.market || "otc") === tab)
@@ -180,60 +198,89 @@ export function AssetPicker({ assets, config, onConfigChange, onSelect }: AssetP
           <h2 className="text-sm font-semibold uppercase tracking-widest text-white/70">Escolha o ativo</h2>
         </div>
 
-        {/* Abas de mercado */}
-        <div className="mb-4 inline-flex w-full rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
+        {/* Seletor dropdown minimalista */}
+        <div ref={dropdownRef} className="relative">
           <button
-            onClick={() => setTab("otc")}
-            className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
-              tab === "otc" ? "bg-[#22c55e] text-[#04120a]" : "text-white/50 hover:text-white/80"
+            onClick={() => setOpen((v) => !v)}
+            className={`flex w-full items-center gap-3 rounded-2xl border bg-white/[0.02] px-4 py-4 text-left transition ${
+              open ? "border-[#22c55e]/50" : "border-white/[0.06] hover:border-white/15"
             }`}
           >
-            OTC
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/[0.06] bg-[#22c55e]/10 text-[#22c55e]">
+              <Search className="h-4 w-4" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-white">Selecione um ativo</span>
+              <span className="block text-xs text-white/40">Toque para escolher o par que a IA vai analisar</span>
+            </span>
+            <ChevronDown
+              className={`h-5 w-5 shrink-0 text-white/40 transition ${open ? "rotate-180 text-[#22c55e]" : ""}`}
+            />
           </button>
-          <button
-            onClick={() => setTab("open")}
-            className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
-              tab === "open" ? "bg-[#22c55e] text-[#04120a]" : "text-white/50 hover:text-white/80"
-            }`}
-          >
-            Mercado Aberto
-          </button>
-        </div>
 
-        {/* Busca */}
-        <div className="relative mb-2">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar ativo..."
-            className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/25 transition focus:border-[#22c55e]/50 focus:outline-none"
-          />
-        </div>
-
-        {/* Lista minimalista de ativos */}
-        <div className="max-h-[46vh] divide-y divide-white/[0.05] overflow-y-auto rounded-xl border border-white/[0.06] bg-white/[0.02]">
-          {filtered.length === 0 && (
-            <p className="py-10 text-center text-sm text-white/30">Nenhum ativo encontrado.</p>
-          )}
-          {filtered.map((asset) => (
-            <button
-              key={asset.symbol}
-              onClick={() => onSelect(asset)}
-              className="group flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/[0.03]"
-            >
-              <img
-                src={asset.logo || "/placeholder.svg"}
-                alt={asset.name}
-                className="h-9 w-9 shrink-0 rounded-full bg-black/40 object-cover"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-white">{asset.name}</p>
-                <p className="text-xs text-white/40">Payout {asset.payout}%</p>
+          {open && (
+            <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0b1512] shadow-2xl shadow-black/60">
+              {/* Abas de mercado */}
+              <div className="flex gap-1 border-b border-white/[0.06] p-2">
+                <button
+                  onClick={() => setTab("otc")}
+                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
+                    tab === "otc" ? "bg-[#22c55e] text-[#04120a]" : "text-white/50 hover:text-white/80"
+                  }`}
+                >
+                  OTC
+                </button>
+                <button
+                  onClick={() => setTab("open")}
+                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
+                    tab === "open" ? "bg-[#22c55e] text-[#04120a]" : "text-white/50 hover:text-white/80"
+                  }`}
+                >
+                  Mercado Aberto
+                </button>
               </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-white/20 transition group-hover:translate-x-0.5 group-hover:text-[#22c55e]" />
-            </button>
-          ))}
+
+              {/* Busca */}
+              <div className="relative p-2">
+                <Search className="absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                <input
+                  autoFocus
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar ativo..."
+                  className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/25 transition focus:border-[#22c55e]/50 focus:outline-none"
+                />
+              </div>
+
+              {/* Lista de ativos */}
+              <div className="max-h-[38vh] divide-y divide-white/[0.05] overflow-y-auto">
+                {filtered.length === 0 && (
+                  <p className="py-10 text-center text-sm text-white/30">Nenhum ativo encontrado.</p>
+                )}
+                {filtered.map((asset) => (
+                  <button
+                    key={asset.symbol}
+                    onClick={() => {
+                      setOpen(false)
+                      onSelect(asset)
+                    }}
+                    className="group flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/[0.03]"
+                  >
+                    <img
+                      src={asset.logo || "/placeholder.svg"}
+                      alt={asset.name}
+                      className="h-9 w-9 shrink-0 rounded-full bg-black/40 object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-white">{asset.name}</p>
+                      <p className="text-xs text-white/40">Payout {asset.payout}%</p>
+                    </div>
+                    <Check className="h-4 w-4 shrink-0 text-white/0 transition group-hover:text-[#22c55e]" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

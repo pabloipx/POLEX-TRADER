@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
-import { AssetPicker, type RoboAsset, type RoboConfig } from "@/components/robotradermax/asset-picker"
-import { AnalyzingAnimation } from "@/components/robotradermax/analyzing-animation"
+import { AssetPicker, MODEL_LABELS, type RoboAsset, type RoboConfig } from "@/components/robotradermax/asset-picker"
+import { ConnectingAnimation } from "@/components/robotradermax/connecting-animation"
 import { SyncGate } from "@/components/robotradermax/sync-gate"
 import { ExecutionOverlay } from "@/components/robotradermax/execution-overlay"
 import { normalizeTimeframe, TIMEFRAME_LABELS } from "@/lib/trading/timeframes"
@@ -145,7 +145,7 @@ export default function RoboTraderMaxPage() {
 
     const confidenceRange = { min: 85, span: 11 }
 
-    const analyzeMs = 3800
+    const analyzeMs = 4000
     setTimeout(() => {
       if (!mountedRef.current) return
       const direction: "CALL" | "PUT" = Math.random() > 0.5 ? "CALL" : "PUT"
@@ -288,7 +288,9 @@ export default function RoboTraderMaxPage() {
           <AssetPicker assets={assets} config={config} onConfigChange={setConfig} onSelect={handleSelectAsset} />
         )}
 
-        {phase === "analyzing" && asset && <AnalyzingAnimation asset={asset} />}
+        {phase === "analyzing" && asset && (
+          <ConnectingAnimation asset={asset} modelLabel={MODEL_LABELS[config.model]} />
+        )}
 
         {phase === "signal" && asset && signal && (
           <div className="space-y-4">
