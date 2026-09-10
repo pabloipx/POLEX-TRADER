@@ -27,8 +27,8 @@ export function ExecutionOverlay({ direction, assetName, amount, accountLabel, o
   const heights = isCall ? CANDLE_STEPS : [...CANDLE_STEPS].reverse()
 
   useEffect(() => {
-    const leaveTimer = setTimeout(() => setLeaving(true), 1050)
-    const doneTimer = setTimeout(() => onDone(), 1350)
+    const leaveTimer = setTimeout(() => setLeaving(true), 2700)
+    const doneTimer = setTimeout(() => onDone(), 3000)
     return () => {
       clearTimeout(leaveTimer)
       clearTimeout(doneTimer)
@@ -120,7 +120,10 @@ export function ExecutionOverlay({ direction, assetName, amount, accountLabel, o
             Enviando ordem para a corretora
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-            <div className="rtm-progress h-full rounded-full" style={{ backgroundColor: color }} />
+            <div
+              className="rtm-progress h-full rounded-full"
+              style={{ backgroundColor: color, animationDuration: "2.7s" }}
+            />
           </div>
         </div>
       </div>
