@@ -527,7 +527,6 @@ export default function TradePage() {
   const hydrateActiveTrades = useCallback(
     async (userId: string) => {
       const requestId = ++activeTradesRequestRef.current
-      const requestStartedAt = Date.now()
       try {
         const { data, error } = await supabaseRef.current
           .from("trades")
@@ -574,13 +573,18 @@ export default function TradePage() {
             })
           }
 
-          // Uma resposta iniciada antes da compra ainda não conhece o novo UUID. Preservamos essa
-          // linha até uma consulta posterior confirmá-la; depois disso o banco volta a ser a fonte
-          // única de verdade e a remove normalmente quando a liquidação alterar o status.
+          // Operação recém-criada localmente: mantém a linha por uma janela de tolerância enquanto
+          // o banco ainda não a reporta como pendente. A leitura logo após a compra pode não
+          // enxergar o INSERT (read-after-write / réplica), e a condição antiga
+          // (`createdAt >= requestStartedAt`) era sempre falsa — porque o marcador é gravado ANTES
+          // do início desta consulta —, então a operação era descartada e a linha "não marcava" no
+          // gráfico. Assim que o banco confirma a operação (entra em `pendingIds`), o marcador é
+          // removido acima e o banco volta a ser a fonte única de verdade.
+          const now = Date.now()
           const sincronizadas = [...porId.values()].filter((trade) => {
             if (pendingIds.has(trade.dbId)) return true
             const createdAt = locallyCreatedTradeAtRef.current.get(trade.dbId)
-            return createdAt !== undefined && createdAt >= requestStartedAt
+            return createdAt !== undefined && now - createdAt < 12000
           })
           return [...locaisSemBanco, ...sincronizadas]
         })
