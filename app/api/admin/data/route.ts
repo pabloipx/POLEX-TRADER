@@ -270,7 +270,7 @@ export async function POST(req: NextRequest) {
           }
           updateData.affiliate_code = code
           updateData.affiliate_status = "active"
-          updateData.affiliate_commission_percent = 77.0
+          updateData.affiliate_commission_percent = 70.0
           updateData.affiliate_balance = 0
           updateData.affiliate_total_earned = 0
           updateData.affiliate_total_referrals = 0
