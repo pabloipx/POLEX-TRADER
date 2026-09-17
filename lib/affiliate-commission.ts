@@ -23,7 +23,7 @@ export interface AffiliateGlobalSettings {
 }
 
 export const FALLBACK_SETTINGS: AffiliateGlobalSettings = {
-  default_revshare_percent: 77,
+  default_revshare_percent: 70,
   default_cpa_amount: 100,
   cpa_min_deposit: 50,
   sub_affiliate_percent: 5,

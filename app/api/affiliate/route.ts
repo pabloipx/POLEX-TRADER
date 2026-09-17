@@ -203,7 +203,7 @@ export async function POST() {
           id: user.id,
           user_id: user.id,
           code: profile.affiliate_code,
-          commission_rate: profile.affiliate_commission_percent || 77,
+          commission_rate: profile.affiliate_commission_percent || 70,
           balance: profile.affiliate_balance || 0,
           status: profile.affiliate_status || "active",
           total_earned: 0,
