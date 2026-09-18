@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useEffect, Suspense } from "react"
 import { CheckCircle2, ChevronDown, Loader2, X } from "lucide-react"
 import { recordDeviceSession } from "@/lib/device-session"
+import { persistReferral, getStoredReferral, clearStoredReferral } from "@/lib/referral"
 
 const COUNTRIES = [
   { name: "Brasil", code: "BR", dial: "+55" },
@@ -51,10 +52,18 @@ function SignUpForm() {
 
   useEffect(() => {
     const ref = searchParams.get("ref")
-    if (ref) setReferralCode(ref.toUpperCase())
     // subid identifica a campanha do afiliado (?ref=CODE&subid=instagram)
     const subid = searchParams.get("subid") ?? searchParams.get("sub_id")
-    if (subid) setReferralSubId(subid.slice(0, 64))
+
+    // Persiste o que veio na URL (primeiro toque vence).
+    if (ref || subid) persistReferral(ref, subid)
+
+    // Usa a URL quando presente; senão recupera o que foi capturado antes.
+    const stored = getStoredReferral()
+    const code = ref ? ref.toUpperCase() : stored.code
+    const sub = subid ? subid.slice(0, 64) : stored.subId
+    if (code) setReferralCode(code)
+    if (sub) setReferralSubId(sub)
   }, [searchParams])
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +109,9 @@ function SignUpForm() {
       }
 
       await recordDeviceSession()
+
+      // Indicação já atribuída no cadastro — limpa para não reatribuir depois.
+      clearStoredReferral()
 
       setSuccess(true)
       setTimeout(() => router.push("/trade"), 2000)
