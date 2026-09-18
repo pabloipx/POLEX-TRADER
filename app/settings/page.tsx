@@ -48,8 +48,6 @@ export default function SettingsPage() {
   const [error, setError] = useState("")
 
   // Settings states
-  const [notifications, setNotifications] = useState(true)
-  const [darkMode, setDarkMode] = useState(true)
   const [language, setLanguage] = useState("pt-BR")
 
   const supabase = createBrowserClient(
@@ -393,36 +391,6 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-sm font-semibold text-[#9CA3AF] mb-3 uppercase tracking-wider">Preferências</h2>
           <div className="space-y-2">
-            <div className="p-4 rounded-xl flex items-center justify-between bg-[#121826]">
-              <div className="flex items-center gap-3">
-                <Bell className="w-5 h-5 text-[#9CA3AF]" />
-                <span className="text-white">Notificações</span>
-              </div>
-              <button
-                onClick={() => setNotifications(!notifications)}
-                className={`w-12 h-6 rounded-full transition-colors ${notifications ? "bg-[#22c55e]" : "bg-[#374151]"}`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${notifications ? "translate-x-6" : "translate-x-1"}`}
-                />
-              </button>
-            </div>
-
-            <div className="p-4 rounded-xl flex items-center justify-between bg-[#121826]">
-              <div className="flex items-center gap-3">
-                <Moon className="w-5 h-5 text-[#9CA3AF]" />
-                <span className="text-white">Modo escuro</span>
-              </div>
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`w-12 h-6 rounded-full transition-colors ${darkMode ? "bg-[#22c55e]" : "bg-[#374151]"}`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${darkMode ? "translate-x-6" : "translate-x-1"}`}
-                />
-              </button>
-            </div>
-
             <div className="p-4 rounded-xl flex items-center justify-between bg-[#121826]">
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-[#9CA3AF]" />
