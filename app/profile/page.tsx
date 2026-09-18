@@ -28,6 +28,7 @@ import {
   Cpu,
 } from "lucide-react"
 import { computeRank, applyRankOverride, RANKS, type RankProgress } from "@/lib/ranks"
+import { AutoTraderGate } from "@/components/trading/auto-trader-gate"
 
 interface UserProfile {
   id: string
@@ -68,6 +69,9 @@ export default function ProfilePage() {
   const [rank, setRank] = useState<RankProgress>(() => computeRank(0, 0))
   const [loading, setLoading] = useState(true)
   const [autoTrader, setAutoTrader] = useState(false)
+  const [hasDeposited, setHasDeposited] = useState(false)
+  const [gateOpen, setGateOpen] = useState(false)
+  const [blockedOpen, setBlockedOpen] = useState(false)
 
   useEffect(() => {
     setAutoTrader(localStorage.getItem("polex_auto_trader") === "1")
@@ -137,6 +141,9 @@ export default function ProfilePage() {
           .in("status", ["approved", "completed"])
 
         const totalDeposited = (depositsData || []).reduce((sum, d) => sum + Number(d.amount || 0), 0)
+
+        // A IA (Auto Trader) só libera para quem já fez o primeiro depósito.
+        if (isMounted) setHasDeposited(totalDeposited > 0)
 
         // Total de entradas reais: todas as operacoes da conta real (independente do resultado).
         const { count: entriesCount } = await supabase
@@ -608,37 +615,48 @@ export default function ProfilePage() {
         <button
           type="button"
           onClick={() => {
-            const next = !autoTrader
-            setAutoTrader(next)
-            localStorage.setItem("polex_auto_trader", next ? "1" : "0")
-            window.dispatchEvent(new Event("polex-auto-trader-change"))
+            if (autoTrader) {
+              // Desativar é direto.
+              setAutoTrader(false)
+              localStorage.setItem("polex_auto_trader", "0")
+              window.dispatchEvent(new Event("polex-auto-trader-change"))
+              return
+            }
+            // Ativar: exige primeiro depósito e senha de acesso.
+            if (!hasDeposited) {
+              setBlockedOpen(true)
+              return
+            }
+            setGateOpen(true)
           }}
           className="block w-full text-left"
         >
           <div
             className="p-4 rounded-xl flex items-center justify-between border"
             style={{
-              borderColor: autoTrader ? "rgba(249,115,22,0.45)" : "rgba(249,115,22,0.2)",
-              background: "linear-gradient(135deg, #f9731614 0%, #121826 100%)",
+              borderColor: autoTrader ? "rgba(34,197,94,0.45)" : "rgba(34,197,94,0.2)",
+              background: "linear-gradient(135deg, #22c55e14 0%, #121826 100%)",
             }}
           >
             <div className="flex items-center gap-3">
               <div className="relative flex h-9 w-9 items-center justify-center">
-                <span className="absolute h-9 w-9 rounded-full bg-[#f97316]/20 blur-md" aria-hidden />
+                <span className="absolute h-9 w-9 rounded-full bg-[#22c55e]/20 blur-md" aria-hidden />
                 <img
-                  src="/trade/kayko-robot.png"
-                  alt="Robô Kayko"
+                  src="/auto-trader-mascot.png"
+                  alt="Auto Trader"
                   className="relative h-9 w-9 object-contain"
                 />
               </div>
               <div>
                 <span className="block text-white font-semibold">AUTO TRADER</span>
-                <span className="block text-[#6B7280] text-xs">Robô Kayko flutuante na tela de trade</span>
+                <span className="block text-[#6B7280] text-xs">
+                  {autoTrader ? "IA ativa na tela de trade" : "IA de análise flutuante na tela de trade"}
+                </span>
               </div>
             </div>
             <span
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                autoTrader ? "bg-[#f97316]" : "bg-[#374151]"
+                autoTrader ? "bg-[#22c55e]" : "bg-[#374151]"
               }`}
             >
               <span
@@ -699,6 +717,52 @@ export default function ProfilePage() {
           <span className="text-[#EF4444]">Sair da conta</span>
         </button>
       </div>
+
+      {/* Gate da IA: senha + animação de conexão */}
+      {gateOpen && (
+        <AutoTraderGate
+          onClose={() => setGateOpen(false)}
+          onActivated={() => {
+            setAutoTrader(true)
+            localStorage.setItem("polex_auto_trader", "1")
+            window.dispatchEvent(new Event("polex-auto-trader-change"))
+            setGateOpen(false)
+          }}
+        />
+      )}
+
+      {/* Bloqueio: precisa do primeiro depósito */}
+      {blockedOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setBlockedOpen(false)} aria-hidden />
+          <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-[#22c55e]/30 bg-gradient-to-b from-[#141a24] to-[#0a0d13] p-6 text-center shadow-[0_20px_80px_rgba(0,0,0,0.8)]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#22c55e]/15">
+              <Lock className="h-8 w-8 text-[#22c55e]" />
+            </div>
+            <h3 className="mt-4 text-xl font-extrabold text-white">Acesso bloqueado</h3>
+            <p className="mt-2 text-sm text-[#9CA3AF]">
+              A IA <span className="font-semibold text-white">AUTO TRADER</span> é exclusiva para quem já realizou o
+              primeiro depósito. Faça seu depósito para desbloquear.
+            </p>
+            <div className="mt-5 flex flex-col gap-2">
+              <Link
+                href="/deposit"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#22c55e] via-[#4ade80] to-[#16a34a] py-3.5 text-base font-extrabold text-[#0a0d13] shadow-[0_0_30px_rgba(34,197,94,0.4)] transition hover:brightness-110"
+              >
+                <Banknote className="h-5 w-5" />
+                Fazer primeiro depósito
+              </Link>
+              <button
+                type="button"
+                onClick={() => setBlockedOpen(false)}
+                className="w-full rounded-2xl bg-white/5 py-3 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white"
+              >
+                Agora não
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -349,12 +349,12 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             aria-hidden
           />
           <Image
-            src="/trade/kayko-robot.png"
+            src="/auto-trader-mascot.png"
             alt="Auto Trader"
             width={112}
             height={112}
             draggable={false}
-            className={`relative h-24 w-24 object-contain drop-shadow-[0_8px_28px_rgba(249,115,22,0.45)] transition-transform duration-300 ${
+            className={`relative h-24 w-24 object-contain drop-shadow-[0_8px_28px_rgba(34,197,94,0.5)] transition-transform duration-300 ${
               dragging ? "scale-105" : "group-hover:-translate-y-1"
             } animate-[kaykoFloat_3.4s_ease-in-out_infinite]`}
             priority
@@ -363,7 +363,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
           <span className="pointer-events-none absolute -right-1 top-1 flex items-center gap-0.5 rounded-full bg-black/40 px-1.5 py-1 text-white/50 opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
             <GripVertical className="h-3 w-3" />
           </span>
-          <span className="pointer-events-none absolute right-6 top-[74px] flex h-6 w-6 items-center justify-center rounded-full bg-[#22c55e] shadow-[0_0_12px_rgba(249,115,22,0.9)]">
+          <span className="pointer-events-none absolute right-6 top-[74px] flex h-6 w-6 items-center justify-center rounded-full bg-[#22c55e] shadow-[0_0_12px_rgba(34,197,94,0.9)]">
             <span className="h-2 w-2 rounded-full bg-white" />
           </span>
         </div>
@@ -455,7 +455,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
               <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
                 <span className="absolute h-16 w-16 rounded-full bg-[#22c55e]/25 blur-lg" aria-hidden />
                 <Image
-                  src="/trade/kayko-robot.png"
+                  src="/auto-trader-mascot.png"
                   alt="Auto Trader"
                   width={64}
                   height={64}
