@@ -114,6 +114,10 @@ function fmtTime(ts: number) {
   return new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
 }
 
+function fmtTimeSec(ts: number) {
+  return new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+}
+
 export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   const [open, setOpen] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
@@ -220,10 +224,10 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
       }
       const confidence = Math.round(72 + Math.random() * 22)
 
-      // Entrada alinhada à abertura do próximo minuto (com folga mínima de 8s).
+      // Entrada agendada de 2:10 a 2:49 no futuro, dando tempo de entrar.
       const base = Date.now()
-      let entryAt = Math.ceil(base / 60000) * 60000
-      if (entryAt - base < 8000) entryAt += 60000
+      const lead = 130000 + Math.floor(Math.random() * 40000) // 2:10 .. 2:49
+      const entryAt = base + lead
       const expiresAt = entryAt + 60000
 
       setAnalyzing(false)
@@ -406,9 +410,9 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                   {isCall ? "COMPRAR" : "VENDER"}
                 </span>
                 <span className="ml-auto flex items-center gap-1 text-xs text-white/60">
-                  <Clock className="h-3.5 w-3.5" />
-                  {fmtTime(signal.entryAt)}
-                </span>
+          <Clock className="h-3.5 w-3.5" />
+                {fmtTimeSec(signal.entryAt)}
+              </span>
               </div>
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-[11px] uppercase tracking-wide text-white/45">
@@ -544,7 +548,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                       <p className="flex items-center justify-center gap-1 text-[11px] uppercase tracking-wide text-white/45">
                         <Clock className="h-3.5 w-3.5" /> Horário de entrada
                       </p>
-                      <p className="mt-1 text-2xl font-extrabold tabular-nums text-white">{fmtTime(signal.entryAt)}</p>
+                      <p className="mt-1 text-2xl font-extrabold tabular-nums text-white">{fmtTimeSec(signal.entryAt)}</p>
                     </div>
                     <div className="rounded-xl bg-black/30 p-3 text-center">
                       <p className="text-[11px] uppercase tracking-wide text-white/45">
