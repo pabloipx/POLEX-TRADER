@@ -374,7 +374,7 @@ export default function ProfilePage() {
                       {achieved && <Check className="w-3 h-3 text-[#0B0F14]" strokeWidth={3.5} />}
                     </div>
                     <span
-                      className="text-[9px] font-semibold tracking-wide"
+                      className="whitespace-nowrap text-[10px] font-semibold tracking-wide"
                       style={{ color: achieved ? r.color : "#4B5563" }}
                     >
                       {r.name}
