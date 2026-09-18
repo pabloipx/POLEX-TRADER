@@ -10,6 +10,7 @@ import { TraderIAWatermark } from "@/components/trading/trader-ia-watermark"
 import { TradeHistorySidebar } from "@/components/trading/trade-history-sidebar"
 import { TradeResultOverlay } from "@/components/trading/trade-result-overlay"
 import { AssetPanel } from "@/components/trading/asset-panel"
+import { KaykoWidget } from "@/components/trading/kayko-widget"
 import { useGlobalOTC } from "@/lib/hooks/use-global-otc"
 import { multiAssetEngine } from "@/lib/price-engine/multi-asset-engine"
 import { playCallSound, playPutSound, playWinSound, playLossSound, unlockAudio } from "@/lib/sounds"
@@ -214,6 +215,26 @@ export default function TradePage() {
   // Trader IA
   const [showTraderIAModal, setTraderIAModalOpen] = useState(false)
   const [isTraderIAActive, setIsTraderIAActive] = useState(false)
+
+  // Auto Trader (Robô Kayko) — flutuante ativado pelo perfil e persistido no navegador.
+  const [autoTraderOn, setAutoTraderOn] = useState(false)
+  const [kaykoStats, setKaykoStats] = useState<{ win: number; loss: number; profit: number }>({
+    win: 0,
+    loss: 0,
+    profit: 0,
+  })
+
+  useEffect(() => {
+    const read = () => setAutoTraderOn(localStorage.getItem("polex_auto_trader") === "1")
+    read()
+    const onCustom = () => read()
+    window.addEventListener("storage", read)
+    window.addEventListener("polex-auto-trader-change", onCustom)
+    return () => {
+      window.removeEventListener("storage", read)
+      window.removeEventListener("polex-auto-trader-change", onCustom)
+    }
+  }, [])
 
   // Trader sentiment (simulated)
 
@@ -466,6 +487,11 @@ export default function TradePage() {
           ...prev,
           { key: trade.id, type: result === "win" ? "win" : "loss", amount: Math.abs(profit || trade.amount) },
         ])
+        setKaykoStats((prev) =>
+          result === "win"
+            ? { ...prev, win: prev.win + 1, profit: prev.profit + Math.abs(profit) }
+            : { ...prev, loss: prev.loss + 1, profit: prev.profit - trade.amount },
+        )
         setActiveTrades((prev) => prev.filter((item) => item.id !== trade.id))
         setHistoryRefresh((prev) => prev + 1)
         if (result === "win") playWinSound()
@@ -787,6 +813,11 @@ export default function TradePage() {
               ...prev,
               { key: trade.id, type: result, amount: isWin ? profitAmount : trade.amount },
             ])
+            setKaykoStats((prev) =>
+              isWin
+                ? { ...prev, win: prev.win + 1, profit: prev.profit + profitAmount }
+                : { ...prev, loss: prev.loss + 1, profit: prev.profit - trade.amount },
+            )
             setActiveTrades((prev) => prev.filter((t) => t.id !== trade.id))
             setHistoryRefresh((prev) => prev + 1)
 
@@ -1601,6 +1632,10 @@ export default function TradePage() {
           amount={currentResult.amount}
           durationMs={resultDurationMs}
         />
+      )}
+
+      {autoTraderOn && (
+        <KaykoWidget assetName={selectedAsset?.name || "—"} candles={candles as any} stats={kaykoStats} />
       )}
     </div>
   )

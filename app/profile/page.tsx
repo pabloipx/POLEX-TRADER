@@ -67,6 +67,11 @@ export default function ProfilePage() {
   const [recentWithdrawals, setRecentWithdrawals] = useState<RecentWithdrawal[]>([])
   const [rank, setRank] = useState<RankProgress>(() => computeRank(0, 0))
   const [loading, setLoading] = useState(true)
+  const [autoTrader, setAutoTrader] = useState(false)
+
+  useEffect(() => {
+    setAutoTrader(localStorage.getItem("polex_auto_trader") === "1")
+  }, [])
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -600,6 +605,51 @@ export default function ProfilePage() {
 
       {/* Menu Options */}
       <div className="px-4 pt-6 space-y-2">
+        <button
+          type="button"
+          onClick={() => {
+            const next = !autoTrader
+            setAutoTrader(next)
+            localStorage.setItem("polex_auto_trader", next ? "1" : "0")
+            window.dispatchEvent(new Event("polex-auto-trader-change"))
+          }}
+          className="block w-full text-left"
+        >
+          <div
+            className="p-4 rounded-xl flex items-center justify-between border"
+            style={{
+              borderColor: autoTrader ? "rgba(249,115,22,0.45)" : "rgba(249,115,22,0.2)",
+              background: "linear-gradient(135deg, #f9731614 0%, #121826 100%)",
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-9 w-9 items-center justify-center">
+                <span className="absolute h-9 w-9 rounded-full bg-[#f97316]/20 blur-md" aria-hidden />
+                <img
+                  src="/trade/kayko-robot.png"
+                  alt="Robô Kayko"
+                  className="relative h-9 w-9 object-contain"
+                />
+              </div>
+              <div>
+                <span className="block text-white font-semibold">AUTO TRADER</span>
+                <span className="block text-[#6B7280] text-xs">Robô Kayko flutuante na tela de trade</span>
+              </div>
+            </div>
+            <span
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                autoTrader ? "bg-[#f97316]" : "bg-[#374151]"
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                  autoTrader ? "translate-x-5" : "translate-x-0.5"
+                }`}
+              />
+            </span>
+          </div>
+        </button>
+
         <Link href="/connections" className="block">
           <div className="p-4 rounded-xl flex items-center justify-between border border-[#22c55e]/25" style={{ background: "linear-gradient(135deg, #22c55e14 0%, #121826 100%)" }}>
             <div className="flex items-center gap-3">
