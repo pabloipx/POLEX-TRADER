@@ -114,10 +114,6 @@ function fmtTime(ts: number) {
   return new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
 }
 
-function fmtTimeSec(ts: number) {
-  return new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-}
-
 export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   const [open, setOpen] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
@@ -411,7 +407,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                 </span>
                 <span className="ml-auto flex items-center gap-1 text-xs text-white/60">
           <Clock className="h-3.5 w-3.5" />
-                {fmtTimeSec(signal.entryAt)}
+                {fmtTime(signal.entryAt)}
               </span>
               </div>
               <div className="mt-2 flex items-center justify-between">
@@ -548,7 +544,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                       <p className="flex items-center justify-center gap-1 text-[11px] uppercase tracking-wide text-white/45">
                         <Clock className="h-3.5 w-3.5" /> Horário de entrada
                       </p>
-                      <p className="mt-1 text-2xl font-extrabold tabular-nums text-white">{fmtTimeSec(signal.entryAt)}</p>
+                      <p className="mt-1 text-2xl font-extrabold tabular-nums text-white">{fmtTime(signal.entryAt)}</p>
                     </div>
                     <div className="rounded-xl bg-black/30 p-3 text-center">
                       <p className="text-[11px] uppercase tracking-wide text-white/45">
