@@ -16,7 +16,6 @@ import {
   Banknote,
   Settings,
   HelpCircle,
-  Users,
   BadgeCheck,
   TrendingUp,
   TrendingDown,
@@ -655,27 +654,6 @@ export default function ProfilePage() {
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-[#6B7280]" />
-            </div>
-          </div>
-        </Link>
-
-        {/* Invite */}
-        <Link href="/afiliados" className="block">
-          <div
-            className="p-5 rounded-2xl border border-[#22c55e]/30 active:scale-[0.99] transition-transform"
-            style={{ background: "linear-gradient(135deg, #22c55e18 0%, #121826 100%)" }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#22c55e]/20 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-[#22c55e]" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Convide amigos</h3>
-                  <p className="text-[#6B7280] text-xs">Indique e ganhe comissões!</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-[#22c55e]" />
             </div>
           </div>
         </Link>
