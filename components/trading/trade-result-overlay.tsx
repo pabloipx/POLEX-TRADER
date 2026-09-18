@@ -28,6 +28,23 @@ const COINS = [
   { left: "93%", delay: "400ms", duration: "1500ms", size: 12 },
 ]
 
+// Confete de tela cheia no ganho. Posicoes/tempos fixos para animacao deterministica
+// (sem divergencia servidor/cliente). --cfx/--cfy definem a trajetoria de cada particula.
+const CONFETTI = [
+  { left: "10%", color: "#22c55e", dx: "-40px", dy: "240px", rot: "540deg", delay: "0ms", dur: "1500ms", size: 10 },
+  { left: "18%", color: "#fbbf24", dx: "30px", dy: "300px", rot: "-480deg", delay: "120ms", dur: "1700ms", size: 8 },
+  { left: "27%", color: "#4ade80", dx: "-20px", dy: "260px", rot: "620deg", delay: "60ms", dur: "1400ms", size: 12 },
+  { left: "36%", color: "#38bdf8", dx: "50px", dy: "320px", rot: "-540deg", delay: "220ms", dur: "1650ms", size: 9 },
+  { left: "45%", color: "#22c55e", dx: "-60px", dy: "280px", rot: "500deg", delay: "40ms", dur: "1550ms", size: 11 },
+  { left: "54%", color: "#fde047", dx: "40px", dy: "300px", rot: "-600deg", delay: "180ms", dur: "1600ms", size: 8 },
+  { left: "63%", color: "#4ade80", dx: "-30px", dy: "250px", rot: "560deg", delay: "90ms", dur: "1450ms", size: 12 },
+  { left: "72%", color: "#fbbf24", dx: "60px", dy: "310px", rot: "-500deg", delay: "260ms", dur: "1700ms", size: 9 },
+  { left: "81%", color: "#22c55e", dx: "-50px", dy: "270px", rot: "580deg", delay: "20ms", dur: "1500ms", size: 10 },
+  { left: "90%", color: "#38bdf8", dx: "20px", dy: "330px", rot: "-560deg", delay: "300ms", dur: "1600ms", size: 8 },
+  { left: "5%", color: "#fde047", dx: "30px", dy: "290px", rot: "520deg", delay: "150ms", dur: "1650ms", size: 9 },
+  { left: "96%", color: "#4ade80", dx: "-30px", dy: "260px", rot: "-520deg", delay: "80ms", dur: "1500ms", size: 11 },
+]
+
 export function TradeResultOverlay({
   type,
   amount,
@@ -60,6 +77,52 @@ export function TradeResultOverlay({
       <span className="sr-only">
         {isWin ? `Operação vencedora, lucro de R$ ${formatted}` : `Operação perdida, prejuízo de R$ ${formatted}`}
       </span>
+
+      {/* Flash de tela cheia no impacto do resultado */}
+      <div
+        aria-hidden="true"
+        className="animate-result-flash absolute inset-0"
+        style={{
+          background: isWin
+            ? `radial-gradient(circle at 50% 45%, ${accent}55 0%, ${accent}18 40%, transparent 70%)`
+            : `radial-gradient(circle at 50% 50%, ${accent}4d 0%, ${accent}14 42%, transparent 72%)`,
+        }}
+      />
+
+      {/* Perda: pulso vermelho nas bordas da tela */}
+      {!isWin && (
+        <div
+          aria-hidden="true"
+          className="animate-result-vignette absolute inset-0"
+          style={{ boxShadow: `inset 0 0 160px 40px ${accent}66` }}
+        />
+      )}
+
+      {/* Ganho: explosao de confete em tela cheia */}
+      {isWin && (
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-0">
+          {CONFETTI.map((c, i) => (
+            <span
+              key={i}
+              className="animate-result-confetti absolute top-0 block rounded-[2px]"
+              style={
+                {
+                  left: c.left,
+                  width: c.size,
+                  height: c.size * 0.6,
+                  background: c.color,
+                  boxShadow: `0 0 8px ${c.color}aa`,
+                  "--cfx": c.dx,
+                  "--cfy": c.dy,
+                  "--cfr": c.rot,
+                  "--cfd": c.dur,
+                  "--cfdelay": c.delay,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
+      )}
 
       <div className={leaving ? "animate-result-out" : "animate-result-pop-in"}>
         <div className={isWin ? "" : "animate-result-shake"}>

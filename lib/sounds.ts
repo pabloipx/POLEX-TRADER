@@ -72,22 +72,40 @@ export function playPutSound() {
   }, 100)
 }
 
-// WIN sound - cheerful ascending arpeggio
+// WIN sound - celebratory fanfare: ascending arpeggio + sparkle + final chord
 export function playWinSound() {
   const ctx = getCtx()
   if (!ctx) return
 
-  const notes = [523, 659, 784, 1047] // C5, E5, G5, C6
+  // Arpegio ascendente principal (mais brilhante)
+  const notes = [523, 659, 784, 1047, 1319] // C5, E5, G5, C6, E6
   notes.forEach((freq, i) => {
-    setTimeout(() => playTone(freq, 0.18, "sine", 0.2), i * 80)
+    setTimeout(() => playTone(freq, 0.2, "triangle", 0.22), i * 75)
   })
+
+  // Faisca aguda por cima para dar brilho
+  setTimeout(() => playTone(2093, 0.12, "sine", 0.12), 120) // C7
+  setTimeout(() => playTone(2637, 0.14, "sine", 0.1), 220) // E7
+
+  // Acorde final sustentado (C maior) — sensacao de "vitoria"
+  setTimeout(() => {
+    playTone(523, 0.5, "sine", 0.16) // C5
+    playTone(659, 0.5, "sine", 0.14) // E5
+    playTone(784, 0.55, "sine", 0.14) // G5
+    playTone(1047, 0.6, "sine", 0.12) // C6
+  }, 420)
 }
 
-// LOSS sound - low descending tone
+// LOSS sound - deep descending "red" with a soft buzz
 export function playLossSound() {
   const ctx = getCtx()
   if (!ctx) return
 
-  playTone(330, 0.3, "triangle", 0.2)
-  setTimeout(() => playTone(262, 0.4, "triangle", 0.15), 150)
+  // Descida grave e clara
+  playTone(392, 0.28, "triangle", 0.22) // G4
+  setTimeout(() => playTone(311, 0.32, "triangle", 0.2), 130) // Eb4
+  setTimeout(() => playTone(233, 0.5, "triangle", 0.18), 260) // Bb3
+
+  // Zumbido grave sob a descida para reforcar o "red"
+  setTimeout(() => playTone(110, 0.55, "sawtooth", 0.08), 260) // A2
 }
