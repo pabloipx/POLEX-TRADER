@@ -11,6 +11,7 @@ import {
   UserCircle,
   UserPlus,
   Wallet,
+  X,
 } from "lucide-react"
 import type { AffiliateSection } from "./types"
 
@@ -18,9 +19,11 @@ interface AffiliateSidebarProps {
   active: AffiliateSection
   onChange: (section: AffiliateSection) => void
   onSignOut: () => void
+  open: boolean
+  onClose: () => void
 }
 
-export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSidebarProps) {
+export function AffiliateSidebar({ active, onChange, onSignOut, open, onClose }: AffiliateSidebarProps) {
   const [statsOpen, setStatsOpen] = useState(true)
   const [accountOpen, setAccountOpen] = useState(false)
 
@@ -29,8 +32,27 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
       isActive ? "bg-gray-100 font-medium text-gray-900" : "text-gray-700 hover:bg-gray-50"
     }`
 
+  // No mobile, selecionar uma seção fecha o drawer
+  const select = (section: AffiliateSection) => {
+    onChange(section)
+    onClose()
+  }
+
   return (
-    <aside className="flex w-[272px] shrink-0 flex-col justify-between border-r border-gray-200 bg-white py-4">
+    <>
+      {open && (
+        <button
+          type="button"
+          aria-label="Fechar menu"
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-gray-900/40 lg:hidden"
+        />
+      )}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-[272px] max-w-[85vw] shrink-0 flex-col justify-between border-r border-gray-200 bg-white py-4 transition-transform duration-300 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
       <nav className="flex flex-col gap-1 px-3">
         <button type="button" onClick={() => setStatsOpen((v) => !v)} className={itemClass(false)}>
           <BarChart3 className="h-5 w-5 text-gray-500" />
@@ -46,14 +68,14 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
           <div className="flex flex-col gap-1">
             <button
               type="button"
-              onClick={() => onChange("stats-general")}
+              onClick={() => select("stats-general")}
               className={`${itemClass(active === "stats-general")} pl-12`}
             >
               Geral
             </button>
             <button
               type="button"
-              onClick={() => onChange("stats-clients")}
+              onClick={() => select("stats-clients")}
               className={`${itemClass(active === "stats-clients")} pl-12`}
             >
               Por clientes
@@ -61,24 +83,24 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
           </div>
         )}
 
-        <button type="button" onClick={() => onChange("offers")} className={itemClass(active === "offers")}>
+        <button type="button" onClick={() => select("offers")} className={itemClass(active === "offers")}>
           <Tag className="h-5 w-5 text-gray-500" />
           Ofertas
         </button>
 
-        <button type="button" onClick={() => onChange("payments")} className={itemClass(active === "payments")}>
+        <button type="button" onClick={() => select("payments")} className={itemClass(active === "payments")}>
           <Wallet className="h-5 w-5 text-gray-500" />
           Pagamentos
         </button>
 
-        <button type="button" onClick={() => onChange("competition")} className={itemClass(active === "competition")}>
+        <button type="button" onClick={() => select("competition")} className={itemClass(active === "competition")}>
           <Columns2 className="h-5 w-5 text-gray-500" />
           Competição
         </button>
 
         <button
           type="button"
-          onClick={() => onChange("sub-affiliate")}
+          onClick={() => select("sub-affiliate")}
           className={itemClass(active === "sub-affiliate")}
         >
           <UserPlus className="h-5 w-5 text-gray-500" />
@@ -99,21 +121,21 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
           <div className="flex flex-col gap-1">
             <button
               type="button"
-              onClick={() => onChange("account")}
+              onClick={() => select("account")}
               className={`${itemClass(active === "account")} pl-12`}
             >
               Geral
             </button>
             <button
               type="button"
-              onClick={() => onChange("account-security")}
+              onClick={() => select("account-security")}
               className={`${itemClass(active === "account-security")} pl-12`}
             >
               Segurança
             </button>
             <button
               type="button"
-              onClick={() => onChange("account-profile")}
+              onClick={() => select("account-profile")}
               className={`${itemClass(active === "account-profile")} pl-12`}
             >
               Informações do perfil
@@ -146,6 +168,7 @@ export function AffiliateSidebar({ active, onChange, onSignOut }: AffiliateSideb
           <LogOut className="h-5 w-5 text-gray-400" />
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }

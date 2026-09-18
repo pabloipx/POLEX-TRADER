@@ -41,6 +41,7 @@ function formatPaymentDate(value: string) {
 export default function AffiliatePanelPage() {
   const router = useRouter()
   const [section, setSection] = useState<AffiliateSection>("stats-general")
+  const [menuOpen, setMenuOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [userName, setUserName] = useState("")
   const [data, setData] = useState<AffiliateData | null>(null)
@@ -164,12 +165,23 @@ export default function AffiliatePanelPage() {
   return (
     <DisplayProvider value={display}>
     <div className="flex min-h-screen flex-col bg-[#fafafa] font-sans">
-      <AffiliateTopbar userName={userName} balance={affiliate.balance} nextPayment={nextPayment} />
+      <AffiliateTopbar
+        userName={userName}
+        balance={affiliate.balance}
+        nextPayment={nextPayment}
+        onMenuClick={() => setMenuOpen(true)}
+      />
 
       <div className="flex flex-1">
-        <AffiliateSidebar active={section} onChange={setSection} onSignOut={signOut} />
+        <AffiliateSidebar
+          active={section}
+          onChange={setSection}
+          onSignOut={signOut}
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+        />
 
-        <main className="flex-1 overflow-x-auto px-8 py-8">
+        <main className="w-full flex-1 overflow-x-hidden px-4 py-6 md:px-8 md:py-8">
           <div className="mx-auto max-w-[1160px]">
             {error && (
               <p className="mb-5 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">

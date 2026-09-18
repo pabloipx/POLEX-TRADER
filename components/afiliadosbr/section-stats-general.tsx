@@ -115,7 +115,7 @@ export function SectionStatsGeneral({ referrals }: SectionStatsGeneralProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Estatísticas gerais</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Estatísticas gerais</h1>
         <p className="mt-1 text-[15px] text-gray-600">
           Monitore suas campanhas com os dados mais precisos em tempo real
         </p>

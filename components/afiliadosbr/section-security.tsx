@@ -208,7 +208,7 @@ export function SectionSecurity({ email }: { email: string }) {
 
   return (
     <div className="flex max-w-[960px] flex-col">
-      <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Segurança</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Segurança</h1>
       <p className="mt-1 text-[15px] text-gray-600">
         Melhore o grau de segurança da sua conta com ferramentas de proteção adicionais
       </p>
