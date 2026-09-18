@@ -16,7 +16,6 @@ import {
   Banknote,
   Settings,
   HelpCircle,
-  Users,
   BadgeCheck,
   TrendingUp,
   TrendingDown,
@@ -28,6 +27,7 @@ import {
   Cpu,
 } from "lucide-react"
 import { computeRank, applyRankOverride, RANKS, type RankProgress } from "@/lib/ranks"
+import { AutoTraderGate } from "@/components/trading/auto-trader-gate"
 
 interface UserProfile {
   id: string
@@ -68,6 +68,9 @@ export default function ProfilePage() {
   const [rank, setRank] = useState<RankProgress>(() => computeRank(0, 0))
   const [loading, setLoading] = useState(true)
   const [autoTrader, setAutoTrader] = useState(false)
+  const [hasDeposited, setHasDeposited] = useState(false)
+  const [gateOpen, setGateOpen] = useState(false)
+  const [blockedOpen, setBlockedOpen] = useState(false)
 
   useEffect(() => {
     setAutoTrader(localStorage.getItem("polex_auto_trader") === "1")
@@ -137,6 +140,9 @@ export default function ProfilePage() {
           .in("status", ["approved", "completed"])
 
         const totalDeposited = (depositsData || []).reduce((sum, d) => sum + Number(d.amount || 0), 0)
+
+        // A IA (Auto Trader) só libera para quem já fez o primeiro depósito.
+        if (isMounted) setHasDeposited(totalDeposited > 0)
 
         // Total de entradas reais: todas as operacoes da conta real (independente do resultado).
         const { count: entriesCount } = await supabase
@@ -277,31 +283,54 @@ export default function ProfilePage() {
       {/* Rank / Nivel */}
       <div className="px-4 pt-5">
         <div
-          className="rounded-2xl border p-5"
-          style={{ backgroundColor: "#121826", borderColor: `${rank.current.color}40` }}
+          className="relative overflow-hidden rounded-2xl border p-5"
+          style={{
+            borderColor: `${rank.current.color}55`,
+            background: `radial-gradient(120% 140% at 0% 0%, ${rank.current.color}1f 0%, rgba(18,24,38,0) 55%), linear-gradient(180deg, #141b2b 0%, #0f1521 100%)`,
+            boxShadow: `0 0 0 1px ${rank.current.color}14, 0 18px 40px -24px ${rank.current.color}80`,
+          }}
         >
+          {/* brilho decorativo */}
+          <div
+            className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full blur-3xl opacity-30"
+            style={{ backgroundColor: rank.current.color }}
+            aria-hidden="true"
+          />
+
           {/* Cabecalho do rank atual */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
+          <div className="relative flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3.5">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${rank.current.color}22` }}
+                className="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                style={{
+                  background: `linear-gradient(140deg, ${rank.current.color}33, ${rank.current.color}0d)`,
+                  boxShadow: `inset 0 0 0 1px ${rank.current.color}55, 0 8px 20px -8px ${rank.current.color}99`,
+                }}
               >
-                <Award className="w-6 h-6" style={{ color: rank.current.color }} />
+                <Award className="w-7 h-7" style={{ color: rank.current.color }} />
               </div>
               <div>
-                <p className="text-[10px] text-[#6B7280] uppercase tracking-wide">Seu rank</p>
-                <p className="text-lg font-bold" style={{ color: rank.current.color }}>
+                <p className="text-[10px] text-[#6B7280] uppercase tracking-[0.18em] mb-0.5">Seu rank</p>
+                <p
+                  className="text-2xl font-extrabold leading-none tracking-tight"
+                  style={{
+                    color: rank.current.color,
+                    textShadow: `0 0 18px ${rank.current.color}66`,
+                  }}
+                >
                   {rank.current.name}
                 </p>
               </div>
             </div>
             {rank.next ? (
               <div className="text-right">
-                <p className="text-[10px] text-[#6B7280] uppercase tracking-wide">Próximo</p>
-                <p className="text-sm font-semibold" style={{ color: rank.next.color }}>
+                <p className="text-[10px] text-[#6B7280] uppercase tracking-[0.18em] mb-1">Próximo</p>
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-bold"
+                  style={{ color: rank.next.color, backgroundColor: `${rank.next.color}1f`, boxShadow: `inset 0 0 0 1px ${rank.next.color}44` }}
+                >
                   {rank.next.name}
-                </p>
+                </span>
               </div>
             ) : (
               <span className="px-2.5 py-1 rounded-full text-xs font-bold" style={{ color: rank.current.color, backgroundColor: `${rank.current.color}22` }}>
@@ -310,71 +339,111 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Escada de ranks */}
-          <div className="flex items-center gap-1.5 mb-5">
-            {RANKS.map((r) => {
-              const achieved = rank.current.id >= r.id
-              return (
-                <div key={r.id} className="flex-1 flex flex-col items-center gap-1.5">
-                  <div
-                    className="w-full h-1.5 rounded-full"
-                    style={{ backgroundColor: achieved ? r.color : "#1F2933" }}
-                  />
-                  <span
-                    className="text-[9px] font-medium"
-                    style={{ color: achieved ? r.color : "#4B5563" }}
-                  >
-                    {r.name}
-                  </span>
-                </div>
-              )
-            })}
+          {/* Trilha de ranks conectada */}
+          <div className="relative mb-6 px-1">
+            <div className="relative flex items-center justify-between">
+              {/* linha base */}
+              <div className="absolute left-0 right-0 top-[9px] h-[3px] rounded-full bg-[#1c2534]" aria-hidden="true" />
+              {/* linha de progresso */}
+              <div
+                className="absolute left-0 top-[9px] h-[3px] rounded-full transition-all"
+                style={{
+                  width: `${RANKS.length > 1 ? (rank.current.id / (RANKS.length - 1)) * 100 : 0}%`,
+                  background: `linear-gradient(90deg, ${RANKS[0].color}, ${rank.current.color})`,
+                  boxShadow: `0 0 10px ${rank.current.color}88`,
+                }}
+                aria-hidden="true"
+              />
+              {RANKS.map((r) => {
+                const achieved = rank.current.id >= r.id
+                const isCurrent = rank.current.id === r.id
+                return (
+                  <div key={r.id} className="relative z-10 flex flex-col items-center gap-1.5" style={{ width: `${100 / RANKS.length}%` }}>
+                    <div
+                      className="flex items-center justify-center rounded-full transition-all"
+                      style={{
+                        width: isCurrent ? 22 : 18,
+                        height: isCurrent ? 22 : 18,
+                        backgroundColor: achieved ? r.color : "#0f1521",
+                        boxShadow: achieved
+                          ? `0 0 0 3px ${r.color}22, 0 0 12px ${r.color}${isCurrent ? "cc" : "66"}`
+                          : "inset 0 0 0 2px #2a3446",
+                      }}
+                    >
+                      {achieved && <Check className="w-3 h-3 text-[#0B0F14]" strokeWidth={3.5} />}
+                    </div>
+                    <span
+                      className="whitespace-nowrap text-[10px] font-semibold tracking-wide"
+                      style={{ color: achieved ? r.color : "#4B5563" }}
+                    >
+                      {r.name}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
           {rank.next ? (
             <>
               {/* Meta de deposito */}
               <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <Banknote className="w-3.5 h-3.5 text-[#9CA3AF]" />
                     <span className="text-xs text-[#9CA3AF]">Depósito acumulado</span>
                   </div>
-                  <span className="text-xs font-semibold text-white">
-                    R$ {formatCurrency(rank.totalDeposited)} / R$ {formatCurrency(rank.next.minDeposit)}
+                  <span className="text-xs font-semibold text-white tabular-nums">
+                    R$ {formatCurrency(rank.totalDeposited)} <span className="text-[#6B7280]">/ R$ {formatCurrency(rank.next.minDeposit)}</span>
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-[#0B0F14] overflow-hidden">
+                <div className="relative h-2.5 w-full rounded-full bg-[#0B0F14] overflow-hidden" style={{ boxShadow: "inset 0 0 0 1px #1c2534" }}>
                   <div
                     className="h-full rounded-full transition-all"
-                    style={{ width: `${rank.depositPct}%`, backgroundColor: rank.next.color }}
+                    style={{
+                      width: `${rank.depositPct}%`,
+                      background: `linear-gradient(90deg, ${rank.next.color}bb, ${rank.next.color})`,
+                      boxShadow: `0 0 12px ${rank.next.color}99`,
+                    }}
                   />
                 </div>
               </div>
 
               {/* Meta de entradas */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
+              <div className="mb-5">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-[#9CA3AF]" />
                     <span className="text-xs text-[#9CA3AF]">Entradas realizadas</span>
                   </div>
-                  <span className="text-xs font-semibold text-white">
-                    {rank.totalEntries} / {rank.next.minEntries}
+                  <span className="text-xs font-semibold text-white tabular-nums">
+                    {rank.totalEntries} <span className="text-[#6B7280]">/ {rank.next.minEntries}</span>
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-[#0B0F14] overflow-hidden">
+                <div className="relative h-2.5 w-full rounded-full bg-[#0B0F14] overflow-hidden" style={{ boxShadow: "inset 0 0 0 1px #1c2534" }}>
                   <div
                     className="h-full rounded-full transition-all"
-                    style={{ width: `${rank.entriesPct}%`, backgroundColor: rank.next.color }}
+                    style={{
+                      width: `${rank.entriesPct}%`,
+                      background: `linear-gradient(90deg, ${rank.next.color}bb, ${rank.next.color})`,
+                      boxShadow: `0 0 12px ${rank.next.color}99`,
+                    }}
                   />
                 </div>
               </div>
 
               {/* Resumo do que falta */}
-              <div className="flex items-center gap-2 rounded-xl p-3" style={{ backgroundColor: "#0B0F14" }}>
-                <Lock className="w-4 h-4 shrink-0" style={{ color: rank.next.color }} />
-                <p className="text-xs text-[#9CA3AF]">
+              <div
+                className="flex items-center gap-2.5 rounded-xl p-3"
+                style={{ backgroundColor: "#0b0f14cc", boxShadow: `inset 0 0 0 1px ${rank.next.color}22` }}
+              >
+                <div
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: `${rank.next.color}1f` }}
+                >
+                  <Lock className="w-3.5 h-3.5" style={{ color: rank.next.color }} />
+                </div>
+                <p className="text-xs text-[#9CA3AF] leading-relaxed">
                   Para alcançar <span className="font-semibold" style={{ color: rank.next.color }}>{rank.next.name}</span>
                   {rank.depositRemaining > 0 && (
                     <> deposite mais <span className="font-semibold text-white">R$ {formatCurrency(rank.depositRemaining)}</span></>
@@ -388,9 +457,17 @@ export default function ProfilePage() {
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-2 rounded-xl p-3" style={{ backgroundColor: "#0B0F14" }}>
-              <Check className="w-4 h-4 shrink-0" style={{ color: rank.current.color }} />
-              <p className="text-xs text-[#9CA3AF]">
+            <div
+              className="flex items-center gap-2.5 rounded-xl p-3"
+              style={{ backgroundColor: "#0b0f14cc", boxShadow: `inset 0 0 0 1px ${rank.current.color}33` }}
+            >
+              <div
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+                style={{ backgroundColor: `${rank.current.color}1f` }}
+              >
+                <Check className="w-3.5 h-3.5" style={{ color: rank.current.color }} />
+              </div>
+              <p className="text-xs text-[#9CA3AF] leading-relaxed">
                 Parabéns! Você atingiu o rank máximo com R$ {formatCurrency(rank.totalDeposited)} depositados e {rank.totalEntries} entradas.
               </p>
             </div>
@@ -580,27 +657,6 @@ export default function ProfilePage() {
             </div>
           </div>
         </Link>
-
-        {/* Invite */}
-        <Link href="/afiliados" className="block">
-          <div
-            className="p-5 rounded-2xl border border-[#22c55e]/30 active:scale-[0.99] transition-transform"
-            style={{ background: "linear-gradient(135deg, #22c55e18 0%, #121826 100%)" }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#22c55e]/20 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-[#22c55e]" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Convide amigos</h3>
-                  <p className="text-[#6B7280] text-xs">Indique e ganhe comissões!</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-[#22c55e]" />
-            </div>
-          </div>
-        </Link>
       </div>
 
       {/* Menu Options */}
@@ -608,37 +664,48 @@ export default function ProfilePage() {
         <button
           type="button"
           onClick={() => {
-            const next = !autoTrader
-            setAutoTrader(next)
-            localStorage.setItem("polex_auto_trader", next ? "1" : "0")
-            window.dispatchEvent(new Event("polex-auto-trader-change"))
+            if (autoTrader) {
+              // Desativar é direto.
+              setAutoTrader(false)
+              localStorage.setItem("polex_auto_trader", "0")
+              window.dispatchEvent(new Event("polex-auto-trader-change"))
+              return
+            }
+            // Ativar: exige primeiro depósito e senha de acesso.
+            if (!hasDeposited) {
+              setBlockedOpen(true)
+              return
+            }
+            setGateOpen(true)
           }}
           className="block w-full text-left"
         >
           <div
             className="p-4 rounded-xl flex items-center justify-between border"
             style={{
-              borderColor: autoTrader ? "rgba(249,115,22,0.45)" : "rgba(249,115,22,0.2)",
-              background: "linear-gradient(135deg, #f9731614 0%, #121826 100%)",
+              borderColor: autoTrader ? "rgba(34,197,94,0.45)" : "rgba(34,197,94,0.2)",
+              background: "linear-gradient(135deg, #22c55e14 0%, #121826 100%)",
             }}
           >
             <div className="flex items-center gap-3">
               <div className="relative flex h-9 w-9 items-center justify-center">
-                <span className="absolute h-9 w-9 rounded-full bg-[#f97316]/20 blur-md" aria-hidden />
+                <span className="absolute h-9 w-9 rounded-full bg-[#22c55e]/20 blur-md" aria-hidden />
                 <img
-                  src="/trade/kayko-robot.png"
-                  alt="Robô Kayko"
+                  src="/auto-trader-mascot.png"
+                  alt="Auto Trader"
                   className="relative h-9 w-9 object-contain"
                 />
               </div>
               <div>
                 <span className="block text-white font-semibold">AUTO TRADER</span>
-                <span className="block text-[#6B7280] text-xs">Robô Kayko flutuante na tela de trade</span>
+                <span className="block text-[#6B7280] text-xs">
+                  {autoTrader ? "IA ativa na tela de trade" : "IA de análise flutuante na tela de trade"}
+                </span>
               </div>
             </div>
             <span
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                autoTrader ? "bg-[#f97316]" : "bg-[#374151]"
+                autoTrader ? "bg-[#22c55e]" : "bg-[#374151]"
               }`}
             >
               <span
@@ -699,6 +766,52 @@ export default function ProfilePage() {
           <span className="text-[#EF4444]">Sair da conta</span>
         </button>
       </div>
+
+      {/* Gate da IA: senha + animação de conexão */}
+      {gateOpen && (
+        <AutoTraderGate
+          onClose={() => setGateOpen(false)}
+          onActivated={() => {
+            setAutoTrader(true)
+            localStorage.setItem("polex_auto_trader", "1")
+            window.dispatchEvent(new Event("polex-auto-trader-change"))
+            setGateOpen(false)
+          }}
+        />
+      )}
+
+      {/* Bloqueio: precisa do primeiro depósito */}
+      {blockedOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setBlockedOpen(false)} aria-hidden />
+          <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-[#22c55e]/30 bg-gradient-to-b from-[#141a24] to-[#0a0d13] p-6 text-center shadow-[0_20px_80px_rgba(0,0,0,0.8)]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#22c55e]/15">
+              <Lock className="h-8 w-8 text-[#22c55e]" />
+            </div>
+            <h3 className="mt-4 text-xl font-extrabold text-white">Acesso bloqueado</h3>
+            <p className="mt-2 text-sm text-[#9CA3AF]">
+              A IA <span className="font-semibold text-white">AUTO TRADER</span> é exclusiva para quem já realizou o
+              primeiro depósito. Faça seu depósito para desbloquear.
+            </p>
+            <div className="mt-5 flex flex-col gap-2">
+              <Link
+                href="/deposit"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#22c55e] via-[#4ade80] to-[#16a34a] py-3.5 text-base font-extrabold text-[#0a0d13] shadow-[0_0_30px_rgba(34,197,94,0.4)] transition hover:brightness-110"
+              >
+                <Banknote className="h-5 w-5" />
+                Fazer primeiro depósito
+              </Link>
+              <button
+                type="button"
+                onClick={() => setBlockedOpen(false)}
+                className="w-full rounded-2xl bg-white/5 py-3 text-sm font-medium text-white/60 transition hover:bg-white/10 hover:text-white"
+              >
+                Agora não
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
