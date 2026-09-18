@@ -1379,15 +1379,34 @@ function ChartCore({
           renderFrame()
         }
       }, 250)
+      // Marca o instante em que a aba foi ocultada. Enquanto oculta o navegador estrangula o
+      // rAF/setInterval, entao a vela em formacao (`formingRef`) e o preco suavizado congelam.
+      let hiddenSince = 0
       onVisible = () => {
-        if (typeof document !== "undefined" && !document.hidden) {
-          renderFrame()
-          if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current)
-          animFrameRef.current = requestAnimationFrame(tick)
+        if (typeof document === "undefined") return
+        if (document.hidden) {
+          if (hiddenSince === 0) hiddenSince = Date.now()
+          return
         }
+        // Voltou a ficar visivel. Se a aba ficou oculta tempo suficiente para o loop parar, os
+        // dados locais estao defasados: retomar o loop cru faria o `close` da vela saltar do
+        // preco antigo para o atual (a "vela gigante"), e as velas dos periodos que passaram
+        // durante o background nem existiriam. Recarregar do motor deterministico via loadData
+        // reconstroi historico + vela atual na MESMA serie (sem recriar o grafico, sem flash),
+        // eliminando o salto por completo.
+        const wasHiddenLong = hiddenSince > 0 && Date.now() - hiddenSince > 300
+        hiddenSince = 0
+        if (wasHiddenLong) {
+          loadDataRef.current?.()
+        } else {
+          renderFrame()
+        }
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current)
+        animFrameRef.current = requestAnimationFrame(tick)
       }
       document.addEventListener("visibilitychange", onVisible)
       window.addEventListener("focus", onVisible)
+      window.addEventListener("pageshow", onVisible)
     }
 
     boot()
