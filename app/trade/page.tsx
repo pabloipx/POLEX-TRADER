@@ -228,11 +228,23 @@ export default function TradePage() {
     const read = () => setAutoTraderOn(localStorage.getItem("polex_auto_trader") === "1")
     read()
     const onCustom = () => read()
+    // No mobile, voltar para a aba/página (inclusive via bfcache) restaura o componente
+    // sem remontar — por isso relemos o estado nesses eventos, senão o widget só
+    // apareceria após um reload manual.
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") read()
+    }
     window.addEventListener("storage", read)
     window.addEventListener("polex-auto-trader-change", onCustom)
+    window.addEventListener("pageshow", read)
+    window.addEventListener("focus", read)
+    document.addEventListener("visibilitychange", onVisibility)
     return () => {
       window.removeEventListener("storage", read)
       window.removeEventListener("polex-auto-trader-change", onCustom)
+      window.removeEventListener("pageshow", read)
+      window.removeEventListener("focus", read)
+      document.removeEventListener("visibilitychange", onVisibility)
     }
   }, [])
 

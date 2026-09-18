@@ -28,6 +28,12 @@ type Signal = {
 
 const POS_KEY = "polex_auto_trader_pos"
 const CARD_W = 264
+const CARD_W_MOBILE = 200
+
+function computeCardW() {
+  if (typeof window === "undefined") return CARD_W
+  return window.innerWidth < 480 ? CARD_W_MOBILE : CARD_W
+}
 
 // Som sci-fi leve gerado via Web Audio (sem arquivos externos).
 function useKaykoSound(muted: boolean) {
@@ -122,6 +128,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   const [now, setNow] = useState(() => Date.now())
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
   const [dragging, setDragging] = useState(false)
+  const [cardW, setCardW] = useState<number>(CARD_W)
 
   const { playScan, playSignal, playTick } = useKaykoSound(muted)
   const timeoutRef = useRef<number | null>(null)
@@ -139,8 +146,10 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   // Posição inicial: restaura do localStorage ou centraliza no topo.
   useEffect(() => {
     if (typeof window === "undefined") return
+    const w = computeCardW()
+    setCardW(w)
     const clamp = (p: { x: number; y: number }) => ({
-      x: Math.min(Math.max(8, p.x), window.innerWidth - CARD_W - 8),
+      x: Math.min(Math.max(8, p.x), window.innerWidth - w - 8),
       y: Math.min(Math.max(8, p.y), window.innerHeight - 120),
     })
     try {
@@ -153,16 +162,18 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
         }
       }
     } catch {}
-    setPos({ x: Math.max(8, (window.innerWidth - CARD_W) / 2), y: 76 })
+    setPos({ x: Math.max(8, (window.innerWidth - w) / 2), y: 76 })
   }, [])
 
   // Mantém dentro da tela ao redimensionar.
   useEffect(() => {
     const onResize = () => {
+      const w = computeCardW()
+      setCardW(w)
       setPos((p) => {
         if (!p) return p
         return {
-          x: Math.min(Math.max(8, p.x), window.innerWidth - CARD_W - 8),
+          x: Math.min(Math.max(8, p.x), window.innerWidth - w - 8),
           y: Math.min(Math.max(8, p.y), window.innerHeight - 120),
         }
       })
@@ -283,7 +294,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
     if (!ds.moved && Math.hypot(dx, dy) < 5) return
     ds.moved = true
     setDragging(true)
-    const w = containerRef.current?.offsetWidth ?? CARD_W
+    const w = containerRef.current?.offsetWidth ?? cardW
     const h = containerRef.current?.offsetHeight ?? 200
     const nx = Math.min(Math.max(8, ds.originX + dx), window.innerWidth - w - 8)
     const ny = Math.min(Math.max(8, ds.originY + dy), window.innerHeight - h - 8)
@@ -323,7 +334,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
       <div
         ref={containerRef}
         className="fixed z-[60] flex flex-col items-center select-none"
-        style={{ left: pos.x, top: pos.y, width: CARD_W, touchAction: "none" }}
+        style={{ left: pos.x, top: pos.y, width: cardW, touchAction: "none" }}
       >
         {/* Mascote = alça de arraste + toque para abrir */}
         <div
@@ -341,10 +352,10 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             }
           }}
         >
-          <span className="absolute top-2 h-24 w-24 rounded-full bg-[#22c55e]/25 blur-2xl animate-pulse" aria-hidden />
-          <span className="rtm-radar absolute top-9 h-24 w-24 rounded-full border border-[#22c55e]/40" aria-hidden />
+          <span className="absolute top-2 h-16 w-16 rounded-full bg-[#22c55e]/25 blur-2xl animate-pulse sm:h-24 sm:w-24" aria-hidden />
+          <span className="rtm-radar absolute top-6 h-16 w-16 rounded-full border border-[#22c55e]/40 sm:top-9 sm:h-24 sm:w-24" aria-hidden />
           <span
-            className="rtm-radar absolute top-9 h-24 w-24 rounded-full border border-[#22c55e]/30"
+            className="rtm-radar absolute top-6 h-16 w-16 rounded-full border border-[#22c55e]/30 sm:top-9 sm:h-24 sm:w-24"
             style={{ animationDelay: "0.9s" }}
             aria-hidden
           />
@@ -354,7 +365,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             width={112}
             height={112}
             draggable={false}
-            className={`relative h-24 w-24 object-contain drop-shadow-[0_8px_28px_rgba(34,197,94,0.5)] transition-transform duration-300 ${
+            className={`relative h-16 w-16 object-contain drop-shadow-[0_8px_28px_rgba(34,197,94,0.5)] transition-transform duration-300 sm:h-24 sm:w-24 ${
               dragging ? "scale-105" : "group-hover:-translate-y-1"
             } animate-[kaykoFloat_3.4s_ease-in-out_infinite]`}
             priority
@@ -369,24 +380,24 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
         </div>
 
         {/* Card WIN / LOSS */}
-        <div className="mt-1 w-full rounded-2xl border border-[#22c55e]/40 bg-[#0b0f16]/95 p-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.6)] backdrop-blur">
-          <div className="flex gap-2">
-            <div className="flex flex-1 items-center gap-2 rounded-xl bg-[#0f2e1c] px-3 py-2 ring-1 ring-[#22c55e]/30">
-              <span className="text-xs font-bold tracking-wide text-[#22c55e]">WIN</span>
-              <span className="ml-auto text-base font-extrabold text-white tabular-nums">{stats.win}</span>
+        <div className="mt-1 w-full rounded-2xl border border-[#22c55e]/40 bg-[#0b0f16]/95 p-2 shadow-[0_10px_40px_rgba(0,0,0,0.6)] backdrop-blur sm:p-2.5">
+          <div className="flex gap-1.5 sm:gap-2">
+            <div className="flex flex-1 items-center gap-1.5 rounded-xl bg-[#0f2e1c] px-2 py-1.5 ring-1 ring-[#22c55e]/30 sm:gap-2 sm:px-3 sm:py-2">
+              <span className="text-[10px] font-bold tracking-wide text-[#22c55e] sm:text-xs">WIN</span>
+              <span className="ml-auto text-sm font-extrabold text-white tabular-nums sm:text-base">{stats.win}</span>
             </div>
-            <div className="flex flex-1 items-center gap-2 rounded-xl bg-[#2e1414] px-3 py-2 ring-1 ring-[#ef4444]/30">
-              <span className="text-xs font-bold tracking-wide text-[#ef4444]">LOSS</span>
-              <span className="ml-auto text-base font-extrabold text-white tabular-nums">{stats.loss}</span>
+            <div className="flex flex-1 items-center gap-1.5 rounded-xl bg-[#2e1414] px-2 py-1.5 ring-1 ring-[#ef4444]/30 sm:gap-2 sm:px-3 sm:py-2">
+              <span className="text-[10px] font-bold tracking-wide text-[#ef4444] sm:text-xs">LOSS</span>
+              <span className="ml-auto text-sm font-extrabold text-white tabular-nums sm:text-base">{stats.loss}</span>
             </div>
           </div>
-          <div className="mt-2 flex items-center justify-between px-1">
+          <div className="mt-1.5 flex items-center justify-between px-1 sm:mt-2">
             <span
-              className={`text-lg font-extrabold tabular-nums ${stats.profit >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}
+              className={`text-base font-extrabold tabular-nums sm:text-lg ${stats.profit >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}
             >
               {profitLabel}
             </span>
-            <span className="text-lg font-extrabold text-white/80 tabular-nums">{winRate}%</span>
+            <span className="text-base font-extrabold text-white/80 tabular-nums sm:text-lg">{winRate}%</span>
           </div>
 
           {/* Faixa de sinal ativo com horário + cronômetro */}
