@@ -1044,3 +1044,26 @@ body {
     animation: none !important;
   }
 }
+
+/* ===== Robô Kayko (Auto Trader) ===== */
+@keyframes kaykoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes kaykoBar {
+  0%, 100% { transform: scaleY(0.25); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes kaykoScan {
+  0% { left: -35%; }
+  100% { left: 105%; }
+}
+@keyframes kaykoRadar {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.rtm-radar { animation: kaykoRadar 1.8s ease-out infinite; transform-origin: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rtm-radar { animation: none !important; }
+}
