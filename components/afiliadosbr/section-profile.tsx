@@ -95,7 +95,7 @@ export function SectionProfile() {
 
   return (
     <div className="flex max-w-[660px] flex-col">
-      <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Informações do perfil</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Informações do perfil</h1>
       <p className="mt-1 text-[15px] text-gray-600">Edite seus dados pessoais e informações de contato</p>
 
       <div className="mt-6 grid gap-5 md:grid-cols-2">

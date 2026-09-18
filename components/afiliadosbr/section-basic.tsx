@@ -11,7 +11,7 @@ export function SectionCompetition({ affiliate }: { affiliate: AffiliateInfo }) 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Competição</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Competição</h1>
         <p className="mt-1 text-[15px] text-gray-600">Sua posição no ranking mensal de afiliados</p>
       </div>
 
@@ -69,7 +69,7 @@ export function SectionSubAffiliate({ affiliate }: { affiliate: AffiliateInfo })
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Sub-afiliado</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Sub-afiliado</h1>
         <p className="mt-1 text-[15px] text-gray-600">Convide outros afiliados e receba uma parte das comissões</p>
       </div>
 
@@ -106,7 +106,7 @@ export function SectionPostbacks({ affiliate }: { affiliate: AffiliateInfo }) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Postbacks</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Postbacks</h1>
         <p className="mt-1 text-[15px] text-gray-600">Receba notificações automáticas dos eventos das suas campanhas</p>
       </div>
 
@@ -153,7 +153,7 @@ export function SectionTelegramBot({ affiliate }: { affiliate: AffiliateInfo }) 
   return (
     <div className="flex max-w-[760px] flex-col gap-6">
       <div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Bot do Telegram</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Bot do Telegram</h1>
         <p className="mt-1 text-[15px] text-gray-600">
           Receba notificações de registros, depósitos e comissões diretamente no Telegram
         </p>
@@ -207,7 +207,7 @@ export function SectionAccount({ affiliate, email }: { affiliate: AffiliateInfo;
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Configurações da conta</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Configurações da conta</h1>
         <p className="mt-1 text-[15px] text-gray-600">Dados da sua conta de afiliado</p>
       </div>
 

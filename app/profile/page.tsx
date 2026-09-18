@@ -25,6 +25,7 @@ import {
   Award,
   Lock,
   Check,
+  Cpu,
 } from "lucide-react"
 import { computeRank, applyRankOverride, RANKS, type RankProgress } from "@/lib/ranks"
 
@@ -599,6 +600,16 @@ export default function ProfilePage() {
 
       {/* Menu Options */}
       <div className="px-4 pt-6 space-y-2">
+        <Link href="/connections" className="block">
+          <div className="p-4 rounded-xl flex items-center justify-between border border-[#22c55e]/25" style={{ background: "linear-gradient(135deg, #22c55e14 0%, #121826 100%)" }}>
+            <div className="flex items-center gap-3">
+              <Cpu className="w-5 h-5 text-[#22c55e]" />
+              <span className="text-white">API Avançada</span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-[#6B7280]" />
+          </div>
+        </Link>
+
         <Link href="/transactions" className="block">
           <div className="p-4 rounded-xl flex items-center justify-between border border-[#1F2933]" style={{ backgroundColor: "#121826" }}>
             <div className="flex items-center gap-3">

@@ -129,7 +129,7 @@ export function SectionPayments({ affiliate, withdrawals, nextPayment, onRefresh
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-[28px] font-semibold tracking-tight text-gray-900">Configurações de pagamento</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">Configurações de pagamento</h1>
 
       <div className="grid gap-5 md:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-6">
