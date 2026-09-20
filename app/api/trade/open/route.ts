@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { getPriceManager } from "@/lib/price-engine/price-manager"
+import { multiAssetEngine } from "@/lib/price-engine/multi-asset-engine"
+import { loadActiveManipulations } from "@/lib/price-engine/load-manipulations"
 import { getRealPriceAt } from "@/lib/price-engine/real-quote"
 import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { createClient } from "@/lib/supabase/server"
@@ -56,9 +57,10 @@ export async function POST(request: Request) {
       if (otcError || !otcSymbols?.length) {
         return NextResponse.json({ error: "Configuração OTC indisponível." }, { status: 503 })
       }
-      const manager = getPriceManager()
-      manager.initialize(otcSymbols)
-      entryPrice = manager.getPriceAt(symbol, now)
+      // Mesma serie do grafico + manipulacao ativa carregada do banco: a entrada usa exatamente
+      // o preco que o usuario ve no clique, e a manipulacao afeta o resultado da operacao.
+      await loadActiveManipulations()
+      entryPrice = multiAssetEngine.getPriceAt(symbol, now)
     }
 
     // Em serverless, a chamada da entrada pode cair em outra instância daquela que buscou a
