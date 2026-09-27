@@ -2,7 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 
 function isOwnedKycPath(path: unknown, userId: string, type: "front" | "back" | "selfie") {
-  return typeof path === "string" && path.startsWith(`${userId}/${type}_`) && !path.includes("..")
+  // O upload no cliente nomeia os arquivos com estes prefixos.
+  const prefix = type === "front" ? "document_front" : type === "back" ? "document_back" : "selfie"
+  return typeof path === "string" && path.startsWith(`${userId}/${prefix}_`) && !path.includes("..")
 }
 
 export async function POST(request: NextRequest) {
