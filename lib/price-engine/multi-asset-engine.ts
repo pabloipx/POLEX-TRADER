@@ -509,6 +509,30 @@ class MultiAssetEngine {
     return getLivePrice(asset, Date.now() / 1000)
   }
 
+  /**
+   * Preco do ativo em um instante ESPECIFICO (ms). E a MESMA serie exibida no grafico:
+   * para OTC usa getLivePrice (com o drift da manipulacao ativa aplicado), para mercado
+   * aberto usa o ultimo tick/fechamento real conhecido. Usado pela abertura e pela
+   * liquidacao das operacoes no servidor, garantindo que o resultado (WIN/LOSS) siga
+   * exatamente o candle que o usuario ve — inclusive quando ha manipulacao do admin.
+   */
+  getPriceAt(symbol: string, timestampMs: number): number {
+    if (!Number.isFinite(timestampMs)) return 0
+    const asset =
+      OTC_ASSETS.find((a) => a.symbol === symbol) ||
+      OTC_ASSETS.find((a) => a.symbol === symbol.replace("-OTC", "_OTC"))
+    if (!asset) return 0
+
+    if (isRealSymbol(asset.symbol)) {
+      if (hasRealPrice(asset.symbol)) return Number(getRealPrice(asset.symbol).toFixed(asset.decimals))
+      const real = getRealCandles(asset.symbol, 60)
+      const last = real?.[real.length - 1]
+      return last ? Number(last.close.toFixed(asset.decimals)) : 0
+    }
+
+    return getLivePrice(asset, timestampMs / 1000)
+  }
+
   /** Repassa as velas reais encadeando as aberturas. Sem nenhum valor sintetizado. */
   private anchoredCandles(asset: OTCAsset, real: RealCandle[]): OTCCandle[] {
     const out: OTCCandle[] = []

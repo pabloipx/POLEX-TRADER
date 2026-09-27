@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { authenticateAccessToken } from "@/lib/oauth"
 import { createAdminClient } from "@/lib/supabase/server"
-import { getPriceManager } from "@/lib/price-engine/price-manager"
+import { multiAssetEngine } from "@/lib/price-engine/multi-asset-engine"
+import { loadActiveManipulations } from "@/lib/price-engine/load-manipulations"
 import { getRealPriceAt } from "@/lib/price-engine/real-quote"
 import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { isTimeframeAllowed } from "@/lib/trading/timeframes"
@@ -37,9 +38,9 @@ export async function POST(request: Request) {
   else {
     const { data: symbols } = await admin.from("otc_symbols").select("symbol,is_active,base_price,volatility").eq("is_active", true)
     if (!symbols?.length) return NextResponse.json({ error: { code: "quote_unavailable", message: "Cotação indisponível." } }, { status: 503 })
-    const manager = getPriceManager()
-    manager.initialize(symbols)
-    entryPrice = manager.getPriceAt(order.symbol, now)
+    // Mesma serie do grafico + manipulacao ativa: a entrada segue o preco visto no grafico.
+    await loadActiveManipulations()
+    entryPrice = multiAssetEngine.getPriceAt(order.symbol, now)
   }
   if (!entryPrice || entryPrice <= 0) return NextResponse.json({ error: { code: "quote_unavailable", message: "Cotação confiável indisponível." } }, { status: 503 })
 

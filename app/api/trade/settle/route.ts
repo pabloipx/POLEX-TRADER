@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { getPriceManager } from "@/lib/price-engine/price-manager"
+import { multiAssetEngine } from "@/lib/price-engine/multi-asset-engine"
+import { loadActiveManipulations } from "@/lib/price-engine/load-manipulations"
 import { getRealPriceAt } from "@/lib/price-engine/real-quote"
 import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { createClient } from "@/lib/supabase/server"
@@ -43,9 +44,10 @@ export async function POST(request: Request) {
       if (otcError || !otcSymbols?.length) {
         return NextResponse.json({ error: "Configuração OTC indisponível." }, { status: 503 })
       }
-      const manager = getPriceManager()
-      manager.initialize(otcSymbols)
-      exitPrice = manager.getPriceAt(trade.symbol, expiryMs)
+      // Mesma serie do grafico + manipulacao ativa carregada do banco: o preco de fechamento
+      // reflete exatamente o candle que o usuario ve, inclusive quando ha manipulacao do admin.
+      await loadActiveManipulations()
+      exitPrice = multiAssetEngine.getPriceAt(trade.symbol, expiryMs)
     }
 
     if (!exitPrice || exitPrice <= 0) {

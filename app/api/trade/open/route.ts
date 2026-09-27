@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { getPriceManager } from "@/lib/price-engine/price-manager"
+import { multiAssetEngine } from "@/lib/price-engine/multi-asset-engine"
+import { loadActiveManipulations } from "@/lib/price-engine/load-manipulations"
 import { getRealPriceAt } from "@/lib/price-engine/real-quote"
 import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { createClient } from "@/lib/supabase/server"
@@ -48,6 +49,11 @@ export async function POST(request: Request) {
     let entryPrice: number | null
     if (isRealSymbol(symbol)) {
       entryPrice = await getRealPriceAt(symbol, now)
+      // Mercado real: a cotacao exibida no clique deve marcar a linha; aceitamos quando esta
+      // proxima do tick real do servidor (tolerancia estreita, pois e preco de mercado real).
+      if (entryPrice && entryPrice > 0 && Number.isFinite(displayedPrice) && displayedPrice > 0) {
+        if (Math.abs(displayedPrice - entryPrice) / entryPrice <= 0.005) entryPrice = displayedPrice
+      }
     } else {
       const { data: otcSymbols, error: otcError } = await supabase
         .from("otc_symbols")
@@ -56,9 +62,32 @@ export async function POST(request: Request) {
       if (otcError || !otcSymbols?.length) {
         return NextResponse.json({ error: "Configuração OTC indisponível." }, { status: 503 })
       }
-      const manager = getPriceManager()
-      manager.initialize(otcSymbols)
-      entryPrice = manager.getPriceAt(symbol, now)
+      // Mesma serie do grafico + manipulacao ativa carregada do banco.
+      await loadActiveManipulations()
+      const reference = multiAssetEngine.getPriceAt(symbol, now)
+      entryPrice = reference
+
+      // A LINHA DE ENTRADA precisa cair exatamente sobre o candle que o usuario clicou.
+      // O grafico OTC e 100% client-side, deterministico e suavizado (lerp por frame). Entre o
+      // clique e a chegada desta requisicao ao servidor o motor ja avancou (latencia de rede +
+      // suavizacao), entao o `reference` recalculado aqui quase nunca coincide com o preco que
+      // estava na tela — era isso que jogava a linha para fora da area visivel ("nao marca").
+      // Por isso a entrada usa o preco exibido no clique, validado para permanecer dentro da
+      // banda natural que o proprio motor consegue gerar para o ativo (anti-fraude): um cliente
+      // nao consegue forjar um preco fora dessa banda, mas qualquer valor legitimo (que sempre
+      // cai dentro dela) e aceito e a linha fica exatamente sobre o candle.
+      if (Number.isFinite(displayedPrice) && displayedPrice > 0 && reference > 0) {
+        const row = otcSymbols.find(
+          (s) => String(s.symbol).replace(/-/g, "_") === symbol.replace(/-/g, "_"),
+        )
+        const volatility = Number(row?.volatility) || 40
+        const bandPct = 0.004 + (volatility / 100) * 0.012
+        // Folga = amplitude pico-a-pico da banda (hardCap = +/- bandPct*1.3) + margem p/ drift.
+        const maxDeviation = bandPct * 2.6 + 0.002
+        if (Math.abs(displayedPrice - reference) / reference <= maxDeviation) {
+          entryPrice = displayedPrice
+        }
+      }
     }
 
     // Em serverless, a chamada da entrada pode cair em outra instância daquela que buscou a
@@ -70,14 +99,6 @@ export async function POST(request: Request) {
 
     if (!entryPrice || entryPrice <= 0) {
       return NextResponse.json({ error: "Cotação confiável indisponível. Aguarde a atualização do gráfico." }, { status: 503 })
-    }
-
-    // A linha deve marcar exatamente a cotação que estava visível no gráfico no clique.
-    // Aceitamos essa cotação somente quando ela permanece próxima da referência autoritativa
-    // do servidor, impedindo que o cliente envie um preço arbitrário.
-    if (Number.isFinite(displayedPrice) && displayedPrice > 0) {
-      const deviation = Math.abs(displayedPrice - entryPrice) / entryPrice
-      if (deviation <= 0.005) entryPrice = displayedPrice
     }
 
     if (isDemo) await injectFault("database-before")
