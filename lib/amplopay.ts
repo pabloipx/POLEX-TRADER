@@ -38,7 +38,11 @@ const SECRET_KEY = process.env.AMPLOPAY_SECRET_KEY || ""
 // e nao se deve depender de o provedor seguir redirecionamento em POST de webhook.
 //
 // Para trocar de dominio, basta definir NEXT_PUBLIC_APP_URL - ela tem prioridade sobre este valor.
-const CANONICAL_APP_URL = "https://www.urynbrokertrade.com"
+//
+// Atualizado: o projeto migrou para fidexoption.pro. O dominio antigo (urynbrokertrade.com) nao
+// pertence mais a este projeto, entao a confirmacao da AmploPay ia para outro site e o PIX nao
+// creditava sozinho. O apex fidexoption.pro redireciona (308) para o www, por isso usamos o www.
+const CANONICAL_APP_URL = "https://www.fidexoption.pro"
 
 function resolveAppUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.trim()
