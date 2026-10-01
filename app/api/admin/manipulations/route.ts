@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { isAdminRequest } from "@/lib/admin/session"
+import { isSonarRequest } from "@/lib/sonar/session"
 import { OTC_ASSETS } from "@/lib/price-engine/multi-asset-engine"
 
 const VALID_TIMEFRAMES = [60, 300, 600]
@@ -23,8 +24,9 @@ function getAdminClient() {
   })
 }
 
+// O painel restrito /adminsonar acessa somente esta rota de manipulacao.
 async function checkAuth(): Promise<boolean> {
-  return isAdminRequest()
+  return (await isAdminRequest()) || (await isSonarRequest())
 }
 
 function notConfigured() {
