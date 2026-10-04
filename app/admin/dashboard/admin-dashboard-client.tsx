@@ -26,6 +26,8 @@ import {
   Zap,
   Gift,
   Repeat,
+  Link2,
+  ChevronRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -78,6 +80,9 @@ interface User {
   deposit_count: number
   deposit_total: number
   last_deposit_at: string | null
+  referral_code: string | null
+  referred_subid?: string | null
+  referrer: { id: string; full_name: string; email: string; public_id: number | null } | null
 }
 
 interface Deposit {
@@ -140,6 +145,7 @@ export default function AdminDashboardClient() {
   const [usersLoading, setUsersLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [userDaysFilter, setUserDaysFilter] = useState<number | "all">("all")
+  const [userOriginFilter, setUserOriginFilter] = useState<"all" | "referred" | "organic">("all")
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
   // Deposits
@@ -559,6 +565,8 @@ export default function AdminDashboardClient() {
   user.phone?.includes(searchTerm) ||
   String(user.public_id).includes(searchTerm)
     if (!matchesSearch) return false
+    if (userOriginFilter === "referred" && !user.referral_code) return false
+    if (userOriginFilter === "organic" && user.referral_code) return false
     if (userDaysFilter === "all") return true
     const cutoff = Date.now() - userDaysFilter * 24 * 60 * 60 * 1000
     return new Date(user.created_at).getTime() >= cutoff
@@ -948,6 +956,30 @@ export default function AdminDashboardClient() {
                 })}
               </div>
 
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-gray-500">Origem:</span>
+                {([
+                  { label: "Todos", value: "all" as const },
+                  { label: `Indicados (${users.filter((u) => u.referral_code).length})`, value: "referred" as const },
+                  { label: `Sem indicação (${users.filter((u) => !u.referral_code).length})`, value: "organic" as const },
+                ]).map((opt) => {
+                  const active = userOriginFilter === opt.value
+                  return (
+                    <button
+                      key={opt.value}
+                      onClick={() => setUserOriginFilter(opt.value)}
+                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                        active
+                          ? "bg-orange-500 text-white"
+                          : "border border-[#2A3142] bg-[#11161f] text-gray-400 hover:bg-[#171d28] hover:text-gray-200"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
+              </div>
+
               <UsersChart refreshKey={statsRefreshKey} />
 
               {usersLoading ? (
@@ -955,65 +987,66 @@ export default function AdminDashboardClient() {
               ) : filteredUsers.length === 0 ? (
                 <div className="text-center text-gray-400 py-8">Nenhum usuário encontrado</div>
               ) : (
-                <div className="space-y-3">
+                <ul className="flex flex-col gap-3">
                   {filteredUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setSelectedUser(user)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault()
-                          setSelectedUser(user)
-                        }
-                      }}
-                      className="cursor-pointer rounded-xl border border-[#2A3142] bg-[#1A1F2E] p-4 transition-colors hover:border-orange-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-                      aria-label={`Ver detalhes de ${user.full_name || user.email}`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-white font-medium truncate">{user.email}</p>
-                            {user.is_blocked && (
-                              <span className="px-2 py-0.5 bg-red-500/20 text-red-500 text-xs rounded">Bloqueado</span>
-                            )}
-  {user.is_verified && (
-  <span className="px-2 py-0.5 bg-orange-500/20 text-orange-500 text-xs rounded">
-  Verificado
-  </span>
-  )}
-  {user.is_affiliate && (
-  <span className="px-2 py-0.5 bg-green-500/20 text-green-500 text-xs rounded">
-  Afiliado
-  </span>
-  )}
-  </div>
-                          <p className="text-gray-400 text-sm">{user.full_name || "Sem nome"}</p>
-                          <p className="font-mono text-xs text-orange-400">ID {user.public_id}</p>
-                          <p className="text-gray-500 text-xs">{formatDate(user.created_at)}</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-green-500 font-bold">{formatCurrency(user.balance_real)}</p>
-                            <p className="text-gray-500 text-xs">Demo: {formatCurrency(user.balance_demo)}</p>
+                    <li key={user.id}>
+                      <article className="overflow-hidden rounded-2xl border border-[#232A38] bg-gradient-to-b from-[#161C27] to-[#121720] transition-colors hover:border-orange-500/40">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedUser(user)}
+                          className="flex w-full items-center gap-3 p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange-500"
+                          aria-label={`Ver detalhes de ${user.full_name || user.email}`}
+                        >
+                          <UserAvatar name={user.full_name || user.email} />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="truncate font-semibold text-white">{user.full_name || "Sem nome"}</p>
+                              <span className="shrink-0 font-mono text-[11px] text-orange-400">#{user.public_id}</span>
+                            </div>
+                            <p className="truncate text-sm text-gray-400">{user.email}</p>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              {user.is_blocked ? (
+                                <StatusPill tone="red">Bloqueado</StatusPill>
+                              ) : (
+                                <StatusPill tone="green">Ativo</StatusPill>
+                              )}
+                              {user.is_verified && <StatusPill tone="blue">KYC</StatusPill>}
+                              {user.is_affiliate && <StatusPill tone="orange">Afiliado</StatusPill>}
+                            </div>
                           </div>
-                          <Button
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              openEditModal(user)
-                            }}
-                            size="sm"
-                            variant="outline"
-                            className="border-[#2A3142]"
-                          >
-                            <Edit className="w-4 h-4 text-gray-300" />
-                          </Button>
+                          <ChevronRight className="size-5 shrink-0 text-gray-600" aria-hidden="true" />
+                        </button>
+
+                        <ReferralLine user={user} />
+
+                        <div className="flex items-center justify-between gap-3 border-t border-[#232A38] px-4 py-3">
+                          <div className="flex min-w-0 items-baseline gap-3">
+                            <div>
+                              <p className="text-[11px] uppercase tracking-wider text-gray-500">Real</p>
+                              <p className="font-bold text-green-400">{formatCurrency(user.balance_real)}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-wider text-gray-500">Demo</p>
+                              <p className="text-sm text-gray-400">{formatCurrency(user.balance_demo)}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="hidden text-xs text-gray-500 sm:inline">{formatDate(user.created_at)}</span>
+                            <Button
+                              onClick={() => openEditModal(user)}
+                              size="icon"
+                              variant="outline"
+                              className="size-11 border-[#2A3142] bg-transparent"
+                              aria-label={`Editar ${user.full_name || user.email}`}
+                            >
+                              <Edit className="size-4 text-gray-300" />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                      </article>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </div>
           )}
@@ -1633,10 +1666,43 @@ export default function AdminDashboardClient() {
               </DialogHeader>
 
               <div className="flex flex-col gap-5">
-                <div className="rounded-xl border border-orange-500/20 bg-orange-500/10 p-4">
-                  <p className="text-xs uppercase tracking-wider text-orange-300">ID público</p>
-                  <p className="font-mono text-2xl font-bold text-orange-400">{selectedUser.public_id}</p>
+                <div className="flex items-center gap-4 rounded-xl border border-orange-500/20 bg-orange-500/10 p-4">
+                  <UserAvatar name={selectedUser.full_name || selectedUser.email} size="lg" />
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-white">{selectedUser.full_name || "Sem nome"}</p>
+                    <p className="text-xs uppercase tracking-wider text-orange-300">ID público</p>
+                    <p className="font-mono text-2xl font-bold text-orange-400">{selectedUser.public_id}</p>
+                  </div>
                 </div>
+
+                <section aria-label="Origem do cadastro" className="rounded-xl border border-[#2A3142] bg-[#0B0F14] p-4">
+                  <p className="mb-2 text-xs uppercase tracking-wider text-gray-500">Origem do cadastro</p>
+                  {selectedUser.referral_code ? (
+                    <div className="flex items-start gap-3">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-orange-500/15 text-orange-400">
+                        <Link2 className="size-5" aria-hidden="true" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-gray-300">Indicado por</p>
+                        <p className="truncate font-semibold text-white">
+                          {selectedUser.referrer?.full_name || selectedUser.referrer?.email || "Afiliado não encontrado"}
+                        </p>
+                        {selectedUser.referrer?.email && selectedUser.referrer.full_name && (
+                          <p className="truncate text-xs text-gray-400">{selectedUser.referrer.email}</p>
+                        )}
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          <StatusPill tone="orange">Código {selectedUser.referral_code}</StatusPill>
+                          {selectedUser.referrer?.public_id != null && (
+                            <StatusPill tone="gray">ID #{selectedUser.referrer.public_id}</StatusPill>
+                          )}
+                          {selectedUser.referred_subid && <StatusPill tone="gray">SubID {selectedUser.referred_subid}</StatusPill>}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-300">Cadastro direto — não foi indicado por nenhum afiliado.</p>
+                  )}
+                </section>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <UserDetail label="Nome" value={selectedUser.full_name || "Não informado"} />
@@ -1780,6 +1846,62 @@ export default function AdminDashboardClient() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function UserAvatar({ name, size = "md" }: { name: string; size?: "md" | "lg" }) {
+  const initials =
+    name
+      .split(/[\s@._-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "?"
+  return (
+    <span
+      aria-hidden="true"
+      className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-700 font-bold text-white ${
+        size === "lg" ? "size-14 text-lg" : "size-11 text-sm"
+      }`}
+    >
+      {initials}
+    </span>
+  )
+}
+
+const PILL_TONES = {
+  green: "bg-green-500/15 text-green-400",
+  red: "bg-red-500/15 text-red-400",
+  blue: "bg-blue-500/15 text-blue-400",
+  orange: "bg-orange-500/15 text-orange-400",
+  gray: "bg-white/5 text-gray-400",
+} as const
+
+function StatusPill({ tone, children }: { tone: keyof typeof PILL_TONES; children: React.ReactNode }) {
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${PILL_TONES[tone]}`}>
+      {children}
+    </span>
+  )
+}
+
+function ReferralLine({ user }: { user: User }) {
+  if (!user.referral_code) {
+    return (
+      <div className="flex items-center gap-2 border-t border-[#232A38] bg-white/[0.02] px-4 py-2.5 text-xs text-gray-500">
+        <UserPlus className="size-3.5" aria-hidden="true" />
+        Sem indicação
+      </div>
+    )
+  }
+  const name = user.referrer?.full_name || user.referrer?.email || "Afiliado não encontrado"
+  return (
+    <div className="flex items-center gap-2 border-t border-orange-500/15 bg-orange-500/[0.06] px-4 py-2.5 text-xs">
+      <Link2 className="size-3.5 shrink-0 text-orange-400" aria-hidden="true" />
+      <span className="shrink-0 text-gray-400">Indicado por</span>
+      <span className="truncate font-semibold text-orange-300">{name}</span>
+      <span className="ml-auto shrink-0 font-mono text-[11px] text-gray-500">{user.referral_code}</span>
     </div>
   )
 }
