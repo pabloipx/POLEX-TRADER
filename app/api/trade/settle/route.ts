@@ -29,6 +29,12 @@ export async function POST(request: Request) {
     if (trade.is_demo !== false) await injectFault("database-before")
 
     const expiryMs = new Date(trade.expiry_time).getTime()
+    // O relógio do celular costuma estar um pouco adiantado: em vez de recusar e forçar outra
+    // tentativa, espera a pequena diferença restante e liquida na mesma requisição.
+    const remainingMs = expiryMs - Date.now()
+    if (Number.isFinite(remainingMs) && remainingMs > 0 && remainingMs <= 3000) {
+      await new Promise((resolve) => setTimeout(resolve, remainingMs + 50))
+    }
     if (!Number.isFinite(expiryMs) || Date.now() < expiryMs) {
       return NextResponse.json({ error: "A operação ainda não expirou." }, { status: 409 })
     }

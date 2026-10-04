@@ -465,13 +465,25 @@ export default function TradePage() {
   // frequencia, e era por isso que a animacao "quase sempre" nao aparecia.
   const trackedDbIdsRef = useRef<Set<string>>(new Set())
 
+  // A lista vive num ref para que a função de liquidação seja estável. Antes ela dependia de
+  // `activeTrades`, que é recriado a cada reconciliação com o banco (a cada 3s e a cada evento
+  // Realtime). Isso reiniciava o intervalo de liquidação antes de ele disparar, e a operação
+  // ficava em "LIQUIDANDO" até o timer escapar por sorte.
+  const activeTradesRef = useRef<ActiveTrade[]>([])
+  useEffect(() => {
+    activeTradesRef.current = activeTrades
+  }, [activeTrades])
+
   const finalizeExpiredTrades = useCallback(async (_userId: string) => {
-    const expired = activeTrades.filter(
-      (trade) => trade.dbId && Date.now() >= trade.timestamp + trade.expiryTime * 1000,
+    const expired = activeTradesRef.current.filter(
+      (trade) =>
+        trade.dbId &&
+        !processedTradesRef.current.has(trade.id) &&
+        Date.now() >= trade.timestamp + trade.expiryTime * 1000,
     )
 
-    for (const trade of expired) {
-      if (!trade.dbId || processedTradesRef.current.has(trade.id)) continue
+    await Promise.all(expired.map(async (trade) => {
+      if (!trade.dbId || processedTradesRef.current.has(trade.id)) return
       processedTradesRef.current.add(trade.id)
 
       try {
@@ -484,7 +496,7 @@ export default function TradePage() {
 
         if (!response.ok) {
           processedTradesRef.current.delete(trade.id)
-          continue
+          return
         }
 
         const settled = data.trade
@@ -511,8 +523,8 @@ export default function TradePage() {
       } catch {
         processedTradesRef.current.delete(trade.id)
       }
-    }
-  }, [activeTrades])
+    }))
+  }, [])
 
   // Rede de seguranca: finaliza no banco qualquer operacao expirada, mesmo que o
   // preco ao vivo esteja 0 ou a operacao nao esteja mais na lista em memoria.
@@ -521,7 +533,7 @@ export default function TradePage() {
     if (!user) return
     const interval = setInterval(() => {
       if (mountedRef.current) finalizeExpiredTrades(user.id)
-    }, 3000)
+    }, 1000)
     return () => clearInterval(interval)
   }, [user, finalizeExpiredTrades])
 
