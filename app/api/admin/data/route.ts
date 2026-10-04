@@ -99,12 +99,28 @@ export async function GET(req: NextRequest) {
       const userIds = profiles.map((p: any) => p.id)
       const { data: balances } = await supabase.from("user_balances").select("*").in("user_id", userIds)
 
+      const affiliatesByCode = new Map<string, { id: string; full_name: string; email: string; public_id: number | null }>()
+      for (const p of profiles as any[]) {
+        if (p.affiliate_code) {
+          affiliatesByCode.set(String(p.affiliate_code).toUpperCase(), {
+            id: p.id,
+            full_name: p.full_name || "",
+            email: p.email || "",
+            public_id: p.public_id ?? null,
+          })
+        }
+      }
+
       const users = profiles.map((profile: any) => {
         const balance = balances?.find((b: any) => b.user_id === profile.id)
+        const referralCode = profile.referred_by ? String(profile.referred_by).toUpperCase() : null
+        const referrer = referralCode ? affiliatesByCode.get(referralCode) ?? null : null
         return {
           ...profile,
           balance_real: balance?.balance_real || 0,
           balance_demo: balance?.balance_demo || 100,
+          referral_code: referralCode,
+          referrer,
         }
       })
 
