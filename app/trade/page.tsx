@@ -118,6 +118,10 @@ const formatFixed = (value: number | undefined | null, decimals = 2): string => 
   return safeValue.toFixed(decimals)
 }
 
+// Dentro da janela que o servidor aceita segurar a requisição (SETTLE_MAX_HOLD_MS na rota).
+const SETTLE_PREFIRE_MS = 2500
+const SETTLE_TIMEOUT_MS = 10000
+
 export default function TradePage() {
   const router = useRouter()
   const mountedRef = useRef(true)
@@ -475,22 +479,28 @@ export default function TradePage() {
   }, [activeTrades])
 
   const finalizeExpiredTrades = useCallback(async (_userId: string) => {
+    // A requisição sai antes do vencimento: o servidor segura a resposta até o instante exato
+    // e liquida na hora, então a latência de rede/cold start fica escondida dentro dos últimos
+    // segundos do cronômetro e o resultado aparece assim que ele zera.
     const expired = activeTradesRef.current.filter(
       (trade) =>
         trade.dbId &&
         !processedTradesRef.current.has(trade.id) &&
-        Date.now() >= trade.timestamp + trade.expiryTime * 1000,
+        Date.now() >= trade.timestamp + trade.expiryTime * 1000 - SETTLE_PREFIRE_MS,
     )
 
     await Promise.all(expired.map(async (trade) => {
       if (!trade.dbId || processedTradesRef.current.has(trade.id)) return
       processedTradesRef.current.add(trade.id)
 
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), SETTLE_TIMEOUT_MS)
       try {
         const response = await fetch("/api/trade/settle", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ tradeId: trade.dbId }),
+          signal: controller.signal,
         })
         const data = await response.json()
 
@@ -504,8 +514,10 @@ export default function TradePage() {
         const profit = Number(settled?.profit || 0)
         const newBalance = Number(data.newBalance)
 
-        if (trade.isDemo) setBalanceDemo(newBalance)
-        else setBalanceReal(newBalance)
+        if (Number.isFinite(newBalance)) {
+          if (trade.isDemo) setBalanceDemo(newBalance)
+          else setBalanceReal(newBalance)
+        }
 
         setResultQueue((prev) => [
           ...prev,
@@ -522,6 +534,8 @@ export default function TradePage() {
         else playLossSound()
       } catch {
         processedTradesRef.current.delete(trade.id)
+      } finally {
+        clearTimeout(timeout)
       }
     }))
   }, [])
@@ -533,7 +547,7 @@ export default function TradePage() {
     if (!user) return
     const interval = setInterval(() => {
       if (mountedRef.current) finalizeExpiredTrades(user.id)
-    }, 1000)
+    }, 250)
     return () => clearInterval(interval)
   }, [user, finalizeExpiredTrades])
 

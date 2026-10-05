@@ -6,6 +6,10 @@ import { isRealSymbol } from "@/lib/price-engine/real-price-store"
 import { createClient } from "@/lib/supabase/server"
 import { injectFault } from "@/lib/testing/fault-injection"
 
+// Quanto antes do vencimento o servidor aceita segurar a requisição (cobre o envio antecipado
+// do cliente e relógio do celular adiantado).
+const SETTLE_MAX_HOLD_MS = 4000
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
@@ -19,7 +23,7 @@ export async function POST(request: Request) {
 
     const { data: trade, error: tradeError } = await supabase
       .from("trades")
-      .select("id,symbol,expiry_time,result,is_demo")
+      .select("id,symbol,expiry_time,result,is_demo,profit")
       .eq("id", tradeId)
       .eq("user_id", user.id)
       .maybeSingle()
@@ -29,30 +33,32 @@ export async function POST(request: Request) {
     if (trade.is_demo !== false) await injectFault("database-before")
 
     const expiryMs = new Date(trade.expiry_time).getTime()
-    // O relógio do celular costuma estar um pouco adiantado: em vez de recusar e forçar outra
-    // tentativa, espera a pequena diferença restante e liquida na mesma requisição.
-    const remainingMs = expiryMs - Date.now()
-    if (Number.isFinite(remainingMs) && remainingMs > 0 && remainingMs <= 3000) {
-      await new Promise((resolve) => setTimeout(resolve, remainingMs + 50))
-    }
-    if (!Number.isFinite(expiryMs) || Date.now() < expiryMs) {
+    if (!Number.isFinite(expiryMs) || expiryMs - Date.now() > SETTLE_MAX_HOLD_MS) {
       return NextResponse.json({ error: "A operação ainda não expirou." }, { status: 409 })
     }
 
+    const isReal = isRealSymbol(trade.symbol)
+    // O cliente envia a requisição alguns segundos antes do vencimento. As consultas de
+    // configuração rodam enquanto esperamos o instante exato, para liquidar sem latência extra.
+    const otcConfigPromise = isReal
+      ? null
+      : Promise.all([
+          supabase.from("otc_symbols").select("symbol").eq("is_active", true).limit(1),
+          loadActiveManipulations(),
+        ])
+    const remainingMs = expiryMs - Date.now()
+    if (remainingMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, remainingMs + 20))
+    }
+
     let exitPrice: number | null
-    if (isRealSymbol(trade.symbol)) {
+    if (isReal) {
       exitPrice = await getRealPriceAt(trade.symbol, expiryMs)
     } else {
-      const { data: otcSymbols, error: otcError } = await supabase
-        .from("otc_symbols")
-        .select("symbol,is_active,base_price,volatility")
-        .eq("is_active", true)
+      const [{ data: otcSymbols, error: otcError }] = await otcConfigPromise!
       if (otcError || !otcSymbols?.length) {
         return NextResponse.json({ error: "Configuração OTC indisponível." }, { status: 503 })
       }
-      // Mesma serie do grafico + manipulacao ativa carregada do banco: o preco de fechamento
-      // reflete exatamente o candle que o usuario ve, inclusive quando ha manipulacao do admin.
-      await loadActiveManipulations()
       exitPrice = multiAssetEngine.getPriceAt(trade.symbol, expiryMs)
     }
 
