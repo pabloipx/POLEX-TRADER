@@ -1641,7 +1641,7 @@ function ChartCore({
       const label = isCall ? "CALL" : "PUT"
       const timeStr = cd > 0
         ? `${String(Math.floor(cd / 60)).padStart(2, "0")}:${String(cd % 60).padStart(2, "0")}`
-        : "LIQUIDANDO"
+        : "00:00"
       const amount = trade.amount ? ` R$${trade.amount.toFixed(0)}` : ""
       const title = ` ${label} ${timeStr}${amount} `
 
@@ -1722,7 +1722,7 @@ function ChartCore({
           amount,
           inMoney,
           isCall,
-          time: remaining > 0 ? `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : "LIQUIDANDO",
+          time: remaining > 0 ? `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : "00:00",
         })
       })
       setPnlOverlays(next)

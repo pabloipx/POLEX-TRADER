@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ChevronDown, Wallet, TrendingUp } from "lucide-react"
+import { ChevronDown, Wallet, TrendingUp, Eye, EyeOff } from "lucide-react"
+
+const HIDE_BALANCE_KEY = "polex:hide-balance"
 
 interface AccountSelectorProps {
   balance: { real: number; demo: number }
@@ -36,6 +38,22 @@ export function AccountSelector({ balance, isDemo, payout, onToggleDemo }: Accou
     }).format(value)
   }
 
+  const [isHidden, setIsHidden] = useState(false)
+
+  useEffect(() => {
+    setIsHidden(window.localStorage.getItem(HIDE_BALANCE_KEY) === "1")
+  }, [])
+
+  const toggleHidden = () => {
+    setIsHidden((prev) => {
+      const next = !prev
+      window.localStorage.setItem(HIDE_BALANCE_KEY, next ? "1" : "0")
+      return next
+    })
+  }
+
+  const displayCurrency = (value: number) => (isHidden ? "R$ ••••••" : formatCurrency(value))
+
   const selectAccount = (demo: boolean) => {
     onToggleDemo(demo)
     setIsOpen(false)
@@ -44,22 +62,42 @@ export function AccountSelector({ balance, isDemo, payout, onToggleDemo }: Accou
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-[#121826] border border-[#1F2933] rounded-lg px-3 py-2 hover:border-[#22c55e]/50 transition-colors"
-      >
-        {/* Account Type + Payout Badge */}
-        <div className="flex items-center gap-2">
-          <span className="text-[#9CA3AF] text-sm">{accountType}</span>
-          <span className="bg-[#E91E63] text-white text-xs font-bold px-2 py-0.5 rounded">+{payout}%</span>
-        </div>
+      <div className="flex items-center bg-[#121826] border border-[#1F2933] rounded-lg hover:border-[#22c55e]/50 transition-colors">
+        <button
+          type="button"
+          onClick={toggleHidden}
+          aria-label={isHidden ? "Mostrar saldo" : "Ocultar saldo"}
+          aria-pressed={isHidden}
+          className="flex items-center justify-center w-11 h-11 shrink-0 text-[#9CA3AF] hover:text-white transition-colors"
+        >
+          {isHidden ? <EyeOff className="w-5 h-5" aria-hidden="true" /> : <Eye className="w-5 h-5" aria-hidden="true" />}
+        </button>
 
-        {/* Balance */}
-        <span className="text-white font-bold text-lg ml-1">{formatCurrency(currentBalance)}</span>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          className="flex items-center gap-2 min-h-11 pr-3 py-1.5"
+        >
+          <div className="flex flex-col items-start sm:flex-row sm:items-center sm:gap-2">
+            {/* Account Type + Payout Badge */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-[#9CA3AF] text-xs sm:text-sm whitespace-nowrap">{accountType}</span>
+              <span className="bg-[#E91E63] text-white text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded">
+                +{payout}%
+              </span>
+            </div>
 
-        {/* Chevron */}
-        <ChevronDown className={`w-4 h-4 text-[#6B7280] transition-transform ${isOpen ? "rotate-180" : ""}`} />
-      </button>
+            {/* Balance */}
+            <span className="text-white font-bold text-base sm:text-lg sm:ml-1 tabular-nums whitespace-nowrap leading-tight">
+              {displayCurrency(currentBalance)}
+            </span>
+          </div>
+
+          {/* Chevron */}
+          <ChevronDown className={`w-4 h-4 text-[#6B7280] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        </button>
+      </div>
 
       {/* Dropdown Menu */}
       {isOpen && (
@@ -88,7 +126,7 @@ export function AccountSelector({ balance, isDemo, payout, onToggleDemo }: Accou
               </div>
             </div>
             <span className={`font-bold ${isDemo ? "text-[#F59E0B]" : "text-white"}`}>
-              {formatCurrency(balance.demo)}
+              {displayCurrency(balance.demo)}
             </span>
           </button>
 
@@ -119,7 +157,7 @@ export function AccountSelector({ balance, isDemo, payout, onToggleDemo }: Accou
               </div>
             </div>
             <span className={`font-bold ${!isDemo ? "text-[#22c55e]" : "text-white"}`}>
-              {formatCurrency(balance.real)}
+              {displayCurrency(balance.real)}
             </span>
           </button>
 
