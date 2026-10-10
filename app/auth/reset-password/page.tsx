@@ -9,7 +9,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Lock, ArrowRight, Loader2, CheckCircle2 } from "lucide-react"
+import { Lock, ArrowRight, Loader2, CheckCircle2, ShieldCheck } from "lucide-react"
+import { needsMfaCode, verifyMfaCode } from "@/lib/supabase/mfa"
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("")
@@ -20,23 +21,60 @@ export default function ResetPasswordPage() {
   const [validSession, setValidSession] = useState<boolean | null>(null)
   const router = useRouter()
 
-  // Ao chegar pelo link do e-mail, o Supabase cria uma sessao de recuperacao.
-  // Verificamos se ela existe para permitir a troca de senha.
+  const [mfaRequired, setMfaRequired] = useState(false)
+  const [mfaCode, setMfaCode] = useState("")
+
+  // The recovery link can arrive as #access_token (implicit), ?token_hash or ?code (PKCE).
+  // All are turned into a session here before deciding whether the link is valid.
   useEffect(() => {
+    let cancelled = false
     const supabase = createClient()
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((event: any, session: any) => {
-      if (event === "PASSWORD_RECOVERY" || session) {
-        setValidSession(true)
-      }
-    })
+    const establishRecoverySession = async () => {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""))
+      const query = new URLSearchParams(window.location.search)
 
-    supabase.auth.getSession().then(({ data: { session } }: any) => {
-      setValidSession(!!session)
-    })
+      if (hash.get("error") || query.get("error")) return false
+
+      const accessToken = hash.get("access_token")
+      const refreshToken = hash.get("refresh_token")
+      const tokenHash = query.get("token_hash")
+      const code = query.get("code")
+
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+        if (error) return false
+      } else if (tokenHash) {
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" })
+        if (error) return false
+      } else if (code) {
+        const { data: existing } = await supabase.auth.getSession()
+        if (!existing.session) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code)
+          if (error) return false
+        }
+      }
+
+      if (accessToken || tokenHash || code) {
+        window.history.replaceState(window.history.state, "", window.location.pathname)
+      }
+
+      const { data } = await supabase.auth.getSession()
+      return !!data.session
+    }
+
+    establishRecoverySession()
+      .then(async (ok) => {
+        if (cancelled) return
+        if (ok) setMfaRequired(await needsMfaCode(supabase))
+        setValidSession(ok)
+      })
+      .catch(() => {
+        if (!cancelled) setValidSession(false)
+      })
 
     return () => {
-      subscription.subscription.unsubscribe()
+      cancelled = true
     }
   }, [])
 
@@ -63,6 +101,13 @@ export default function ResetPasswordPage() {
 
     try {
       const supabase = createClient()
+
+      if (mfaRequired) {
+        if (mfaCode.length !== 6) throw new Error("Digite o código de 6 dígitos do app autenticador")
+        const mfaError = await verifyMfaCode(supabase, mfaCode)
+        if (mfaError) throw new Error(mfaError)
+        setMfaRequired(false)
+      }
 
       const { error: updateError } = await supabase.auth.updateUser({ password: trimmedPassword })
 
@@ -178,6 +223,27 @@ export default function ResetPasswordPage() {
                   style={{ backgroundColor: "#1a2332", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)" }}
                 />
               </div>
+
+              {mfaRequired && (
+                <div className="space-y-2">
+                  <Label htmlFor="mfaCode" className="text-white text-sm font-medium flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4" style={{ color: "#22c55e" }} />
+                    Código do app autenticador
+                  </Label>
+                  <Input
+                    id="mfaCode"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder="000000"
+                    value={mfaCode}
+                    onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    disabled={isLoading}
+                    className="text-white text-center text-xl tracking-[0.4em] font-mono placeholder:text-gray-500 h-12 rounded-xl border-0 focus:ring-2 disabled:opacity-50"
+                    style={{ backgroundColor: "#1a2332", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)" }}
+                  />
+                  <p className="text-xs text-gray-400">Sua conta tem verificação em duas etapas ativa.</p>
+                </div>
+              )}
 
               {error && (
                 <div

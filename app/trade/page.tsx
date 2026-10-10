@@ -30,7 +30,11 @@ import {
   Clock,
   LayoutGrid,
   Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react"
+
+const HIDE_BALANCE_KEY = "polex:hide-balance"
 import { getMarketStatus, canOpenTrade } from "@/lib/market-hours"
 import {
   TIMEFRAME_LABELS,
@@ -187,6 +191,19 @@ export default function TradePage() {
   // com os controles aparentemente quebrados quando há saldo de treinamento disponível.
   const [accountType, setAccountType] = useState<"demo" | "real">("demo")
   const [showAccountDropdown, setShowAccountDropdown] = useState(false)
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false)
+
+  useEffect(() => {
+    setIsBalanceHidden(window.localStorage.getItem(HIDE_BALANCE_KEY) === "1")
+  }, [])
+
+  const toggleBalanceHidden = useCallback(() => {
+    setIsBalanceHidden((prev) => {
+      const next = !prev
+      window.localStorage.setItem(HIDE_BALANCE_KEY, next ? "1" : "0")
+      return next
+    })
+  }, [])
   const [amount, setAmount] = useState(10)
   // Modal centralizado: usado somente no mobile.
   const [showAssetModal, setShowAssetModal] = useState(false)
@@ -1144,9 +1161,22 @@ export default function TradePage() {
 
           {/* Right - Balance & Wallet */}
           <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5 lg:gap-2">
+            <button
+              type="button"
+              onClick={toggleBalanceHidden}
+              aria-label={isBalanceHidden ? "Mostrar saldo" : "Ocultar saldo"}
+              aria-pressed={isBalanceHidden}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white lg:h-9 lg:w-9"
+            >
+              {isBalanceHidden ? (
+                <EyeOff className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true" />
+              ) : (
+                <Eye className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true" />
+              )}
+            </button>
             <div className="relative flex max-w-[84px] flex-col items-end sm:max-w-none">
               <span className="max-w-full truncate whitespace-nowrap text-[11px] font-bold leading-tight tracking-tight text-white sm:text-xs lg:text-lg">
-                R$ {formatCurrency(currentBalance)}
+                {isBalanceHidden ? "R$ ••••••" : `R$ ${formatCurrency(currentBalance)}`}
               </span>
               <button
                 onClick={() => setShowAccountDropdown(!showAccountDropdown)}

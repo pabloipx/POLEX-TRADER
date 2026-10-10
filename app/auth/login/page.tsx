@@ -6,7 +6,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Loader2 } from "lucide-react"
+import { Loader2, ShieldCheck } from "lucide-react"
+import { needsMfaCode, verifyMfaCode } from "@/lib/supabase/mfa"
 import { recordDeviceSession } from "@/lib/device-session"
 
 function Flag({ code, className }: { code: string; className?: string }) {
@@ -28,13 +29,47 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isCheckingSession, setIsCheckingSession] = useState(true)
+  const [mfaStep, setMfaStep] = useState(false)
+  const [mfaCode, setMfaCode] = useState("")
   const router = useRouter()
+
+  const handleMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isLoading) return
+    if (mfaCode.length !== 6) {
+      setError("Digite o código de 6 dígitos")
+      return
+    }
+    setIsLoading(true)
+    setError(null)
+    const supabase = createClient()
+    const mfaError = await verifyMfaCode(supabase, mfaCode)
+    if (mfaError) {
+      setError(mfaError)
+      setMfaCode("")
+      setIsLoading(false)
+      return
+    }
+    await recordDeviceSession()
+    router.replace("/trade")
+  }
+
+  const cancelMfa = async () => {
+    await createClient().auth.signOut()
+    setMfaStep(false)
+    setMfaCode("")
+    setPassword("")
+    setError(null)
+  }
 
   useEffect(() => {
     const checkSession = async () => {
       const supabase = createClient()
       const { data } = await supabase.auth.getSession()
-      if (data.session) {
+      if (data.session && (await needsMfaCode(supabase))) {
+        setMfaStep(true)
+        setIsCheckingSession(false)
+      } else if (data.session) {
         router.replace("/trade")
       } else {
         setIsCheckingSession(false)
@@ -79,6 +114,12 @@ export default function LoginPage() {
         throw new Error(signInError.message)
       }
 
+      if (await needsMfaCode(supabase)) {
+        setMfaStep(true)
+        setIsLoading(false)
+        return
+      }
+
       // Registra este dispositivo/navegador para a tela "Dispositivos conectados".
       await recordDeviceSession()
 
@@ -120,6 +161,37 @@ export default function LoginPage() {
 
       <main className="flex flex-1 flex-col items-center px-5 py-14 md:py-20">
         <section className="flex w-full max-w-[640px] flex-col items-center">
+          {mfaStep ? (
+            <>
+              <span className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#22c55e]/10">
+                <ShieldCheck className="h-8 w-8 text-[#22c55e]" />
+              </span>
+              <h1 className="mb-3 text-center text-3xl font-semibold tracking-tight text-[#565656] md:text-4xl">Verificação em duas etapas</h1>
+              <p className="mb-8 text-center text-base text-[#5f5f5f] text-pretty">Abra seu app autenticador e digite o código de 6 dígitos.</p>
+              <form onSubmit={handleMfaSubmit} className="flex w-full flex-col gap-6">
+                <label htmlFor="mfa-code" className="sr-only">Código de verificação</label>
+                <input
+                  id="mfa-code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  placeholder="000000"
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  disabled={isLoading}
+                  className={`${inputClass} text-center font-mono text-3xl tracking-[0.5em]`}
+                />
+                {error && <div role="alert" className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+                <button type="submit" disabled={isLoading || mfaCode.length !== 6} className="flex h-[72px] w-full items-center justify-center gap-2 rounded-sm bg-[#22c55e] text-xl font-medium text-[#ffffff] hover:bg-[#16a34a] disabled:opacity-70">
+                  {isLoading ? <><Loader2 className="h-5 w-5 animate-spin" /> Verificando...</> : "Confirmar"}
+                </button>
+                <button type="button" onClick={cancelMfa} disabled={isLoading} className="text-center text-base font-medium text-[#22c55e] hover:text-[#16a34a]">
+                  Voltar e entrar com outra conta
+                </button>
+              </form>
+            </>
+          ) : (
+          <>
           <h1 className="mb-10 text-center text-4xl font-semibold tracking-tight text-[#565656] md:text-5xl">Entrar</h1>
 
           <form onSubmit={handleLogin} className="flex w-full flex-col gap-6">
@@ -138,6 +210,8 @@ export default function LoginPage() {
               <Link href="/auth/sign-up" className="font-medium text-[#22c55e] hover:text-[#16a34a]">Criar conta</Link>
             </p>
           </form>
+          </>
+          )}
 
           <fieldset className="mt-12 w-full rounded-md border border-[#b0b0b0] px-6 py-5 text-[#5d5d5d]">
             <legend className="mx-auto px-4 text-base font-bold uppercase">Aviso de risco</legend>
