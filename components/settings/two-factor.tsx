@@ -292,7 +292,7 @@ export function TwoFactor({ onBack }: Props) {
               <button
                 onClick={verifyEnroll}
                 disabled={code.length < 6 || verifying}
-                className="flex-1 py-3 rounded-xl text-white bg-[#22c55e] hover:bg-[#c2410c] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl text-white bg-[#22c55e] hover:bg-[#16a34a] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                 Ativar proteção
@@ -337,7 +337,7 @@ export function TwoFactor({ onBack }: Props) {
             <button
               onClick={startEnroll}
               disabled={starting}
-              className="w-full py-3.5 rounded-xl text-white bg-[#22c55e] hover:bg-[#c2410c] transition-colors font-semibold disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl text-white bg-[#22c55e] hover:bg-[#16a34a] transition-colors font-semibold disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
               Ativar verificação em duas etapas

@@ -38,10 +38,26 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
-    if (user && request.nextUrl.pathname.startsWith("/auth/")) {
-      const url = request.nextUrl.clone()
-      url.pathname = "/trade"
-      return NextResponse.redirect(url)
+    const pathname = request.nextUrl.pathname
+    const isAuthFlowRoute = pathname.startsWith("/auth/reset-password") || pathname.startsWith("/auth/callback")
+
+    if (user) {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      const pendingMfa = aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2"
+
+      if (pendingMfa && isProtectedRoute) {
+        const url = request.nextUrl.clone()
+        url.pathname = "/auth/login"
+        url.search = "?mfa=1"
+        return NextResponse.redirect(url)
+      }
+
+      if (!pendingMfa && pathname.startsWith("/auth/") && !isAuthFlowRoute) {
+        const url = request.nextUrl.clone()
+        url.pathname = "/trade"
+        url.search = ""
+        return NextResponse.redirect(url)
+      }
     }
   } catch {
     // Erro silencioso - permite requisição continuar
