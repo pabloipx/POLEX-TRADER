@@ -21,12 +21,11 @@ const QUICK_AMOUNTS = [60, 250, 1000, 2000, 100, 500, 1500, 4000]
 }
 
 type DepositMethod = "pix" | "card" | "crypto"
-type CryptoType = "usdt" | "btc"
+type CryptoType = keyof typeof CRYPTO_WALLETS
 
 const CRYPTO_WALLETS = {
   usdt: "0x4a46afb8Cd04C21FD1370ECbdC1C543352e55e60",
-  btc: "0x49aE47169789c90D1bD9655E5cdA5a21F99CC058"
-}
+} as const
 const CRYPTO_MIN_USD = 20
 const USD_TO_BRL = 6.0 // Taxa de conversão USD para BRL
 
@@ -65,7 +64,7 @@ export default function DepositPage() {
   const [methodsLoading, setMethodsLoading] = useState(true)
   
   // Crypto form state
-  const [cryptoType, setCryptoType] = useState<CryptoType>("usdt")
+  const cryptoType: CryptoType = "usdt"
   const [cryptoAmountUsd, setCryptoAmountUsd] = useState("")
   const [cryptoTxHash, setCryptoTxHash] = useState("")
   const [cryptoSuccess, setCryptoSuccess] = useState(false)
@@ -944,50 +943,13 @@ export default function DepositPage() {
               </div>
             ) : !showCryptoQR ? (
               <>
-                {/* Crypto Type Selector */}
-                <div className="space-y-2">
-                  <label className="text-white text-sm font-medium">Escolha a criptomoeda</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => setCryptoType("usdt")}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        cryptoType === "usdt"
-                          ? "border-[#26A17B] bg-[#26A17B]/10"
-                          : "border-[#1F2933] bg-[#121826] hover:border-[#26A17B]/50"
-                      }`}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          cryptoType === "usdt" ? "bg-[#26A17B]" : "bg-[#26A17B]/20"
-                        }`}>
-                          <span className="text-white font-bold text-lg">₮</span>
-                        </div>
-                        <div className="text-center">
-                          <p className={`font-semibold ${cryptoType === "usdt" ? "text-[#26A17B]" : "text-white"}`}>USDT</p>
-                          <p className="text-[#9CA3AF] text-xs">Tether</p>
-                        </div>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => setCryptoType("btc")}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        cryptoType === "btc"
-                          ? "border-[#F7931A] bg-[#F7931A]/10"
-                          : "border-[#1F2933] bg-[#121826] hover:border-[#F7931A]/50"
-                      }`}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          cryptoType === "btc" ? "bg-[#F7931A]" : "bg-[#F7931A]/20"
-                        }`}>
-                          <span className="text-white font-bold text-lg">₿</span>
-                        </div>
-                        <div className="text-center">
-                          <p className={`font-semibold ${cryptoType === "btc" ? "text-[#F7931A]" : "text-white"}`}>BTC</p>
-                          <p className="text-[#9CA3AF] text-xs">Bitcoin</p>
-                        </div>
-                      </div>
-                    </button>
+                <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-[#26A17B] bg-[#26A17B]/10">
+                  <div className="w-10 h-10 rounded-full bg-[#26A17B] flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-lg" aria-hidden="true">₮</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#26A17B]">USDT (Tether)</p>
+                    <p className="text-[#9CA3AF] text-xs">Rede Ethereum (ERC-20)</p>
                   </div>
                 </div>
 

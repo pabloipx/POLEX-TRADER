@@ -181,7 +181,7 @@ export default function AdminDashboardClient() {
 
   // Settings state
   const [cardDepositEnabled, setCardDepositEnabled] = useState(true)
-  const [cryptoDepositEnabled, setCryptoDepositEnabled] = useState(false)
+  const [cryptoDepositEnabled, setCryptoDepositEnabled] = useState(true)
   const [settingsLoading, setSettingsLoading] = useState(false)
 
   // Rollover de deposito e prazo de saque. Guardados como texto para nao atrapalhar a digitacao

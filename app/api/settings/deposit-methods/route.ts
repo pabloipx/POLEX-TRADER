@@ -15,7 +15,7 @@ export async function GET() {
     const result = {
       card_enabled: true,
       pix_enabled: true,
-      crypto_enabled: false,
+      crypto_enabled: true,
       crypto_wallet: CRYPTO_WALLET,
       crypto_min_usd: CRYPTO_MIN_USD,
     }
@@ -38,7 +38,7 @@ export async function GET() {
     return NextResponse.json({
       card_enabled: true,
       pix_enabled: true,
-      crypto_enabled: false,
+      crypto_enabled: true,
       crypto_wallet: CRYPTO_WALLET,
       crypto_min_usd: CRYPTO_MIN_USD,
     })
