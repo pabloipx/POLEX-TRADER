@@ -1156,9 +1156,23 @@ body {
 .kayko-pop { animation: kaykoPopKf 0.25s ease-out both; }
 .kayko-grid { animation: kaykoGridKf 3s linear infinite; }
 
+@keyframes kaykoFlowKf { to { stroke-dashoffset: -16; } }
+@keyframes kaykoNodeKf {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px #22d3ee); }
+}
+@keyframes kaykoTargetKf {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.25) rotate(45deg); opacity: 0.6; }
+}
+.kayko-flow { animation: kaykoFlowKf 0.9s linear infinite; }
+.kayko-node { animation: kaykoNodeKf 1.4s ease-in-out infinite; }
+.kayko-target { animation: kaykoTargetKf 1.2s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .kayko-spin, .kayko-border, .kayko-scanline, .kayko-blip, .kayko-caret,
-  .kayko-shimmer, .kayko-reveal, .kayko-pop, .kayko-grid { animation: none !important; }
+  .kayko-shimmer, .kayko-reveal, .kayko-pop, .kayko-grid,
+  .kayko-flow, .kayko-node, .kayko-target { animation: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
