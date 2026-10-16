@@ -560,40 +560,48 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             />
 
             {/* header */}
-            <div className="relative flex items-center gap-3 border-b border-white/5 p-5">
-              <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
-                <span className="absolute h-16 w-16 rounded-full bg-[#22c55e]/25 blur-lg" aria-hidden />
-                <span
-                  className="kayko-spin absolute -inset-1 rounded-full border border-dashed border-[#22c55e]/40"
-                  aria-hidden
-                />
-                <Image
-                  src="/auto-trader-mascot.png"
-                  alt="Auto Trader"
-                  width={64}
-                  height={64}
-                  className="relative h-16 w-16 object-contain"
-                />
+            <div className="relative flex items-center gap-4 px-5 pb-4 pt-5">
+              <div className="relative shrink-0 rounded-2xl bg-gradient-to-br from-[#4ade80]/70 via-[#22c55e]/20 to-[#22d3ee]/50 p-px shadow-[0_0_28px_rgba(34,197,94,0.35)]">
+                <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-[15px] bg-[#0a1210]">
+                  <span className="absolute inset-x-2 bottom-0 h-8 rounded-full bg-[#22c55e]/30 blur-xl" aria-hidden />
+                  <Image
+                    src="/auto-trader-mascot.png"
+                    alt="Auto Trader"
+                    width={64}
+                    height={64}
+                    className="relative h-14 w-14 object-contain"
+                  />
+                </div>
+                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0b1017]">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]" />
+                </span>
               </div>
               <div className="min-w-0">
-                <h3 className="text-2xl font-extrabold leading-none text-white">
-                  AUTO <span className="text-[#22c55e]">TRADER</span>
-                </h3>
-                <div className="mt-2 flex items-center gap-2 text-sm text-white/60">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22c55e] opacity-60" />
-                    <span className="relative h-2 w-2 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]" />
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/40">Fidex IA</p>
+                <h3 className="mt-1 text-2xl font-black leading-none tracking-tight text-white">
+                  AUTO{" "}
+                  <span className="bg-gradient-to-r from-[#4ade80] to-[#22d3ee] bg-clip-text text-transparent">
+                    TRADER
                   </span>
-                  <span className="font-semibold text-[#22c55e]">{analyzing ? "Analisando" : "Online"}</span>
-                  <span className="text-white/25">•</span>
-                  <Cpu className="h-4 w-4" />
-                  <span>IA de análise</span>
+                </h3>
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#22c55e]/30 bg-[#22c55e]/10 px-2 py-0.5 text-[11px] font-semibold text-[#4ade80]">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22c55e] opacity-70" />
+                      <span className="relative h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
+                    </span>
+                    {analyzing ? "Analisando" : "Online"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/60">
+                    <Cpu className="h-3 w-3" />
+                    IA de análise
+                  </span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => !analyzing && setOpen(false)}
-                className="ml-auto flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/60 transition hover:bg-white/10 hover:text-white disabled:opacity-40"
+                className="ml-auto flex h-9 w-9 shrink-0 items-center justify-center self-start rounded-xl border border-white/10 bg-white/[0.04] text-white/60 transition hover:bg-white/10 hover:text-white disabled:opacity-40"
                 disabled={analyzing}
                 aria-label="Fechar"
               >
@@ -602,10 +610,21 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             </div>
 
             {/* corpo */}
+            <div className="mx-5 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" aria-hidden />
             <div className="relative space-y-4 p-5">
-              <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.04] px-4 py-3.5 backdrop-blur">
-                <span className="text-sm font-medium uppercase tracking-wide text-white/50">Ativo em análise</span>
-                <span className="text-lg font-extrabold text-white">{assetName}</span>
+              <div className="relative flex items-center gap-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-r from-white/[0.06] to-white/[0.02] px-4 py-3.5">
+                <span className="absolute inset-y-3 left-0 w-[3px] rounded-r-full bg-gradient-to-b from-[#4ade80] to-[#22d3ee]" aria-hidden />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#22c55e]/25 bg-[#22c55e]/10">
+                  <Radar className="h-5 w-5 text-[#4ade80]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/45">Ativo em análise</p>
+                  <p className="truncate text-lg font-extrabold leading-tight text-white">{assetName}</p>
+                </div>
+                <span className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#ef4444]/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#f87171]">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ef4444]" />
+                  Ao vivo
+                </span>
               </div>
 
               {analyzing && (
@@ -865,7 +884,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                 type="button"
                 onClick={runAnalysis}
                 disabled={analyzing || hasActiveSignal}
-                className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#22c55e] via-[#4ade80] to-[#16a34a] py-4 text-lg font-extrabold text-[#0a0d13] shadow-[0_0_30px_rgba(34,197,94,0.45)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-b from-[#4ade80] to-[#16a34a] py-4 text-base font-extrabold tracking-tight text-[#04140a] shadow-[0_10px_30px_-8px_rgba(34,197,94,0.7),inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-[#86efac]/40 transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
               >
                 {!analyzing && !hasActiveSignal && (
                   <span
@@ -888,15 +907,15 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                       : "Analisar e gerar entrada"}
               </button>
 
-              <div className="flex items-center justify-between">
-                <p className="flex items-center gap-1.5 text-xs text-white/40">
-                  <Cpu className="h-3.5 w-3.5" />
+              <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-3">
+                <p className="flex items-center gap-1.5 text-[11px] text-white/40">
+                  <Cpu className="h-3.5 w-3.5 text-[#22c55e]/70" />
                   Análise do ativo aberto na tela em tempo real
                 </p>
                 <button
                   type="button"
                   onClick={() => setMuted((m) => !m)}
-                  className="flex items-center gap-1 text-xs text-white/40 transition hover:text-white/70"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/50 transition hover:bg-white/10 hover:text-white"
                   aria-label={muted ? "Ativar som" : "Silenciar"}
                 >
                   {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
