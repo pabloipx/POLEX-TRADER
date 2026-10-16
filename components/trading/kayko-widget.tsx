@@ -297,8 +297,6 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   const scanProgress = analyzing ? Math.min(1, Math.max(0, (now - scanStart) / SCAN_MS)) : 0
   const scanPct = Math.round(scanProgress * 100)
   const stepIndex = Math.min(SCAN_STEPS.length - 1, Math.floor(scanProgress * SCAN_STEPS.length))
-  const scanSecondsLeft = Math.max(0, Math.ceil((SCAN_MS - (now - scanStart)) / 1000))
-  const candlesRead = Math.round(scanProgress * 240)
 
   const scanChart = useMemo(() => {
     const src =
@@ -773,48 +771,6 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                         />
                       ))}
                     </svg>
-                  </div>
-
-                  <div className="relative mt-3 space-y-1 font-mono text-[11px] leading-relaxed">
-                    {SCAN_STEPS.slice(Math.max(0, stepIndex - 2), stepIndex + 1).map((label) => {
-                      const current = label === SCAN_STEPS[stepIndex]
-                      return (
-                        <p
-                          key={label}
-                          className={`kayko-reveal flex items-center justify-between gap-2 ${current ? "text-white" : "text-white/40"}`}
-                        >
-                          <span className="truncate">
-                            <span className="text-[#22d3ee]">{"> "}</span>
-                            {label}
-                            {current && <span className="kayko-caret ml-0.5 text-[#22d3ee]">_</span>}
-                          </span>
-                          <span className={`shrink-0 font-bold ${current ? "text-[#22d3ee]" : "text-[#4ade80]"}`}>
-                            {current ? "..." : "[OK]"}
-                          </span>
-                        </p>
-                      )
-                    })}
-                  </div>
-
-                  <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#22d3ee] to-[#22c55e] shadow-[0_0_10px_#22d3ee]"
-                      style={{ width: `${scanProgress * 100}%`, transition: "width 120ms linear" }}
-                    />
-                  </div>
-                  <div className="relative mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-white/45 tabular-nums">
-                    <span>
-                      Candles <span className="font-bold text-white/80">{candlesRead}</span>
-                    </span>
-                    <span>
-                      Etapa{" "}
-                      <span className="font-bold text-white/80">
-                        {stepIndex + 1}/{SCAN_STEPS.length}
-                      </span>
-                    </span>
-                    <span>
-                      Restam <span className="font-bold text-[#22d3ee]">{scanSecondsLeft}s</span>
-                    </span>
                   </div>
                 </div>
               )}
