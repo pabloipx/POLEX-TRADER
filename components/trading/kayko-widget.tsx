@@ -2,7 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
-import { Radar, X, TrendingUp, TrendingDown, Volume2, VolumeX, Cpu, Clock, GripVertical } from "lucide-react"
+import {
+  Radar,
+  X,
+  TrendingUp,
+  TrendingDown,
+  Volume2,
+  VolumeX,
+  Cpu,
+  Clock,
+  GripVertical,
+} from "lucide-react"
 
 type Candle = { open: number; close: number; high: number; low: number }
 
@@ -29,6 +39,28 @@ type Signal = {
 const POS_KEY = "polex_auto_trader_pos"
 const CARD_W = 264
 const CARD_W_MOBILE = 200
+const SCAN_MS = 13000
+const SCAN_STEPS = [
+  "Conectando à rede neural",
+  "Coletando candles do ativo",
+  "Calculando RSI, MACD e médias",
+  "Detectando padrões de preço",
+  "Medindo força da tendência",
+  "Confirmando sinal de entrada",
+]
+const SCAN_CANDLES = 32
+const NEURAL_LAYERS = [3, 5, 5, 2]
+const NEURAL_NODES = NEURAL_LAYERS.flatMap((count, li) =>
+  Array.from({ length: count }, (_, ni) => ({
+    id: `${li}-${ni}`,
+    layer: li,
+    x: 20 + li * (260 / (NEURAL_LAYERS.length - 1)),
+    y: ((ni + 1) * 56) / (count + 1),
+  })),
+)
+const NEURAL_LINKS = NEURAL_NODES.flatMap((a) =>
+  NEURAL_NODES.filter((b) => b.layer === a.layer + 1).map((b) => ({ id: `${a.id}>${b.id}`, a, b })),
+)
 
 function computeCardW() {
   if (typeof window === "undefined") return CARD_W
@@ -106,7 +138,12 @@ function useKaykoSound(muted: boolean) {
 
   const playTick = useCallback(() => beep(1200, 0, 0.05, "square", 0.025), [beep])
 
-  return { playScan, playSignal, playTick }
+  const playStep = useCallback(() => {
+    beep(760, 0, 0.06, "sine", 0.03)
+    beep(1020, 0.07, 0.08, "sine", 0.025)
+  }, [beep])
+
+  return { playScan, playSignal, playTick, playStep }
 }
 
 function fmtClock(ms: number) {
@@ -129,8 +166,9 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
   const [dragging, setDragging] = useState(false)
   const [cardW, setCardW] = useState<number>(CARD_W)
+  const [scanStart, setScanStart] = useState(0)
 
-  const { playScan, playSignal, playTick } = useKaykoSound(muted)
+  const { playScan, playSignal, playTick, playStep } = useKaykoSound(muted)
   const timeoutRef = useRef<number | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const dragRef = useRef<{
@@ -195,10 +233,10 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
 
   // Relógio: só liga quando há sinal ativo ou o painel está aberto.
   useEffect(() => {
-    if (!signal && !open) return
-    const id = window.setInterval(() => setNow(Date.now()), 250)
+    if (!signal && !open && !analyzing) return
+    const id = window.setInterval(() => setNow(Date.now()), analyzing ? 100 : 250)
     return () => window.clearInterval(id)
-  }, [signal, open])
+  }, [signal, open, analyzing])
 
   const winRate = useMemo(() => {
     const total = stats.win + stats.loss
@@ -211,6 +249,9 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
     // Só permite nova análise quando a entrada atual já expirou.
     if (signal && Date.now() < signal.expiresAt) return
     setSignal(null)
+    const start = Date.now()
+    setScanStart(start)
+    setNow(start)
     setAnalyzing(true)
     playScan()
 
@@ -242,7 +283,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
       lastTickRef.current = -1
       setSignal({ direction, confidence, createdAt: base, entryAt, expiresAt })
       playSignal(direction)
-    }, 3200)
+    }, SCAN_MS)
   }, [analyzing, candles, playScan, playSignal, signal])
 
   // Contagem regressiva e beeps nos últimos 5s antes da entrada.
@@ -252,6 +293,48 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
   const entryDone = !!signal && now >= signal.expiresAt
   // Enquanto existe um sinal que ainda não expirou, a nova análise fica bloqueada.
   const hasActiveSignal = !!signal && !entryDone
+
+  const scanProgress = analyzing ? Math.min(1, Math.max(0, (now - scanStart) / SCAN_MS)) : 0
+  const scanPct = Math.round(scanProgress * 100)
+  const stepIndex = Math.min(SCAN_STEPS.length - 1, Math.floor(scanProgress * SCAN_STEPS.length))
+  const scanSecondsLeft = Math.max(0, Math.ceil((SCAN_MS - (now - scanStart)) / 1000))
+  const candlesRead = Math.round(scanProgress * 240)
+
+  const scanChart = useMemo(() => {
+    const src =
+      candles.length >= 8
+        ? candles.slice(-SCAN_CANDLES)
+        : Array.from({ length: SCAN_CANDLES }, (_, i) => {
+            const open = 50 + Math.sin(i / 3) * 12 + Math.cos(i / 1.7) * 5
+            const close = 50 + Math.sin((i + 1) / 3) * 12 + Math.cos((i + 1) / 1.7) * 5
+            return { open, close, high: Math.max(open, close) + 3, low: Math.min(open, close) - 3 }
+          })
+    const hi = Math.max(...src.map((c) => c.high))
+    const lo = Math.min(...src.map((c) => c.low))
+    const range = hi - lo || 1
+    const y = (v: number) => 8 + (1 - (v - lo) / range) * 84
+    const step = 300 / src.length
+    const bars = src.map((c, i) => ({
+      x: i * step + step / 2,
+      w: Math.max(2, step * 0.55),
+      yOpen: y(c.open),
+      yClose: y(c.close),
+      yHigh: y(c.high),
+      yLow: y(c.low),
+      up: c.close >= c.open,
+    }))
+    return { bars, resistance: y(hi) + 4, support: y(lo) - 4 }
+  }, [candles])
+  const lastStepRef = useRef(-1)
+
+  useEffect(() => {
+    if (!analyzing) {
+      lastStepRef.current = -1
+      return
+    }
+    if (stepIndex > 0 && stepIndex !== lastStepRef.current) playStep()
+    lastStepRef.current = stepIndex
+  }, [analyzing, stepIndex, playStep])
 
   useEffect(() => {
     if (!signal || muted) return
@@ -450,14 +533,29 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             onClick={() => !analyzing && setOpen(false)}
             aria-hidden
           />
-          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[#22c55e]/30 bg-gradient-to-b from-[#141a24] to-[#0a0d13] shadow-[0_20px_80px_rgba(0,0,0,0.7)]">
+          <div className="kayko-pop relative w-full max-w-md overflow-hidden rounded-3xl p-px shadow-[0_0_60px_rgba(34,197,94,0.18),0_24px_80px_rgba(0,0,0,0.75)]">
+            <span
+              className="kayko-border pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[160%]"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, transparent 0deg, #22c55e 50deg, transparent 110deg, transparent 180deg, #4ade80 230deg, transparent 290deg)",
+              }}
+              aria-hidden
+            />
+          <div className="relative overflow-hidden rounded-[calc(1.5rem-1px)] bg-gradient-to-b from-[#111823] via-[#0b1017] to-[#070a0f]">
             <div
-              className="pointer-events-none absolute inset-0 opacity-[0.12]"
+              className="kayko-grid pointer-events-none absolute inset-0 opacity-[0.09]"
               style={{
                 backgroundImage:
                   "linear-gradient(#22c55e 1px, transparent 1px), linear-gradient(90deg, #22c55e 1px, transparent 1px)",
                 backgroundSize: "26px 26px",
+                maskImage: "radial-gradient(ellipse at top, black 30%, transparent 85%)",
+                WebkitMaskImage: "radial-gradient(ellipse at top, black 30%, transparent 85%)",
               }}
+              aria-hidden
+            />
+            <span
+              className="pointer-events-none absolute -top-24 left-1/2 h-48 w-72 -translate-x-1/2 rounded-full bg-[#22c55e]/20 blur-3xl"
               aria-hidden
             />
 
@@ -465,6 +563,10 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
             <div className="relative flex items-center gap-3 border-b border-white/5 p-5">
               <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
                 <span className="absolute h-16 w-16 rounded-full bg-[#22c55e]/25 blur-lg" aria-hidden />
+                <span
+                  className="kayko-spin absolute -inset-1 rounded-full border border-dashed border-[#22c55e]/40"
+                  aria-hidden
+                />
                 <Image
                   src="/auto-trader-mascot.png"
                   alt="Auto Trader"
@@ -478,8 +580,11 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                   AUTO <span className="text-[#22c55e]">TRADER</span>
                 </h3>
                 <div className="mt-2 flex items-center gap-2 text-sm text-white/60">
-                  <span className="h-2 w-2 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]" />
-                  <span className="font-semibold text-[#22c55e]">Online</span>
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22c55e] opacity-60" />
+                    <span className="relative h-2 w-2 rounded-full bg-[#22c55e] shadow-[0_0_8px_#22c55e]" />
+                  </span>
+                  <span className="font-semibold text-[#22c55e]">{analyzing ? "Analisando" : "Online"}</span>
                   <span className="text-white/25">•</span>
                   <Cpu className="h-4 w-4" />
                   <span>IA de análise</span>
@@ -498,47 +603,216 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
 
             {/* corpo */}
             <div className="relative space-y-4 p-5">
-              <div className="flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.04] px-4 py-3.5 backdrop-blur">
                 <span className="text-sm font-medium uppercase tracking-wide text-white/50">Ativo em análise</span>
                 <span className="text-lg font-extrabold text-white">{assetName}</span>
               </div>
 
               {analyzing && (
-                <div className="overflow-hidden rounded-2xl border border-[#22c55e]/30 bg-black/40 p-5">
-                  <div className="flex items-center gap-3">
-                    <Radar className="h-5 w-5 animate-spin text-[#22c55e]" style={{ animationDuration: "1.6s" }} />
-                    <span className="text-sm font-semibold text-white">Analisando mercado…</span>
-                    <span className="ml-auto text-xs text-white/40">{assetName}</span>
+                <div
+                  className="kayko-reveal relative overflow-hidden rounded-2xl border border-[#22d3ee]/25 bg-[#030a0d] p-4 shadow-[0_0_40px_rgba(34,211,238,0.12),inset_0_0_30px_rgba(34,197,94,0.06)]"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div
+                    className="kayko-grid pointer-events-none absolute inset-0 opacity-60"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(rgba(34,211,238,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.07) 1px, transparent 1px)",
+                      backgroundSize: "26px 26px",
+                    }}
+                    aria-hidden
+                  />
+                  <span
+                    className="pointer-events-none absolute -top-16 left-1/2 h-32 w-56 -translate-x-1/2 rounded-full bg-[#22d3ee]/20 blur-3xl"
+                    aria-hidden
+                  />
+
+                  <div className="relative flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#22d3ee]">
+                        <span className="relative flex h-2 w-2">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22d3ee] opacity-75" />
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-[#22d3ee]" />
+                        </span>
+                        IA procurando entrada
+                      </p>
+                      <p className="mt-1 truncate font-mono text-xs text-white/50">
+                        {"neural_core://"}
+                        {assetName}
+                      </p>
+                    </div>
+                    <p className="font-mono text-3xl font-extrabold tabular-nums leading-none text-white drop-shadow-[0_0_12px_rgba(34,211,238,0.6)]">
+                      {scanPct}
+                      <span className="text-base text-[#22d3ee]">%</span>
+                    </p>
                   </div>
-                  <div className="mt-4 flex h-16 items-end justify-between gap-1">
-                    {Array.from({ length: 22 }).map((_, i) => (
-                      <span
-                        key={i}
-                        className="flex-1 rounded-sm bg-gradient-to-t from-[#22c55e] to-[#16a34a]"
-                        style={{
-                          animation: "kaykoBar 0.9s ease-in-out infinite",
-                          animationDelay: `${i * 0.06}s`,
-                          height: "100%",
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <div className="relative mt-4 h-1 overflow-hidden rounded-full bg-white/10">
-                    <span
-                      className="absolute inset-y-0 w-1/3 rounded-full bg-gradient-to-r from-transparent via-[#22c55e] to-transparent"
-                      style={{ animation: "kaykoScan 1.2s linear infinite" }}
+
+                  <div className="relative mt-3 h-28 overflow-hidden rounded-xl border border-white/10 bg-black/60">
+                    <svg
+                      className="absolute inset-0 h-full w-full"
+                      viewBox="0 0 300 100"
+                      preserveAspectRatio="none"
+                      aria-hidden
+                    >
+                      {scanChart.bars.map((b, i) => {
+                        const read = b.x / 300 <= scanProgress
+                        const color = b.up ? "#22c55e" : "#ef4444"
+                        return (
+                          <g key={i} opacity={read ? 1 : 0.18} style={{ transition: "opacity 200ms" }}>
+                            <line x1={b.x} x2={b.x} y1={b.yHigh} y2={b.yLow} stroke={color} strokeWidth="0.8" />
+                            <rect
+                              x={b.x - b.w / 2}
+                              y={Math.min(b.yOpen, b.yClose)}
+                              width={b.w}
+                              height={Math.max(1, Math.abs(b.yClose - b.yOpen))}
+                              fill={color}
+                              rx="0.6"
+                            />
+                          </g>
+                        )
+                      })}
+                      {scanProgress > 0.45 && (
+                        <g className="kayko-reveal">
+                          <line
+                            x1="0"
+                            x2="300"
+                            y1={scanChart.resistance}
+                            y2={scanChart.resistance}
+                            stroke="#f87171"
+                            strokeWidth="0.7"
+                            strokeDasharray="4 3"
+                          />
+                          <line
+                            x1="0"
+                            x2="300"
+                            y1={scanChart.support}
+                            y2={scanChart.support}
+                            stroke="#4ade80"
+                            strokeWidth="0.7"
+                            strokeDasharray="4 3"
+                          />
+                        </g>
+                      )}
+                    </svg>
+
+                    {scanProgress > 0.45 && (
+                      <>
+                        <span className="kayko-reveal absolute right-2 top-1 rounded bg-[#ef4444]/15 px-1.5 font-mono text-[9px] font-bold uppercase text-[#f87171]">
+                          Resistência
+                        </span>
+                        <span className="kayko-reveal absolute bottom-1 right-2 rounded bg-[#22c55e]/15 px-1.5 font-mono text-[9px] font-bold uppercase text-[#4ade80]">
+                          Suporte
+                        </span>
+                      </>
+                    )}
+
+                    <div
+                      className="pointer-events-none absolute inset-y-0 left-0 bg-gradient-to-r from-transparent to-[#22d3ee]/15"
+                      style={{ width: `${scanProgress * 100}%` }}
+                      aria-hidden
                     />
+                    <div
+                      className="pointer-events-none absolute inset-y-0 w-px bg-[#67e8f9] shadow-[0_0_10px_2px_#22d3ee]"
+                      style={{ left: `${scanProgress * 100}%` }}
+                      aria-hidden
+                    >
+                      <span className="kayko-target absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-[#67e8f9]" />
+                    </div>
+                    <span
+                      className="kayko-scanline pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-transparent via-[#22d3ee]/10 to-transparent"
+                      aria-hidden
+                    />
+                  </div>
+
+                  <div className="relative mt-3 rounded-xl border border-white/5 bg-black/40 px-2 py-1">
+                    <svg className="h-14 w-full" viewBox="0 0 300 56" preserveAspectRatio="none" aria-hidden>
+                      {NEURAL_LINKS.map((l, i) => (
+                        <line
+                          key={l.id}
+                          x1={l.a.x}
+                          y1={l.a.y}
+                          x2={l.b.x}
+                          y2={l.b.y}
+                          stroke="#22d3ee"
+                          strokeOpacity="0.35"
+                          strokeWidth="0.6"
+                          strokeDasharray="3 5"
+                          className="kayko-flow"
+                          style={{ animationDelay: `${(i % 6) * 0.15}s` }}
+                        />
+                      ))}
+                      {NEURAL_NODES.map((n, i) => (
+                        <circle
+                          key={n.id}
+                          cx={n.x}
+                          cy={n.y}
+                          r="3"
+                          fill={n.layer === NEURAL_LAYERS.length - 1 ? "#4ade80" : "#22d3ee"}
+                          className="kayko-node"
+                          style={{ animationDelay: `${n.layer * 0.25 + (i % 3) * 0.1}s` }}
+                        />
+                      ))}
+                    </svg>
+                  </div>
+
+                  <div className="relative mt-3 space-y-1 font-mono text-[11px] leading-relaxed">
+                    {SCAN_STEPS.slice(Math.max(0, stepIndex - 2), stepIndex + 1).map((label) => {
+                      const current = label === SCAN_STEPS[stepIndex]
+                      return (
+                        <p
+                          key={label}
+                          className={`kayko-reveal flex items-center justify-between gap-2 ${current ? "text-white" : "text-white/40"}`}
+                        >
+                          <span className="truncate">
+                            <span className="text-[#22d3ee]">{"> "}</span>
+                            {label}
+                            {current && <span className="kayko-caret ml-0.5 text-[#22d3ee]">_</span>}
+                          </span>
+                          <span className={`shrink-0 font-bold ${current ? "text-[#22d3ee]" : "text-[#4ade80]"}`}>
+                            {current ? "..." : "[OK]"}
+                          </span>
+                        </p>
+                      )
+                    })}
+                  </div>
+
+                  <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#22d3ee] to-[#22c55e] shadow-[0_0_10px_#22d3ee]"
+                      style={{ width: `${scanProgress * 100}%`, transition: "width 120ms linear" }}
+                    />
+                  </div>
+                  <div className="relative mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-white/45 tabular-nums">
+                    <span>
+                      Candles <span className="font-bold text-white/80">{candlesRead}</span>
+                    </span>
+                    <span>
+                      Etapa{" "}
+                      <span className="font-bold text-white/80">
+                        {stepIndex + 1}/{SCAN_STEPS.length}
+                      </span>
+                    </span>
+                    <span>
+                      Restam <span className="font-bold text-[#22d3ee]">{scanSecondsLeft}s</span>
+                    </span>
                   </div>
                 </div>
               )}
 
               {!analyzing && signal && (
                 <div
-                  className={`rounded-2xl border p-5 ${
-                    isCall ? "border-[#22c55e]/40 bg-[#0f2e1c]" : "border-[#ef4444]/40 bg-[#2e1414]"
+                  className={`kayko-reveal relative overflow-hidden rounded-2xl border p-5 ${
+                    isCall
+                      ? "border-[#22c55e]/50 bg-gradient-to-b from-[#103a22] to-[#0a1f13] shadow-[0_0_40px_rgba(34,197,94,0.25)]"
+                      : "border-[#ef4444]/50 bg-gradient-to-b from-[#3a1414] to-[#1f0a0a] shadow-[0_0_40px_rgba(239,68,68,0.25)]"
                   }`}
                 >
-                  <div className="flex items-center justify-center gap-2">
+                  <span
+                    className="kayko-shimmer pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                    aria-hidden
+                  />
+                  <div className="relative flex items-center justify-center gap-2">
                     {isCall ? (
                       <TrendingUp className="h-8 w-8 text-[#22c55e]" />
                     ) : (
@@ -550,7 +824,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                   </div>
 
                   {/* Horário + cronômetro */}
-                  <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="relative mt-4 grid grid-cols-2 gap-3">
                     <div className="rounded-xl bg-black/30 p-3 text-center">
                       <p className="flex items-center justify-center gap-1 text-[11px] uppercase tracking-wide text-white/45">
                         <Clock className="h-3.5 w-3.5" /> Horário de entrada
@@ -577,7 +851,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                     </div>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-center gap-2 rounded-full bg-black/30 px-3 py-1 text-sm">
+                  <div className="relative mt-3 flex items-center justify-center gap-2 rounded-full bg-black/30 px-3 py-1 text-sm">
                     <span className="text-white/60">Confiança</span>
                     <span className="font-bold text-white">{signal.confidence}%</span>
                     <span className="text-white/25">•</span>
@@ -591,14 +865,20 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                 type="button"
                 onClick={runAnalysis}
                 disabled={analyzing || hasActiveSignal}
-                className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#22c55e] via-[#4ade80] to-[#16a34a] py-4 text-lg font-extrabold text-[#0a0d13] shadow-[0_0_30px_rgba(34,197,94,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#22c55e] via-[#4ade80] to-[#16a34a] py-4 text-lg font-extrabold text-[#0a0d13] shadow-[0_0_30px_rgba(34,197,94,0.45)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
+                {!analyzing && !hasActiveSignal && (
+                  <span
+                    className="kayko-shimmer pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    aria-hidden
+                  />
+                )}
                 <Radar
-                  className={`h-6 w-6 ${analyzing ? "animate-spin" : ""}`}
+                  className={`relative h-6 w-6 ${analyzing ? "animate-spin" : ""}`}
                   style={{ animationDuration: "1.6s" }}
                 />
                 {analyzing
-                  ? "Analisando…"
+                  ? `IA procurando entrada… ${scanPct}%`
                   : hasActiveSignal
                     ? entryActive
                       ? "Entrada em andamento…"
@@ -623,6 +903,7 @@ export function KaykoWidget({ assetName, candles, stats }: KaykoWidgetProps) {
                 </button>
               </div>
             </div>
+          </div>
           </div>
         </div>
       )}
