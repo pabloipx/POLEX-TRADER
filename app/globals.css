@@ -1117,6 +1117,50 @@ body {
 }
 .rtm-radar { animation: kaykoRadar 1.8s ease-out infinite; transform-origin: center; }
 
+@keyframes kaykoSpinKf { to { transform: rotate(360deg); } }
+@keyframes kaykoBorderKf {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes kaykoScanY {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(600%); }
+}
+@keyframes kaykoBlipKf {
+  0%, 100% { opacity: 0; transform: scale(0.4); }
+  20% { opacity: 1; transform: scale(1.2); }
+  60% { opacity: 0.4; transform: scale(1); }
+}
+@keyframes kaykoCaretKf { 50% { opacity: 0; } }
+@keyframes kaykoShimmerKf {
+  0% { left: -60%; }
+  60%, 100% { left: 130%; }
+}
+@keyframes kaykoRevealKf {
+  0% { opacity: 0; transform: translateY(10px) scale(0.96); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes kaykoPopKf {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes kaykoGridKf { to { background-position: 0 26px, 26px 0; } }
+
+.kayko-spin { animation: kaykoSpinKf 6s linear infinite; }
+.kayko-border { animation: kaykoBorderKf 5s linear infinite; }
+.kayko-scanline { animation: kaykoScanY 2.6s linear infinite; }
+.kayko-blip { animation: kaykoBlipKf 1.8s ease-out infinite; }
+.kayko-caret { animation: kaykoCaretKf 0.9s step-end infinite; }
+.kayko-shimmer { animation: kaykoShimmerKf 2.8s ease-in-out infinite; }
+.kayko-reveal { animation: kaykoRevealKf 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.kayko-pop { animation: kaykoPopKf 0.25s ease-out both; }
+.kayko-grid { animation: kaykoGridKf 3s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kayko-spin, .kayko-border, .kayko-scanline, .kayko-blip, .kayko-caret,
+  .kayko-shimmer, .kayko-reveal, .kayko-pop, .kayko-grid { animation: none !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rtm-radar { animation: none !important; }
 }
