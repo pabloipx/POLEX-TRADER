@@ -83,15 +83,12 @@ interface Props {
   // de entrada caia sobre o candle visivel, e nao no preco cru que ainda nao chegou na tela.
   livePriceRef?: React.MutableRefObject<number>
 }
-interface PnlOverlay {
-  id: string
-  top: number
-  pnl: number
-  amount: number
-  inMoney: boolean
-  isCall: boolean
-  time: string
-}
+// Paleta do gráfico no estilo Avalon.
+const AV_BG = "#1b1e2a"
+const AV_UP = "#18b04b"
+const AV_DOWN = "#e0403c"
+const AV_EXPIRY = "#e5484d"
+const AV_PILL = "#d5d8df"
 
 // ========== DRAWING TOOLS (estilo IQ Option) ==========
 type DrawTool = "cursor" | "trend" | "horizontal" | "ray" | "vertical" | "rect" | "fib" | "eraser"
@@ -433,13 +430,16 @@ function ChartCore({
   const containerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const countdownRef = useRef<HTMLDivElement>(null)
+  const markersCanvasRef = useRef<HTMLCanvasElement>(null)
+  const pricePillRef = useRef<HTMLDivElement>(null)
+  const pillHeadRef = useRef<HTMLSpanElement>(null)
+  const pillTailRef = useRef<HTMLSpanElement>(null)
   const [loading, setLoading] = useState(true)
   // Incrementa toda vez que uma NOVA serie do grafico e criada (ex.: ao trocar de moeda).
   // Serve para forcar o redesenho das linhas de operacao/overlays, que dependem de seriesRef
   // (uma ref que nao dispara re-render por si so).
   const [seriesReady, setSeriesReady] = useState(0)
   const [flash, setFlash] = useState<{ id: string; dir: "call" | "put" } | null>(null)
-  const [pnlOverlays, setPnlOverlays] = useState<PnlOverlay[]>([])
   // Geometria do preview de hover: y do preco atual e largura do eixo de precos,
   // para o tingimento cobrir so a area do grafico (nunca a escala da direita).
   const [hoverGeom, setHoverGeom] = useState<{ y: number; axis: number } | null>(null)
@@ -962,27 +962,27 @@ function ChartCore({
         height: containerRef.current.clientHeight,
         layout: {
           background: { type: CT.Solid, color: "rgba(0,0,0,0)" },
-          textColor: "#787B86",
+          textColor: "#8b90a0",
           fontSize: 11,
           fontFamily: "'SF Mono',Consolas,monospace",
           attributionLogo: false,
         },
         grid: {
-          vertLines: { color: "rgba(42, 46, 57, 0.4)" },
-          horzLines: { color: "rgba(42, 46, 57, 0.4)" },
+          vertLines: { color: "rgba(255, 255, 255, 0.055)" },
+          horzLines: { color: "rgba(255, 255, 255, 0.055)" },
         },
         crosshair: {
           mode: CM.Normal,
-          vertLine: { color: "rgba(255,255,255,0.35)", width: 1, style: LS.Dashed, labelBackgroundColor: "#2A2E39" },
-          horzLine: { color: "rgba(255,255,255,0.35)", width: 1, style: LS.Dashed, labelBackgroundColor: "#2A2E39" },
+          vertLine: { color: "rgba(255,255,255,0.3)", width: 1, style: LS.Dashed, labelBackgroundColor: "#353a4a" },
+          horzLine: { color: "rgba(255,255,255,0.3)", width: 1, style: LS.Dashed, labelBackgroundColor: "#353a4a" },
         },
-        rightPriceScale: { borderColor: "#363A45", autoScale: true, scaleMargins: { top: 0.12, bottom: 0.12 } },
+        rightPriceScale: { borderVisible: false, autoScale: true, scaleMargins: { top: 0.12, bottom: 0.12 } },
         localization: {
           locale: "pt-BR",
           timeFormatter: formatCrosshairBRT,
         },
         timeScale: {
-          borderColor: "#363A45",
+          borderVisible: false,
           timeVisible: true,
           secondsVisible: tf0 <= 60,
           tickMarkFormatter: formatTickBRT,
@@ -1010,16 +1010,18 @@ function ChartCore({
       // Precisao por ativo: garante que cada simbolo (inclusive memecoins com 8 casas) renderize corretamente
       const dec = getDecimals(latest.current.symbol, latest.current.currentPrice)
       const cOpts = {
-        upColor: "#00E676",
-        downColor: "#FF5252",
-        borderUpColor: "#00E676",
-        borderDownColor: "#FF5252",
-        wickUpColor: "#00E676",
-        wickDownColor: "#FF5252",
+        upColor: AV_UP,
+        downColor: AV_DOWN,
+        borderUpColor: AV_UP,
+        borderDownColor: AV_DOWN,
+        wickUpColor: AV_UP,
+        wickDownColor: AV_DOWN,
         priceLineVisible: true,
-        priceLineColor: "#787B86",
+        priceLineColor: "rgba(213,216,223,0.55)",
         priceLineWidth: 1 as const,
-        lastValueVisible: true,
+        priceLineStyle: 0,
+        // O rótulo do preço atual é a etiqueta em seta desenhada por cima do eixo.
+        lastValueVisible: false,
         priceFormat: {
           type: "price" as const,
           precision: dec,
@@ -1586,151 +1588,335 @@ function ChartCore({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [indicators, seriesReady, symbol, timeframe])
 
-  // ===== TRADE LINES (native price lines, attached to chart) =====
-  //
-  // BUG CORRIGIDO — "a linha de CALL/PUT sumia ao minimizar a pagina e voltar":
-  //
-  // 1. A existencia da linha dependia do estado `cds`, alimentado por um setInterval. Navegador
-  //    estrangula (e chega a congelar) timers de aba em segundo plano, entao ao restaurar a
-  //    janela o `cds` vinha vazio/velho: `cds[trade.id] ?? -1` dava -1, caia no `cd <= 0` e a
-  //    linha NAO era desenhada. Agora o tempo restante e calculado na hora, direto de
-  //    `trade.timestamp + trade.expiryTime`, que nao depende de nenhum timer ter rodado.
-  // 2. O efeito apagava TODAS as linhas e recriava a cada tick (4x/s). Qualquer falha no meio
-  //    (ou um tick com estado velho) deixava o grafico sem linha nenhuma. Agora e incremental:
-  //    linha existente e so atualizada via applyOptions, e removemos apenas as que sairam.
-  //
-  // O `resyncKey` (visibilitychange/focus/pageshow) forca uma reconciliacao ao voltar para a
-  // aba, e `linesSeriesRef` detecta troca de serie para descartar handles orfaos.
+  // ===== Marcações de tempo e de operações (estilo Avalon) =====
+  // Tudo é desenhado num canvas por frame, a partir de refs, para acompanhar o zoom/arrasto do
+  // gráfico sem re-render do React:
+  //  - linha pontilhada branca (cronômetro) = agora, onde uma nova entrada começaria;
+  //  - linha vermelha (bandeira) = onde essa entrada expiraria com o tempo selecionado;
+  //  - cada operação aberta: ponto na entrada, linha até a expiração, linha vermelha de
+  //    expiração própria e etiqueta com resultado parcial e tempo restante.
+  const chartTradesRef = useRef(chartTrades)
+  chartTradesRef.current = chartTrades
+  const hoverDirRef = useRef(hoverDirection)
+  hoverDirRef.current = hoverDirection
+  const payoutRef = useRef(payout)
+  payoutRef.current = payout
+
   useEffect(() => {
-    const series = seriesRef.current
-    const lwc = lwcRef.current
-    if (!series) return
+    let raf = 0
+    let dead = false
+    const FONT = "'SF Mono',Consolas,monospace"
 
-    // Na troca de aba, aguarda as velas do ativo solicitado entrarem na série. Antes a linha era
-    // criada sobre os dados do ativo anterior e podia ser invalidada silenciosamente pelo setData.
-    if (loadedSymbolRef.current !== symbol) {
-      tradeLinesRef.current.forEach((line) => {
-        try {
-          series.removePriceLine(line)
-        } catch {}
-      })
-      tradeLinesRef.current.clear()
-      setPnlOverlays([])
-      return
+    const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
+      ctx.beginPath()
+      ctx.moveTo(x + r, y)
+      ctx.arcTo(x + w, y, x + w, y + h, r)
+      ctx.arcTo(x + w, y + h, x, y + h, r)
+      ctx.arcTo(x, y + h, x, y, r)
+      ctx.arcTo(x, y, x + w, y, r)
+      ctx.closePath()
     }
 
-    // Se a serie foi recriada, os handles guardados apontam para um objeto morto: descarta.
-    if (linesSeriesRef.current !== series) {
-      tradeLinesRef.current.clear()
-      linesSeriesRef.current = series
+    const drawStopwatch = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+      ctx.fillStyle = "#ffffff"
+      ctx.beginPath()
+      ctx.arc(x, y, 9, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.strokeStyle = AV_BG
+      ctx.fillStyle = AV_BG
+      ctx.lineWidth = 1.4
+      ctx.beginPath()
+      ctx.arc(x, y + 1, 4.5, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.fillRect(x - 1.5, y - 6.2, 3, 1.6)
+      ctx.beginPath()
+      ctx.moveTo(x, y + 1)
+      ctx.lineTo(x + 2, y - 1.2)
+      ctx.stroke()
     }
 
-    const LS = lwc?.LineStyle
-    const now = Date.now()
-    const seen = new Set<string>()
+    const drawFlag = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+      ctx.fillStyle = AV_EXPIRY
+      ctx.beginPath()
+      ctx.arc(x, y, 9, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.strokeStyle = "#ffffff"
+      ctx.fillStyle = "#ffffff"
+      ctx.lineWidth = 1.3
+      ctx.beginPath()
+      ctx.moveTo(x - 3.5, y + 5)
+      ctx.lineTo(x - 3.5, y - 5)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(x - 3.5, y - 5)
+      ctx.lineTo(x + 4.5, y - 3)
+      ctx.lineTo(x - 3.5, y - 0.5)
+      ctx.closePath()
+      ctx.fill()
+    }
 
-    chartTrades.forEach((trade) => {
-      if (trade.entryPrice <= 0) return
+    const updatePill = (y: number | null, plotH: number, axisW: number, price: number) => {
+      const pill = pricePillRef.current
+      if (!pill) return
+      if (y == null || y < 0 || y > plotH || !(price > 0)) {
+        pill.style.opacity = "0"
+        return
+      }
+      const txt = fmtPrice(price, latest.current.symbol)
+      const cut = Math.max(0, txt.length - 2)
+      if (pillHeadRef.current && pillHeadRef.current.textContent !== txt.slice(0, cut)) {
+        pillHeadRef.current.textContent = txt.slice(0, cut)
+      }
+      if (pillTailRef.current && pillTailRef.current.textContent !== txt.slice(cut)) {
+        pillTailRef.current.textContent = txt.slice(cut)
+      }
+      const hd = hoverDirRef.current
+      const bg = hd === "call" ? AV_UP : hd === "put" ? AV_DOWN : AV_PILL
+      pill.style.opacity = "1"
+      pill.style.top = `${y}px`
+      pill.style.minWidth = `${axisW + 8}px`
+      pill.style.backgroundColor = bg
+      pill.style.color = hd ? "#ffffff" : AV_BG
+      if (pillTailRef.current) {
+        pillTailRef.current.style.color = hd ? "#ffffff" : dirRef.current === "down" ? AV_DOWN : AV_UP
+      }
+    }
 
-      // A presença da operação nesta lista significa que o banco ainda a considera pendente.
-      // Mesmo que o relógio local chegue a zero antes da liquidação no servidor, a linha permanece.
-      const cd = Math.max(0, Math.ceil((trade.timestamp + trade.expiryTime * 1000 - now) / 1000))
+    const render = () => {
+      if (dead) return
+      raf = requestAnimationFrame(render)
+      const canvas = markersCanvasRef.current
+      const container = containerRef.current
+      if (!canvas || !container) return
+      const w = container.clientWidth
+      const h = container.clientHeight
+      const dpr = window.devicePixelRatio || 1
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr)
+        canvas.height = Math.floor(h * dpr)
+        canvas.style.width = `${w}px`
+        canvas.style.height = `${h}px`
+      }
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.clearRect(0, 0, w, h)
 
-      const isCall = trade.direction === "call"
-      const color = cd <= 10 ? "#FFC400" : isCall ? "#00E676" : "#FF5252"
-      const label = isCall ? "CALL" : "PUT"
-      const timeStr = cd > 0
-        ? `${String(Math.floor(cd / 60)).padStart(2, "0")}:${String(cd % 60).padStart(2, "0")}`
-        : "00:00"
-      const amount = trade.amount ? ` R$${trade.amount.toFixed(0)}` : ""
-      const title = ` ${label} ${timeStr}${amount} `
+      const chart = chartRef.current
+      const series = seriesRef.current
+      const forming = formingRef.current
+      if (!chart || !series || !forming || loadedSymbolRef.current !== latest.current.symbol) {
+        updatePill(null, 0, 0, 0)
+        return
+      }
 
-      seen.add(trade.id)
-      const existing = tradeLinesRef.current.get(trade.id)
+      let axisW = 62
+      let timeH = 28
+      try {
+        const v = chart.priceScale("right").width()
+        if (v > 0) axisW = v
+      } catch {}
+      try {
+        const v = chart.timeScale().height()
+        if (v > 0) timeH = v
+      } catch {}
+      const plotW = w - axisW
+      const plotH = h - timeH
 
-      if (existing) {
-        // Linha ja existe: apenas atualiza cor/cronometro, sem remover e recriar (sem piscar).
+      const yAt = (p: number): number | null => {
         try {
-          existing.applyOptions({ price: trade.entryPrice, color, title })
-          return
+          const y = series.priceToCoordinate(p)
+          return typeof y === "number" && Number.isFinite(y) ? y : null
         } catch {
-          // applyOptions falhou (handle invalido) — cai no caminho de recriar abaixo.
-          tradeLinesRef.current.delete(trade.id)
+          return null
         }
       }
 
-      try {
-        const line = series.createPriceLine({
-          price: trade.entryPrice,
-          color,
-          lineWidth: 2,
-          lineStyle: LS?.Dashed ?? 1,
-          axisLabelVisible: true,
-          title,
-        })
-        if (line) tradeLinesRef.current.set(trade.id, line)
-      } catch {}
-
-      // Nenhum marcador e desenhado no candle da entrada, por escolha do usuario: a seta grande
-      // (arrowUp/arrowDown) cobria os candles vizinhos e o ponto que a substituiu continuava
-      // poluindo o grafico. A entrada segue identificada pela linha tracejada de preco acima,
-      // que ja traz direcao, cor, cronometro e valor.
-    })
-
-    // Remove apenas as linhas de operacoes que expiraram ou sairam da lista.
-    tradeLinesRef.current.forEach((line, id) => {
-      if (seen.has(id)) return
-      try {
-        series.removePriceLine(line)
-      } catch {}
-      tradeLinesRef.current.delete(id)
-    })
-  }, [chartTrades, cds, seriesReady, resyncKey, symbol])
-
-  // ===== Live floating P&L overlays (IQ Option style) =====
-  useEffect(() => {
-    if (!chartTrades.length || loadedSymbolRef.current !== symbol) {
-      setPnlOverlays([])
-      return
-    }
-    const payoutFrac = payout > 1 ? payout / 100 : payout
-    const update = () => {
-      const series = seriesRef.current
-      if (!series) return
       const price = smoothPriceRef.current || latest.current.currentPrice
-      const now = Date.now()
-      const next: PnlOverlay[] = []
-      chartTrades.forEach((t) => {
-        if (t.entryPrice <= 0) return
-        const remaining = Math.max(0, Math.ceil((t.timestamp + t.expiryTime * 1000 - now) / 1000))
-        let y: number | null = null
+      updatePill(yAt(price), plotH, axisW, price)
+
+      // Converte um instante (s) em x: as velas são contíguas, então a posição lógica é a da
+      // vela atual somada à fração de períodos decorridos — vale também para o futuro.
+      const ts = chart.timeScale()
+      const tf = latest.current.timeframe
+      let lastLogical: number | null = null
+      try {
+        const x = ts.timeToCoordinate(forming.time as any)
+        if (x != null) {
+          const l = ts.coordinateToLogical(x)
+          if (l != null) lastLogical = Math.round(l as number)
+        }
+      } catch {}
+      if (lastLogical == null) return
+      const xAt = (sec: number): number | null => {
         try {
-          y = series.priceToCoordinate(t.entryPrice)
-        } catch {}
-        if (y == null) return
+          const x = ts.logicalToCoordinate((lastLogical! + (sec - forming.time) / tf) as any)
+          return typeof x === "number" && Number.isFinite(x) ? x : null
+        } catch {
+          return null
+        }
+      }
+      const vline = (x: number, color: string, dash: number[], width: number) => {
+        ctx.save()
+        ctx.strokeStyle = color
+        ctx.lineWidth = width
+        ctx.setLineDash(dash)
+        ctx.beginPath()
+        ctx.moveTo(Math.round(x) + 0.5, 0)
+        ctx.lineTo(Math.round(x) + 0.5, plotH)
+        ctx.stroke()
+        ctx.restore()
+      }
+
+      const nowSec = Date.now() / 1000
+      const iconY = plotH - 14
+      const icons: { x: number; kind: "watch" | "flag" }[] = []
+
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(0, 0, plotW, h)
+      ctx.clip()
+
+      const xNow = xAt(nowSec)
+      const xExp = xAt(nowSec + tf)
+      if (xNow != null) {
+        vline(xNow, "rgba(255,255,255,0.8)", [1.5, 3], 1)
+        icons.push({ x: xNow, kind: "watch" })
+      }
+      if (xExp != null) {
+        vline(xExp, AV_EXPIRY, [], 1.5)
+        icons.push({ x: xExp, kind: "flag" })
+      }
+
+      const payoutFrac = payoutRef.current > 1 ? payoutRef.current / 100 : payoutRef.current
+      for (const t of chartTradesRef.current) {
+        if (!(t.entryPrice > 0)) continue
+        const y = yAt(t.entryPrice)
+        if (y == null) continue
+        const entrySec = t.timestamp / 1000
+        const expSec = entrySec + t.expiryTime
+        const xe = xAt(entrySec)
+        const xx = xAt(expSec)
         const isCall = t.direction === "call"
-        // In binary options the result is "in the money" or not (tie counts as loss)
         const inMoney = isCall ? price > t.entryPrice : price < t.entryPrice
-        const amount = t.amount || 10
-        const pnl = inMoney ? Math.round(amount * payoutFrac * 100) / 100 : -amount
-        const m = Math.floor(remaining / 60)
-        const s = remaining % 60
-        next.push({
-          id: t.id,
-          top: y,
-          pnl,
-          amount,
-          inMoney,
-          isCall,
-          time: remaining > 0 ? `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : "00:00",
-        })
-      })
-      setPnlOverlays(next)
+        const clr = inMoney ? AV_UP : AV_DOWN
+
+        if (xx != null) {
+          vline(xx, AV_EXPIRY, [], 1)
+          icons.push({ x: xx, kind: "flag" })
+        }
+
+        const x0 = xe ?? 0
+        const x1 = xx ?? plotW
+        ctx.save()
+        ctx.strokeStyle = clr
+        ctx.lineWidth = 1.5
+        ctx.beginPath()
+        ctx.moveTo(x0, y)
+        ctx.lineTo(x1, y)
+        ctx.stroke()
+        ctx.globalAlpha = 0.35
+        ctx.setLineDash([4, 4])
+        ctx.beginPath()
+        ctx.moveTo(x1, y)
+        ctx.lineTo(plotW, y)
+        ctx.stroke()
+        ctx.restore()
+
+        if (xe != null) {
+          ctx.fillStyle = clr
+          ctx.strokeStyle = "#ffffff"
+          ctx.lineWidth = 1.5
+          ctx.beginPath()
+          ctx.arc(xe, y, 4, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.stroke()
+        }
+
+        // Etiqueta: [seta] +R$ lucro | tempo restante
+        const amount = t.amount || 0
+        const value = inMoney ? amount * payoutFrac : amount
+        const money = `${inMoney ? "+" : "-"}R$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        const remaining = Math.max(0, Math.ceil(expSec - nowSec))
+        const time = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`
+        ctx.font = `700 11px ${FONT}`
+        const moneyW = ctx.measureText(money).width
+        ctx.font = `600 10px ${FONT}`
+        const timeW = ctx.measureText(time).width
+        const pillH = 20
+        const leftW = 18 + moneyW + 8
+        const rightW = timeW + 12
+        const pillW = leftW + rightW
+        const anchor = xe ?? 8
+        let px = anchor - 10 - pillW
+        if (px < 40) px = anchor + 10
+        const py = y - pillH / 2
+
+        ctx.save()
+        roundRect(ctx, px, py, pillW, pillH, 4)
+        ctx.fillStyle = "rgba(20,22,31,0.92)"
+        ctx.fill()
+        ctx.beginPath()
+        roundRect(ctx, px, py, leftW, pillH, 4)
+        ctx.fillStyle = clr
+        ctx.fill()
+        // Seta da direção da operação
+        ctx.fillStyle = "#ffffff"
+        ctx.beginPath()
+        const ax = px + 9
+        const ay = py + pillH / 2
+        if (isCall) {
+          ctx.moveTo(ax, ay - 4.5)
+          ctx.lineTo(ax + 4.5, ay + 2.5)
+          ctx.lineTo(ax - 4.5, ay + 2.5)
+        } else {
+          ctx.moveTo(ax, ay + 4.5)
+          ctx.lineTo(ax + 4.5, ay - 2.5)
+          ctx.lineTo(ax - 4.5, ay - 2.5)
+        }
+        ctx.closePath()
+        ctx.fill()
+        ctx.textBaseline = "middle"
+        ctx.font = `700 11px ${FONT}`
+        ctx.fillText(money, px + 18, ay + 0.5)
+        ctx.font = `600 10px ${FONT}`
+        ctx.fillStyle = remaining <= 5 ? "#ffd166" : "#e6e8ee"
+        ctx.fillText(time, px + leftW + 6, ay + 0.5)
+        ctx.restore()
+      }
+
+      for (const icon of icons) {
+        if (icon.x < 10 || icon.x > plotW - 10) continue
+        if (icon.kind === "watch") drawStopwatch(ctx, icon.x, iconY)
+        else drawFlag(ctx, icon.x, iconY)
+      }
+
+      // Tempo até o fechamento da vela, ao lado do cronômetro
+      if (xNow != null && xNow > 10 && xNow < plotW - 10) {
+        const left = Math.max(0, Math.ceil(Math.ceil(nowSec / tf) * tf - nowSec))
+        const label = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`
+        ctx.font = `600 10px ${FONT}`
+        const lw = ctx.measureText(label).width + 10
+        const lx = xNow - 14 - lw
+        if (lx > 4) {
+          roundRect(ctx, lx, iconY - 8, lw, 16, 4)
+          ctx.fillStyle = left <= 10 ? AV_EXPIRY : "rgba(20,22,31,0.9)"
+          ctx.fill()
+          ctx.fillStyle = "#e6e8ee"
+          ctx.textBaseline = "middle"
+          ctx.fillText(label, lx + 5, iconY + 0.5)
+        }
+      }
+
+      ctx.restore()
     }
-    update()
-    const iv = setInterval(update, 60)
-    return () => clearInterval(iv)
-  }, [chartTrades, payout, seriesReady, symbol])
+
+    raf = requestAnimationFrame(render)
+    return () => {
+      dead = true
+      cancelAnimationFrame(raf)
+    }
+  }, [])
 
   // ===== Preview de direcao no hover de Comprar/Vender =====
   // Acompanha a altura do preco atual enquanto o mouse esta sobre um dos botoes, para que a
@@ -1771,30 +1957,30 @@ function ChartCore({
     if (!series) return
     try {
       series.applyOptions({
-        priceLineColor: hoverDirection === "call" ? "#00E676" : hoverDirection === "put" ? "#FF5252" : "#787B86",
-        priceLineStyle: hoverDirection ? 2 : 0,
+        priceLineColor: hoverDirection === "call" ? AV_UP : hoverDirection === "put" ? AV_DOWN : "rgba(213,216,223,0.55)",
+        priceLineStyle: 0,
       })
     } catch {}
   }, [hoverDirection, seriesReady])
 
   return (
-    <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: "#0d0d0f" }}>
-      {/* Marca d'água Fidex Option no fundo do gráfico */}
+    <div className="relative w-full h-full overflow-hidden" style={{ backgroundColor: AV_BG }}>
+      {/* Mapa-múndi pontilhado no fundo do gráfico (estilo Avalon) */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: "url(/images/fidelity-chart-watermark.png)",
+          backgroundImage: "url(/images/chart-world-map.png)",
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "center 45%",
-          backgroundSize: "55% auto",
-          opacity: 0.1,
+          backgroundPosition: "center 40%",
+          backgroundSize: "cover",
+          opacity: 0.45,
         }}
       />
       {/* Vinheta sutil para dar profundidade */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at center, rgba(13,13,15,0) 55%, rgba(13,13,15,0.85) 100%)",
+          background: "radial-gradient(ellipse at center, rgba(27,30,42,0) 60%, rgba(27,30,42,0.7) 100%)",
         }}
       />
       {/* OHLC header */}
@@ -1804,20 +1990,30 @@ function ChartCore({
         style={{ fontFamily: "'SF Mono',Consolas,monospace" }}
       />
 
-      {/* Contador regressivo do fechamento da vela (estilo IQ Option) */}
-      <div
-        ref={countdownRef}
-        className="absolute right-[62px] z-20 rounded px-1.5 py-0.5 text-[11px] font-bold tabular-nums pointer-events-none"
-        style={{
-          top: "50%",
-          transform: "translateY(-50%)",
-          fontFamily: "'SF Mono',Consolas,monospace",
-          opacity: 0,
-        }}
-      />
-
       {/* Chart container - touchAction none lets the chart capture drag instead of the page scrolling */}
       <div ref={containerRef} className="absolute inset-0 z-10" style={{ touchAction: "none" }} />
+
+      {/* Linhas de tempo (compra/expiração) e marcações das operações abertas */}
+      <canvas ref={markersCanvasRef} className="pointer-events-none absolute inset-0 z-[14]" aria-hidden="true" />
+
+      {/* Etiqueta em seta do preço atual sobre o eixo de preços (estilo Avalon) */}
+      <div
+        ref={pricePillRef}
+        className="pointer-events-none absolute right-0 z-20 flex h-6 items-center justify-end pl-3 pr-1.5 tabular-nums"
+        style={{
+          top: 0,
+          opacity: 0,
+          transform: "translateY(-50%)",
+          clipPath: "polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%)",
+          fontFamily: "'SF Mono',Consolas,monospace",
+          backgroundColor: AV_PILL,
+          color: AV_BG,
+        }}
+        aria-hidden="true"
+      >
+        <span ref={pillHeadRef} className="text-[11px] font-medium" />
+        <span ref={pillTailRef} className="text-[14px] font-bold leading-none" />
+      </div>
 
       {/* Camada de desenho (marcacoes) - so captura eventos quando uma ferramenta esta ativa */}
       <canvas
@@ -1862,7 +2058,7 @@ function ChartCore({
             className="absolute left-0 right-0"
             style={{
               top: `${hoverGeom.y}px`,
-              borderTop: `1px dashed ${hoverDirection === "call" ? "#00E676" : "#FF5252"}`,
+              borderTop: `1px solid ${hoverDirection === "call" ? AV_UP : AV_DOWN}`,
               opacity: 0.9,
             }}
           />
@@ -1903,7 +2099,7 @@ function ChartCore({
       )}
 
       {/* Barra de ferramentas de desenho (estilo IQ Option) */}
-      <div className="absolute left-1 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-0.5 rounded-lg border border-[#2A2E39] bg-[#0d0d0f]/90 p-0.5 backdrop-blur-sm sm:left-2 sm:gap-1 sm:rounded-xl sm:p-1">
+      <div className="absolute left-1 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-0.5 rounded-lg border border-[#2A2E39] bg-[#1b1e2a]/90 p-0.5 backdrop-blur-sm sm:left-2 sm:gap-1 sm:rounded-xl sm:p-1">
         {DRAW_TOOLS.map((dt) => {
           const active = tool === dt.id
           return (
@@ -1938,7 +2134,7 @@ function ChartCore({
             <span className="size-3.5 rounded-full border border-white/30 sm:size-4" style={{ backgroundColor: drawColor }} />
           </button>
           {showColors && (
-            <div className="absolute left-10 top-0 flex gap-1 rounded-lg border border-[#2A2E39] bg-[#0d0d0f] p-1.5">
+            <div className="absolute left-10 top-0 flex gap-1 rounded-lg border border-[#2A2E39] bg-[#1b1e2a] p-1.5">
               {DRAW_COLORS.map((c) => (
                 <button
                   key={c}
@@ -1995,7 +2191,7 @@ function ChartCore({
             </svg>
           </button>
           {showIndicators && (
-            <div className="absolute left-10 top-0 w-52 rounded-xl border border-[#2A2E39] bg-[#0d0d0f] p-1.5 shadow-xl">
+            <div className="absolute left-10 top-0 w-52 rounded-xl border border-[#2A2E39] bg-[#1b1e2a] p-1.5 shadow-xl">
               {(
                 [
                   { key: "ma", label: "Médias Móveis", desc: "SMA 9 / 21", color: "#FFC400" },
@@ -2037,7 +2233,7 @@ function ChartCore({
       {/* Relógio de Brasília acima do eixo de tempo, sem cobrir os horários do gráfico */}
       {clock && (
         <div
-          className="pointer-events-none absolute bottom-9 left-12 z-20 flex items-center gap-1.5 rounded-md border border-[#2A2E39] bg-[#0d0d0f]/90 px-2 py-1 shadow-sm"
+          className="pointer-events-none absolute bottom-9 left-12 z-20 flex items-center gap-1.5 rounded-md border border-[#2A2E39] bg-[#1b1e2a]/90 px-2 py-1 shadow-sm"
           style={{ fontFamily: "'SF Mono',Consolas,monospace" }}
         >
           <span className="size-1.5 rounded-full bg-[#00E676]" />
@@ -2047,64 +2243,9 @@ function ChartCore({
         </div>
       )}
 
-      {/* Linha de entrada persistente, no estilo IQ Option. Esta camada HTML garante que a
-          marcação continue visível mesmo quando a API nativa de price lines for recriada. */}
-      {pnlOverlays.map((o) => {
-        const clr = o.isCall ? "#00E676" : "#FF5252"
-        return (
-          <div
-            key={o.id}
-            className="pointer-events-none absolute left-0 right-[62px] z-20"
-            style={{
-              top: o.top,
-              transform: "translateY(-50%)",
-              transition: "top 0.12s linear",
-            }}
-          >
-            <div className="absolute left-0 right-0 top-1/2 border-t border-dashed" style={{ borderColor: clr }} />
-            <div
-              className="absolute right-2 top-1/2 flex items-center gap-2"
-              style={{ transform: "translateY(-50%)", animation: "pnlPop 0.3s ease-out" }}
-            >
-              <div
-                className="flex size-5 items-center justify-center rounded-full border border-white/80 text-[11px] font-medium text-white"
-                style={{ backgroundColor: clr }}
-              >
-                {o.isCall ? "↑" : "↓"}
-              </div>
-              <div className="flex flex-col items-end gap-0.5">
-                <div
-                className="px-2 py-1 rounded-md font-bold text-xs whitespace-nowrap"
-                style={{
-                  background: "rgba(13,13,15,0.92)",
-                  color: clr,
-                  border: `1px solid ${clr}`,
-                  boxShadow: `0 0 10px ${clr}55`,
-                  fontFamily: "'SF Mono',Consolas,monospace",
-                }}
-              >
-                R${" "}
-                {o.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <div
-                className="px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
-                style={{
-                  background: "rgba(13,13,15,0.85)",
-                  color: o.isCall ? "#00E676" : "#FF5252",
-                  fontFamily: "'SF Mono',Consolas,monospace",
-                }}
-              >
-                {o.time}
-              </div>
-            </div>
-          </div>
-          </div>
-        )
-      })}
-
       {/* Loading */}
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-30" style={{ backgroundColor: "#0d0d0f" }}>
+        <div className="absolute inset-0 flex items-center justify-center z-30" style={{ backgroundColor: AV_BG }}>
           <div className="flex flex-col items-center gap-3">
             <div
               className="w-8 h-8 rounded-full border-2 border-[#1a1a1e] border-t-[#00E676] animate-spin"
