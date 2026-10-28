@@ -1779,6 +1779,7 @@ function ChartCore({
 
       const xNow = xAt(nowSec)
       const xExp = xAt(nowSec + tf)
+      if (Math.random() < 0.01) console.log("[v0] markers", { ft: forming.time, tf, lastLogical, xNow, xExp, plotW, xl: ts.timeToCoordinate(forming.time as any) })
       if (xNow != null) {
         vline(xNow, "rgba(255,255,255,0.8)", [1.5, 3], 1)
         icons.push({ x: xNow, kind: "watch" })
